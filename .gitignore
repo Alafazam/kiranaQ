@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.db
+*.db-wal
+*.db-shm
+.env
+server/public/
+server/uploads/
+server/data/
+build/
+.gradle/
+local.properties
+*.apk
+.DS_Store
