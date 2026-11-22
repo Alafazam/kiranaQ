@@ -89,7 +89,7 @@ export const dict = {
     synthetic: 'सिर्फ़ नकली डेटा', name: 'नाम', cycle_days: 'हर कितने दिन आते हैं', last_visit: 'पिछली विज़िट', note: 'नोट',
     save: 'सेव करें', saved: 'सेव हुआ', save_failed: 'सेव नहीं हुआ। फिर कोशिश करें।', active: 'चालू', distributor: 'वितरक',
     back: 'पीछे', close: 'बंद करें', tts_failed: 'आवाज़ नहीं चली। स्क्रीन पर लिस्ट पढ़ें।',
-    case_n: '{n} पेटी', case_1: '1 पेटी',
+    case_n: '{n} box', case_1: '1 box',
   },
 }
 
