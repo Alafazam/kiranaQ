@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useT } from '../i18n.js'
 import { useAssistant } from '../assistant/AssistantProvider.jsx'
 import DistributorCard from './DistributorCard.jsx'
@@ -18,6 +19,16 @@ export default function CardList({ result, onChange, announce = false }) {
     ...result.cards.filter((c) => !c.distributor),
   ]
   const firstUrgent = sorted.find((c) => c.distributor && c.runs_out.length > 0)
+  // Distributor filter (spec R1), kept in the URL as ?d=<id>.
+  const [params, setParams] = useSearchParams()
+  const filterId = Number(params.get('d')) || null
+  const shown = filterId ? sorted.filter((c) => c.distributor?.id === filterId) : sorted
+  function setFilter(value) {
+    const next = new URLSearchParams(params)
+    if (value) next.set('d', value)
+    else next.delete('d')
+    setParams(next, { replace: true })
+  }
   const assistant = useAssistant({
     context: {
       log_id: result.log_id,
@@ -40,12 +51,22 @@ export default function CardList({ result, onChange, announce = false }) {
   }, [announce])
   return (
     <div className="space-y-4">
-      <p className="font-medium">
+      {withDist.length > 1 && (
+        <label className="block">
+          <span className="sr-only">{t('choose_distributor')}</span>
+          <select value={filterId ?? ''} onChange={(e) => setFilter(e.target.value)}
+            className="w-full min-h-control rounded-control border-[1.5px] border-rule bg-surface px-3 font-medium text-ink">
+            <option value="">{t('all_distributors')}</option>
+            {withDist.map((c) => <option key={c.distributor.id} value={c.distributor.id}>{c.distributor.name}</option>)}
+          </select>
+        </label>
+      )}
+      {!filterId && <p className="font-medium">
         {runsOutSummary(t, result.cards)}{firstUrgent ? ` ${t('first_needs', { name: firstUrgent.distributor.name })}` : ''}
-      </p>
+      </p>}
       {result.not_counted > 0 && <p className="text-ink-2">{result.not_counted === 1 ? t('not_counted_1') : t('not_counted', { n: result.not_counted })}</p>}
       <div className="space-y-4">
-        {sorted.map((card) => (
+        {shown.map((card) => (
           <DistributorCard key={card.distributor?.id ?? 'none'} card={card} logId={result.log_id} onChange={onChange} />
         ))}
       </div>

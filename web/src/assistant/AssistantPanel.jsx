@@ -14,7 +14,7 @@ export function BoloButton() {
   const a = useAssistantState()
   const { pathname } = useLocation()
   // Screens with the tab bar have the mic in its centre; Check has its own "Hold to speak".
-  const hasTabBar = TAB_ROUTES.includes(pathname) || pathname.startsWith('/settings') || /^\/log\/\d+$/.test(pathname)
+  const hasTabBar = TAB_ROUTES.includes(pathname) || pathname.startsWith('/settings') || pathname.startsWith('/distributors/') || /^\/log\/\d+$/.test(pathname)
   if (a.open || hasTabBar || pathname.startsWith('/log/new/check')) return null
   const lift = 'bottom-[150px]'
   return (

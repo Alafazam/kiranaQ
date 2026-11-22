@@ -53,6 +53,12 @@ const mock = {
   results: { 4: clone(mockResult) },
 }
 const wait = (v) => new Promise((r) => setTimeout(() => r(clone(v)), MOCK_DELAY_MS))
+const withPhones = (result) => {
+  for (const c of result.cards || []) {
+    if (c.distributor) c.distributor.phone = mock.distributors.find((d) => d.id === c.distributor.id)?.phone ?? null
+  }
+  return result
+}
 function mockCounts(logId) {
   const r = mock.results[logId] || mock.results[4]
   return r.cards.flatMap((c) => [...c.runs_out, ...c.order, ...c.enough, ...(c.first_log || c.no_history || [])])
@@ -76,6 +82,8 @@ const real = {
   setLanguage: (language) => request('/store', { method: 'PUT', json: { language } }),
   distributors: () => request('/distributors'),
   updateDistributor: (id, body) => request(`/distributors/${id}`, { method: 'PUT', json: body }),
+  createDistributor: (body) => request('/distributors', { method: 'POST', json: body }),
+  distributorOrders: (id) => request(`/distributors/${id}/orders`),
   items: () => request('/items'),
   updateItem: (id, body) => request(`/items/${id}`, { method: 'PUT', json: body }),
   logs: () => request('/logs'),
@@ -110,6 +118,24 @@ const fake = {
     Object.assign(d, body)
     return wait(d)
   },
+  createDistributor: (body) => {
+    const id = Math.max(...mock.distributors.map((d) => d.id)) + 1
+    const d = { id, note: '', last_visit_date: null, phone: null, item_count: 0, runs_out_count: 0, tint_index: ((id - 1) % 5) + 1,
+      next_visit_date: mock.results[4].log_date, days_to_next_visit: Number(body.cycle_days), visit_date_set: false, ...body }
+    mock.distributors.push(d)
+    return wait(d)
+  },
+  distributorOrders: (id) => {
+    const out = []
+    for (const r of Object.values(mock.results)) {
+      const card = r.cards.find((c) => c.distributor?.id === Number(id) && c.confirmed)
+      if (!card) continue
+      const lines = [...card.runs_out, ...card.order].filter((l) => (l.final_qty ?? 0) > 0)
+        .map(({ item_id, name_en, name_hi, pack_size, unit, final_qty }) => ({ item_id, name_en, name_hi, pack_size, unit, final_qty }))
+      out.push({ log_id: r.log_id, log_date: r.log_date, confirmed_at: r.log_date, lines })
+    }
+    return wait(out.sort((a, b) => (a.log_date < b.log_date ? 1 : -1)))
+  },
   items: () => wait(mock.items),
   updateItem: (id, body) => {
     const it = mock.items.find((x) => x.id === id)
@@ -134,10 +160,10 @@ const fake = {
     mock.logs.unshift({ id, log_date: result.log_date, item_count: body.counts.length, runs_out_count: 1, visits: [] })
     return wait(result)
   },
-  result: (id) => wait(mock.results[id] || { ...mock.results[4], log_id: Number(id) }),
+  result: (id) => wait(withPhones(mock.results[id] || { ...mock.results[4], log_id: Number(id) })),
   latestOrders: () => {
     const id = mock.logs[0]?.id
-    return wait(id ? (mock.results[id] || mock.results[4]) : { cards: [] })
+    return wait(id ? withPhones(mock.results[id] || mock.results[4]) : { cards: [] })
   },
   confirmOrder: (id, { distributor_id, lines }) => {
     const r = mock.results[id] || mock.results[4]

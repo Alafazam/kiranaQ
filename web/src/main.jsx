@@ -10,6 +10,7 @@ import { AssistantPanel, BoloButton } from './assistant/AssistantPanel.jsx'
 import Home from './screens/Home.jsx'
 import Orders from './screens/Orders.jsx'
 import Distributors from './screens/Distributors.jsx'
+import DistributorDetail from './screens/DistributorDetail.jsx'
 import Photo from './screens/Photo.jsx'
 import Check from './screens/Check.jsx'
 import Result from './screens/Result.jsx'
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')).render(
             <Route element={<Tabs />}>
               <Route path="/" element={<Home />} />
               <Route path="/distributors" element={<Distributors />} />
+              <Route path="/distributors/:id" element={<DistributorDetail />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/settings" element={<SettingsHome />} />
               <Route path="/settings/distributors/:id" element={<EditDistributor />} />

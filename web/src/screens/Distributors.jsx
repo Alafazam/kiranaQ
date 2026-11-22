@@ -1,7 +1,9 @@
 // "Distributor kab aayenge": one band per distributor, sorted by next visit,
 // with the items that run out before that visit (from the latest result).
-import { Link, useNavigate } from 'react-router-dom'
-import { AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { AlertTriangle, CheckCircle2, ChevronRight, Plus } from 'lucide-react'
+import { useState } from 'react'
+import AddDistributorSheet from './AddDistributorSheet.jsx'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad } from '../state.jsx'
@@ -22,8 +24,8 @@ async function loadVisits() {
 
 export default function Distributors() {
   const t = useT()
-  const navigate = useNavigate()
   const res = useLoad(loadVisits, [])
+  const [addOpen, setAddOpen] = useState(false)
   useAssistant({ context: { distributors: (res.data || []).map(({ id, name, next_visit_date, days_to_next_visit }) => ({ id, name, next_visit_date, days_to_next_visit })) } })
   return (
     <>
@@ -33,14 +35,17 @@ export default function Distributors() {
         {res.status === 'error' && <ErrorState onRetry={res.reload} />}
         {res.status === 'ok' && res.data.length === 0 && (
           <EmptyState title={t('no_dist_title')} body={t('no_dist_body')}>
-            <Button onClick={() => navigate('/settings')}>{t('add_distributor')}</Button>
+            <Button icon={Plus} onClick={() => setAddOpen(true)}>{t('new_distributor')}</Button>
           </EmptyState>
+        )}
+        {res.status === 'ok' && res.data.length > 0 && (
+          <Button icon={Plus} className="w-full mb-3" onClick={() => setAddOpen(true)}>{t('new_distributor')}</Button>
         )}
         {res.status === 'ok' && res.data.length > 0 && (
           <ul className="space-y-3">
             {res.data.map((d) => (
               <li key={d.id} className={`rounded-card p-3 shadow-lift ${stripeClass(d.tint_index ?? d.id)}`}>
-                <Link to={`/settings/distributors/${d.id}`} className="flex items-start gap-2 px-1">
+                <Link to={`/distributors/${d.id}`} className="flex items-start gap-2 px-1">
                   <div className="flex-1">
                     <h2 className="text-xl">{d.name}</h2>
                     <p className="text-lg font-medium mt-1">{t.day(d.next_visit_date)}, <span className="num">{t.date(d.next_visit_date)}</span></p>
@@ -68,6 +73,7 @@ export default function Distributors() {
           </ul>
         )}
       </main>
+      <AddDistributorSheet open={addOpen} onClose={() => setAddOpen(false)} onAdded={() => res.reload()} />
     </>
   )
 }

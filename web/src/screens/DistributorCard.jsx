@@ -9,6 +9,7 @@ import { useToast } from '../ui/Toast.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { playBlob } from '../voice.js'
 import { useAssistant } from '../assistant/AssistantProvider.jsx'
+import PhoneButton from '../ui/PhoneButton.jsx'
 
 const firstLog = (card) => card.first_log || card.no_history || []
 const qtyOf = (l) => (l.final_qty ?? l.suggested_qty)
@@ -26,13 +27,16 @@ function daysLeftText(t, l) {
   return n === 1 ? t('day_left') : t('days_left', { n })
 }
 
-function OrderLine({ line, qty, onQty, locked }) {
+function OrderLine({ line, qty, onQty, locked, distributor }) {
   const t = useT()
   return (
     <li className="border-t border-rule px-1 py-3">
       <ItemLabel item={line} />
       <p className={`mt-1 text-sm font-medium ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
-      <p className="mt-1 text-sm text-ink-2">{t.reason(line.reason_key, line.reason_args)}</p>
+      <div className="mt-1 flex items-center gap-2">
+        <p className="text-sm text-ink-2 flex-1">{t.reason(line.reason_key, line.reason_args)}</p>
+        {line.status === 'runs_out' && distributor && <PhoneButton distributor={distributor} size="sm" />}
+      </div>
       <div className="mt-2 flex items-center justify-between gap-2">
         {locked ? (
           <span className="num text-lg">{qty} {line.unit}</span>
@@ -109,7 +113,8 @@ export default function DistributorCard({ card, logId, onChange }) {
     <article ref={articleRef} className="scroll-mt-4 pt-4 border-t-[2px] border-rule first:border-t-0 first:pt-0">
       <header className="px-1 pb-3">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-xl">{d ? d.name : t('no_distributor')}</h2>
+          <h2 className="text-xl flex-1">{d ? d.name : t('no_distributor')}</h2>
+          {d && <PhoneButton distributor={d} />}
           {d && (card.confirmed || orderLines.length > 0) && (
             <Stamp done={card.confirmed}>{card.confirmed ? t('ordered_on', { date: t.date(d.next_visit_date) }) : t('not_confirmed')}</Stamp>
           )}
@@ -129,7 +134,7 @@ export default function DistributorCard({ card, logId, onChange }) {
         <section className="mb-3">
           <StatusLabel status="runs_out" className="px-1 mb-2" />
           <ul>
-            {card.runs_out.map((l) => <OrderLine key={l.item_id} line={l} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
+            {card.runs_out.map((l) => <OrderLine key={l.item_id} line={l} distributor={d} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
           </ul>
         </section>
       )}
@@ -137,7 +142,7 @@ export default function DistributorCard({ card, logId, onChange }) {
         <section className="mb-3">
           <StatusLabel status="order" text={d ? t('order_on', { day: t.day(d.next_visit_date) }) : t('order')} className="px-1 mb-2" />
           <ul>
-            {card.order.map((l) => <OrderLine key={l.item_id} line={l} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
+            {card.order.map((l) => <OrderLine key={l.item_id} line={l} distributor={d} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
           </ul>
         </section>
       )}
