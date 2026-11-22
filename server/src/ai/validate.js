@@ -135,7 +135,9 @@ export function validateAssist(raw, { catalog, context, askAgain }) {
   const actions = proposed.map((a) => cleanAction(a, ctx)).filter(Boolean);
   const droppedAll = proposed.length > 0 && actions.length === 0;
   let expect = EXPECTS.has(raw.expect) ? raw.expect : 'answer';
-  if (actions.some((a) => WRITE_ACTIONS.has(a.type))) expect = 'confirm';
+  const hasWrite = actions.some((a) => WRITE_ACTIONS.has(a.type));
+  if (hasWrite) expect = 'confirm';
+  else if (expect === 'confirm') expect = 'answer'; // nothing to confirm: a Yes would do nothing
   const out = { say: droppedAll ? askAgain : raw.say.trim().slice(0, ASSIST_SAY_MAX), actions, expect: droppedAll ? 'answer' : expect };
   const options = Array.isArray(raw.options) ? raw.options.filter((o) => typeof o === 'string' && o.trim() && o.length <= ASSIST_OPTION_MAX_CHARS) : [];
   if (options.length) out.options = options.slice(0, ASSIST_OPTIONS_MAX);

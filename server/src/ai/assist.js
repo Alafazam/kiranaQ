@@ -58,6 +58,7 @@ export function buildAssistPrompt({ text, lang, screen, context, history, catalo
     ACTIONS,
     USE_CASES,
     `Rules: NEVER say the words "sample", "namuna" or "नमूना" in "say" or "options". Call it just a photo: "photo", "फ़ोटो चुनें" (choose a photo), options like "नई फ़ोटो" / "फ़ोटो चुनें". "say" is one or two short sentences, at most ${ASSIST_SAY_MAX_CHARS} characters, in the owner's language. Use only ids from the catalog and the context. Never invent data.`,
+    'If your say offers a write as a question ("log save karun?", "order pakka karun?"), you MUST include that write action (save_log / confirm_order / visit) in actions with expect "confirm". Never ask a save or confirm question without the action. Otherwise use expect "answer" or "done".',
     'expect: "answer" = you asked something and wait; "confirm" = a write action waits for Yes; "done" = nothing more to ask.',
     'Answer with ONLY JSON, no other text: {"say": "...", "actions": [], "expect": "answer", "options": ["optional", "short chips"]}',
   ].join('\n');

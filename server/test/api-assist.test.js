@@ -32,6 +32,10 @@ test('validate: a write action forces expect confirm', () => {
   }
 });
 
+test('validate: expect confirm without a write action becomes answer', () => {
+  assert.equal(v({ say: 'Save karun?', actions: [], expect: 'confirm' }).expect, 'answer');
+});
+
 test('validate: say is cut to 200 chars; no say gives null', () => {
   assert.equal(v({ say: 'a'.repeat(300), actions: [] }).say.length, 200);
   assert.equal(v({ actions: [] }), null);
