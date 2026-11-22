@@ -17,7 +17,7 @@ A kirana owner has no POS and no bills. He buys from several distributors (for e
 3. **The vision model counts.** The server sends each photo to Claude vision with the store's item list. It returns items it can see and a count for each, with a confidence.
 4. **Voice check.** The app reads the counts back in Hindi (text to speech): "Maggi 12, Parle-G 30, chini 4 kilo. Sahi hai?" The owner answers by voice: "Maggi 8 hai, aur Surf bhi 5 hai". Sarvam turns speech into text. Claude turns text into edits `{item, count}`. The app shows "I heard: Maggi 8, Surf 5. Correct?" and applies the edits on yes. Items not in the photo can be added by voice or by tap. Plus and minus buttons always work too.
 5. **Save the log.** The log is saved with today's date.
-6. **Compute.** For each item, the server compares this log with the last one: stock then, plus what arrived, minus stock now, gives what sold. Sold divided by days gives a daily rate. Stock now divided by rate gives **days of cover**. Each item belongs to one distributor, so the server also knows when that item can next be restocked.
+6. **Compute.** For each item, the server compares this log with the last log that counted it: stock then minus stock now gives what sold (a log where stock went up by a delivery keeps the old rate). Sold divided by days gives a daily rate. Stock now divided by rate gives **days of cover**. Each item belongs to one distributor, so the server also knows when that item can next be restocked.
 7. **Result screen, one card per distributor**, sorted by next visit:
    - Header: "Sharma Traders: next visit Tue 24 Nov (in 2 days), then every 7 days".
    - **Runs out first** (red): items whose cover ends before this distributor's next visit. "Surf: 1 day left, Sharma comes in 2 days. Call Sharma early, or you are out for 1 day."
@@ -47,15 +47,15 @@ flowchart TD
 - **R2. Photo count.** The owner takes 1–3 photos. The server returns a list of `{item_id, count, confidence}` that uses only items in the store catalog. Unknown objects are dropped. When the vision call fails, the owner gets an empty list and can count by voice or tap (no crash).
 - **R3. Voice check.** The app speaks the counts in Hindi or English. The owner speaks corrections. The app shows what it understood and applies it only after yes. When the item or number is unclear (low confidence or unknown item), the app asks again and does not guess.
 - **R4. Manual edit.** Every count has plus and minus buttons and a remove button. Voice is never the only way.
-- **R5. Rate and days of cover.** For each item with a previous log: `sold = prev_count + received − count_now`, `rate = sold ÷ days`, smoothed with the old rate. `days_of_cover = count_now ÷ rate`. When `count_now = 0`, the rate is raised by the stock-out step-up (true demand is hidden).
+- **R5. Rate and days of cover.** For each item counted in this log and in an earlier log: `sold = prev_count − count_now`, `rate = sold ÷ days`, smoothed with the old rate. `days_of_cover = count_now ÷ rate`. When `count_now = 0`, the rate is raised by the stock-out step-up (true demand is hidden). The rate does not change when the logs are on the same day or when the count went up by a pack or more (a delivery); then the old rate is used. An item left out of a log is "not counted" (not 0): it gets no result in that log and its rate does not change.
 - **R6. Order suggestion per distributor.** Each item uses its own distributor's `days_to_next_visit` and `cycle_days`. The order placed at the next visit must last until the visit after: `order_qty = roundup_to_pack(rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − count_now)`, never below 0. Example: rate 1.5/day, Sharma comes in 2 days, Sharma's cycle 7 days, safety 1.15, stock 5 → `1.5 × 9 × 1.15 − 5 = 10.5` → pack 6 → 12. When the same item had a 15-day distributor, the order is bigger.
-- **R7. Runs-out alert per distributor.** When `days_of_cover < days_to_next_visit` of that item's distributor, the item shows "Runs out in N days, <distributor> comes in M days: call early, or out for M − N days". Home shows the count of such items per distributor.
+- **R7. Runs-out alert per distributor.** When `days_of_cover < days_to_next_visit` of that item's distributor, the item shows "Runs out in N days, <distributor> comes in M days: call early, or out for M − N days". A runs-out item also has an order quantity (R6) and a stepper; the distributor's order includes it. Home shows the count of such items per distributor.
 - **R8. Reason line.** Every suggested quantity has a one-line reason in the owner's language.
-- **R9. Distributors.** The store has a list of distributors. Each has a name, `cycle_days` and `last_visit_date`. Next visit = the first `last_visit_date + k × cycle_days` that is today or later. Each item has one distributor. The owner can add a distributor, change its cycle and last visit, and move an item to another distributor in a settings screen. When an item has no distributor, it uses `DEFAULT_CYCLE_DAYS` and shows "no distributor set".
-- **R10. Named config.** All numbers in the rule (`SAFETY_MARGIN`, `STOCKOUT_STEP_UP`, `RATE_SMOOTHING`, `DEFAULT_CYCLE_DAYS`, `MIN_CONFIDENCE`, `RESTOCK_MIN_PACKS`) live in `server/src/core/config.js`. No number is hard-coded in the rule.
-- **R11. Demo seed.** One command loads a synthetic store with ~25 items, 3 distributors with different cycles (for example 4, 7 and 15 days), and 3 past logs, so rates and alerts show at once for more than one distributor.
-- **R13. Restock detection.** After a log is confirmed, for each distributor the app finds items with `count_now > expected_before + RESTOCK_MIN_PACKS × pack_size`. When at least one is found, the app asks "Did <distributor> deliver today?" and names up to 3 of the items. On yes: it saves a visit (distributor, date, log), sets the distributor's `last_visit_date` to the log date, and saves `received` per item. On no: nothing changes (the rise is treated as a count error the owner can fix). Example: Maggi was 2 cases, rate 0.5/day, 2 days ago, now 14 → expected 1, rise 13 → "Did Sharma deliver today?"
+- **R9. Distributors.** The store has a list of distributors. Each has a name, `cycle_days` and `last_visit_date`. Next visit = the first `last_visit_date + k × cycle_days` with `k ≥ 1` that is today or later (so a visit recorded today moves the next visit to today + cycle). When `last_visit_date` is not set, next visit = today + `cycle_days` and the card says "visit date not set". Each item has one distributor. The owner can add a distributor, change its cycle and last visit, and move an item to another distributor in a settings screen. When an item has no distributor, it uses `DEFAULT_CYCLE_DAYS` and shows "no distributor set".
+- **R10. Named config.** All numbers in the rule (`SAFETY_MARGIN`, `STOCKOUT_STEP_UP`, `RATE_SMOOTHING`, `DEFAULT_CYCLE_DAYS`, `MIN_CONFIDENCE`, `RESTOCK_MIN_PACKS`), the request limits and the model names live in `server/src/core/config.js` (pure constants, no `process.env`). `server/src/config.js` keeps only server settings (paths, port, host). No number is hard-coded in the rule.
+- **R11. Demo seed.** One command (`pnpm --dir server seed`, `--reset` clears the store first) loads a synthetic store with ~25 items, 3 distributors with different cycles (for example 4, 7 and 15 days), and 3 past logs, so rates and alerts show at once for more than one distributor. All seed dates are relative to `clock.today()` (for example today − 6, − 3, − 1), so the demo works on any day.
 - **R12. Web app on a phone.** The POC is a web app only. It works in a phone browser (Chrome on Android, Safari on iOS) over HTTPS, so camera and microphone work. It can be deployed to one public HTTPS URL. The Android shell is deferred.
+- **R13. Restock detection.** After a log is saved, for each distributor the app finds items with `rise ≥ RESTOCK_MIN_PACKS × pack_size`, where `rise = count_now − expected_before` (all in units). When at least one is found, the app asks "Did <distributor> deliver today?" and names up to 3 of the items. On yes: it saves a visit (distributor, date, log), sets the distributor's `last_visit_date` to the log date, and saves `received = rise` per item. On no: only the visit is not saved (the rise is treated as a count error the owner can fix). In both cases the rate of a risen item stays at the old rate (R5). Example (Maggi, pack 6 units): 4 units 2 days ago, rate 0.5/day → expected 3; now 16 → rise 13 ≥ 6 → "Did Sharma deliver today?", received 13.
 
 Out of scope: bills, prices, cash budget, distributor integration, login, multi-store, real owner data. Stretch only: the 12-cycle simulation chart from the idea spec, Kannada.
 
@@ -79,12 +79,12 @@ Out of scope: bills, prices, cash budget, distributor integration, login, multi-
 |---|---|---|
 | Count items in a photo | Claude vision (`claude-sonnet-5-5`), JSON output. Option behind `VISION_PROVIDER=sarvam`: Sarvam chat `gemma4` with a base64 image (compare in E1 if time) | `ai/vision.js` |
 | Speech to text (hi-IN, en-IN, Hinglish) | Sarvam `POST /speech-to-text`, model `saaras:v4`, `mode=codemix`, `language_code` left out (auto-detect), `keyterms` = up to 50 item names and aliases from the catalog | `ai/sarvam.js` |
-| Text to speech | Sarvam `POST /text-to-speech`, model `bulbul:v4-flash`, speaker `shubh_enhi_ads` (Hindi-English persona); reply is base64 WAV in `audios[0]` | `ai/sarvam.js` |
+| Text to speech | Sarvam `POST /text-to-speech`, model `bulbul:v3` (the round trip passed with it), default speaker; reply is base64 WAV in `audios[0]`. `bulbul:v4-flash` with speaker `shubh_enhi_ads` is an option (open question 1) | `ai/sarvam.js` |
 | Spoken text → edits JSON | Claude (`claude-haiku-5-5`), JSON output | `ai/parse.js` |
 
-Sarvam auth header: `api-subscription-key`. Node SDK `sarvamai` is installed; check its method names against the installed version before use. Limits that shape the UI: STT takes at most 30 s of audio per request (the mic stops at `MAX_RECORD_SECONDS = 25`); TTS takes at most 2,500 characters (we cap at `MAX_TTS_CHARS = 500`). Keys come from env vars only. Model names live in `config.js`.
+Sarvam auth header: `api-subscription-key`. Node SDK `sarvamai` is installed. `server/src/ai/sarvam.js` exists and works (TTS → STT round trip passed): `speak(text, {languageCode, speaker})` returns a WAV `Buffer`; `transcribe(audio, {filename, mimeType, languageCode})` returns `{transcript, languageCode}`. Keep these names. `ai/real.js` adapts them to the `ai` interface: `stt(audio, opts)` → `{text: transcript}`, `tts(text, opts)` → `Buffer`. Lane C adds `keyterms` to `transcribe` and moves its model names and limits into `core/config.js`. Limits that shape the UI: STT takes at most 30 s of audio per request (the mic stops at `MAX_RECORD_SECONDS = 25`); TTS takes at most 2,500 characters (we cap at `MAX_TTS_CHARS = 500`). Keys come from env vars only. Model names live in `config.js`.
 
-Vision prompt gets the store catalog (id, names in en/hi, pack) and must answer only with `[{item_id, count, confidence}]`. The server validates: known `item_id`, integer count 0–999, confidence 0–1. Counts from a crowded shelf are rough; the voice check is there to fix them.
+Vision prompt gets the store catalog (id, names in en/hi, pack) and must answer only with `[{item_id, count, confidence}]`. The server validates: known `item_id`, integer count 0–999, confidence 0–1. Items with unit `kg` are counted in whole units; loose goods (for example chini in a bin) are not counted by vision, the owner adds them by voice or tap. Counts from a crowded shelf are rough; the voice check is there to fix them.
 
 ### Data model (SQLite)
 
@@ -209,14 +209,16 @@ Notes:
 - Counts and order quantities are stored in **units**. The UI shows them as packs plus loose units ("2 cases + 4") using `pack_size`.
 - Reason lines are stored as a template key plus JSON args, not as text. The UI builds the sentence in the chosen language, so a language switch changes old results too.
 - The draft of a log (photo counts before the owner says yes) lives only in the browser. Nothing is written until `POST /api/logs`.
-- `data/catalog.json` is the starter list (about 25 items for the demo). `scripts/seed.js` copies it into `item` for the demo store, adds 3 distributors, 3 past logs, their results and one visit.
-- Saving a log is one transaction: `stock_log`, `stock_count`, `item_result`, `item_state`. Confirming a visit is one transaction: `visit`, `receipts`, `distributor.last_visit_date`, and recomputed `item_result` rows for that log.
+- `server/seed/catalog.json` is the starter list (about 25 items for the demo; not in `server/data/`, which git ignores). `server/scripts/seed.js` copies it into `item` for the demo store, adds 3 distributors, 3 past logs with counts, their results (computed with the `core/` functions) and one visit. The seed script has its own `INSERT`s; it is a script, not the app.
+- `item_state` is the per-item memory: `rate_per_day`, and `last_log_id` = the last log in which the item was counted. The previous count `p` is that log's `stock_count`, and `d` = days between that log's date and this log's date.
+- Saving a log is one transaction: `stock_log`, `stock_count`, `item_result`, `item_state`. Confirming a visit is one transaction: `visit`, `receipts`, `distributor.last_visit_date`, and re-planned `item_result` rows for that distributor's items in that log. Re-planning keeps the stored `rate_per_day` and only changes the fields that depend on the next visit (`next_visit_date`, `status`, `suggested_qty`, reason). It never changes `item_state`. So confirming twice gives the same rows.
+- The server's `clock.today()` gives the date in `Asia/Kolkata`, not the host's time zone (Replit runs in UTC).
 
 ### API
 
 All routes are under `/api`, JSON in and out (except uploads and TTS audio). The demo store is `store_id = 1`; every handler reads `store_id` from one place (`req.storeId`, set by a middleware) and passes it to every query. Errors are `{ "error": { "code": "...", "message": "..." } }` with a 4xx or 5xx status; model failures never return 500 to the UI for vision and parse (see below).
 
-The app is built as `createApp({ db, ai, clock })` in `server/src/app.js`. `ai` is an object with `countItems`, `stt`, `tts`, `parseEdits`; `clock.today()` gives the business date. Tests pass fakes for both. `server.js` only wires the real ones and listens.
+The app is built as `createApp({ db, ai, clock, publicDir? })` in `server/src/app.js` (this replaces today's `createApp(db, {publicDir})`; Phase 0 updates `server.js` and `test/health.test.js` in the same commit). `ai` is an object with `countItems(images, catalog)`, `stt(audio, {mimeType, keyterms})`, `tts(text, {lang})`, `parseEdits(text, {lang, draft, catalog})`; `clock.today()` gives the business date. Tests pass fakes for both. `server.js` only wires the real ones and listens.
 
 **Store, distributors, items**
 
@@ -236,15 +238,15 @@ The app is built as `createApp({ db, ai, clock })` in `server/src/app.js`. `ai` 
 |---|---|---|---|
 | `GET /logs` | – | `[{id, log_date, item_count, runs_out_count, visits:[{distributor_id, name}]}]` newest first | – |
 | `GET /logs/:id` | – | `{log, counts:[{item_id, count, source, vision_count, vision_confidence}], cards}` | 404 |
-| `POST /logs` | `{source, photo_count, counts:[{item_id, count, source, vision_count?, vision_confidence?}]}` | `{log_id, cards, delivery_candidates:[{distributor_id, name, items:[{item_id, rise}]}]}` | 400 unknown item, count out of range, duplicate item |
+| `POST /logs` | `{source, photo_count, counts:[{item_id, count, source, vision_count?, vision_confidence?}]}` (only counted items; an item not in the list is "not counted") | `{log_id, cards, not_counted: n, delivery_candidates:[{distributor_id, name, items:[{item_id, name_en, name_hi, rise}]}]}` | 400 unknown item, count out of range, duplicate item, empty list |
 | `GET /logs/:id/result` | – | `{log_id, cards}` | 404 |
 | `PUT /logs/:id/order` | `{distributor_id, lines:[{item_id, final_qty}]}` | `{log_id, cards}` | 400 qty not a multiple of pack, 404 |
 | `POST /logs/:id/visits` | `{distributor_id, confirmed: bool}` | `{log_id, cards, distributor}` | 400 not a candidate, 404. Safe to call twice (same result). |
 | `GET /orders/latest` | – | result of the newest log, or `{cards: []}` | – |
 
 A **card** (one per distributor, plus "No distributor" last):
-`{distributor:{id, name, tint_index, next_visit_date, days_to_next_visit, cycle_days}, runs_out:[line], order:[line], enough:[line], confirmed: bool, visit_recorded: bool}`.
-A **line**: `{item_id, name_en, name_hi, count, pack_size, unit, rate_per_day, days_of_cover, status, suggested_qty, final_qty, reason_key, reason_args}`.
+`{distributor:{id, name, tint_index, next_visit_date, days_to_next_visit, cycle_days, visit_date_set: bool}, runs_out:[line], order:[line], enough:[line], no_history:[line], confirmed: bool, visit_recorded: bool}`.
+A **line**: `{item_id, name_en, name_hi, count, pack_size, unit, rate_per_day, days_of_cover, status, suggested_qty, final_qty, reason_key, reason_args}`. `days_of_cover` is `null` when the rate is 0 or unknown (JSON has no `Infinity`). `runs_out` lines carry a `suggested_qty` and are part of the order: the UI shows a stepper on them and `PUT /logs/:id/order` takes them like `order` lines. `tint_index` is 1–5, the distributor's position by `id`, wrapping after 5.
 
 **Models**
 
@@ -252,7 +254,7 @@ A **line**: `{item_id, name_en, name_hi, count, pack_size, unit, rate_per_day, d
 |---|---|---|---|
 | `POST /vision/count` | multipart `images[]` (1–3, jpeg/png/webp, each ≤ 5 MB) | `{items:[{item_id, count, confidence}], dropped: n}` | 200 with `{items: [], error_code}`; UI says "count by voice or tap" |
 | `POST /voice/stt` | multipart `audio` (webm/mp4/wav, ≤ 30 s, ≤ 2 MB), `lang` | `{text}` | 502 `stt_failed`; UI opens the text box |
-| `POST /voice/parse` | `{text, lang, draft:[{item_id, count}]}` | `{edits:[{item_id, count}], unclear: bool, ask?: string}` | 200 with `{edits: [], unclear: true, ask: "Please say it again"}` |
+| `POST /voice/parse` | `{text, lang, draft:[{item_id, count}]}` | `{edits:[{item_id, count}], unclear: bool, ask?: string}`. The model returns a `confidence` per edit; the server sets `unclear: true` when any edit is below `MIN_CONFIDENCE` or names an unknown item, and strips `confidence` | 200 with `{edits: [], unclear: true, ask: "Please say it again"}` |
 | `POST /voice/tts` | `{text, lang}` (≤ 500 chars) | `audio/wav` bytes | 502 `tts_failed`; UI shows the text only |
 
 Every model call writes one `ai_call` row (kind, model, ok, latency, error code). Request limits: `MAX_IMAGES`, `MAX_IMAGE_BYTES`, `MAX_AUDIO_BYTES`, `MAX_TTS_CHARS`, `MODEL_TIMEOUT_MS` in `config.js`.
@@ -261,24 +263,34 @@ Every model call writes one `ai_call` row (kind, model, ok, latency, error code)
 
 ### The rule (`core/rule.js`, pure)
 
-**Restock (`core/restock.js`, pure).** For each item: `expected_before = max(p − o × d, 0)` (or `p` with no rate). `rise = c − expected_before`. Items with `rise > RESTOCK_MIN_PACKS × pack_size` are grouped by distributor into "delivery candidates". On a confirmed visit, `received = rise` per item of that distributor.
+All quantities in the rule are in **units**. Packs appear only in `roundup_to_pack` and in the restock threshold.
 
-**Rate.** For each active item, given previous count `p`, received `r` (from a confirmed visit between the two logs, else 0), current count `c`, days `d` since last log, old rate `o`, and its distributor's `cycle_days` and `days_to_next_visit` (from `core/schedule.js`, pure: `next_visit(last_visit_date, cycle_days, today)`):
+**Contracts (fixed in Phase 0, all pure):**
+- `core/schedule.js` `nextVisit(lastVisitDate, cycleDays, today)` → `{next_visit_date, days_to_next_visit, visit_date_set}`.
+- `core/rule.js` `computeItem({p, c, d, o, rose, pack_size, cycle_days, days_to_next_visit})` → `{rate_per_day, days_of_cover, status, suggested_qty, call_early, days_out, reason_key, reason_args}`. `p`, `d`, `o` are `null` when the item has no earlier counted log.
+- `core/restock.js` `findDeliveryCandidates(rows)`, `rows = [{item_id, distributor_id, p, c, d, o, pack_size}]` → `[{distributor_id, items:[{item_id, rise}]}]`.
+- `core/plan.js` `buildCards(lines, distributors)` → cards (API shape).
 
-1. `sold = max(p + r − c, 0)`
-2. `observed = sold ÷ d`; if `c = 0` then `observed × (1 + STOCKOUT_STEP_UP)`
-3. `rate = o is null ? observed : RATE_SMOOTHING × observed + (1 − RATE_SMOOTHING) × o`
-4. `days_of_cover = rate > 0 ? c ÷ rate : Infinity`
-5. `need = rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − c`
-6. `order_qty = roundup_to_pack(max(need, 0))`
-7. `call_early = days_of_cover < days_to_next_visit`; `days_out = days_to_next_visit − days_of_cover` when true
-8. `reason`: built from a template per case (runs out before visit / order needed / no order needed / ran out last time / no history), with the distributor name and visit date.
+**Restock (`core/restock.js`).** For each item with an earlier count: `expected_before = o is null ? p : max(p − o × d, 0)`. `rise = c − expected_before`. Items with `rise ≥ RESTOCK_MIN_PACKS × pack_size` are "risen" and are grouped by distributor into delivery candidates (items with no distributor are left out). On a confirmed visit, `received = rise` per item of that distributor (a record only; the rate does not use it).
 
-`core/plan.js` (pure) then groups item results by distributor, sorts distributors by next visit, and sorts items inside a card: runs-out first, then order lines, then "no order needed".
+**Rate and order (`core/rule.js`).** Given previous count `p`, current count `c`, days `d` since the item's last counted log, old rate `o`, `rose` (from restock), and its distributor's `cycle_days` and `days_to_next_visit`:
 
-First log of an item (no history): no rate, no order suggestion, reason "first log, need one more".
+1. No earlier count (`p` is null): `status = no_history`, no rate, `suggested_qty = 0`, reason "first log, need one more". Stop.
+2. `keep_old = rose or d = 0`. When `keep_old`: `rate = o` (null `o` → `no_history` as in step 1). Else:
+   - `sold = max(p − c, 0)`
+   - `observed = sold ÷ d`; if `c = 0` then `observed × (1 + STOCKOUT_STEP_UP)`
+   - `rate = o is null ? observed : RATE_SMOOTHING × observed + (1 − RATE_SMOOTHING) × o`
+3. `days_of_cover = rate > 0 ? c ÷ rate : null` (null = does not run out).
+4. `need = rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − c`; `suggested_qty = roundup_to_pack(max(need, 0))`.
+5. `call_early = days_of_cover is not null and days_of_cover < days_to_next_visit`; `days_out = days_to_next_visit − days_of_cover` when true.
+6. `status`: `runs_out` when `call_early`; else `order` when `suggested_qty > 0`; else `ok`.
+7. `reason_key` from the case (runs out before visit / order needed / no order needed / ran out last time / no history), with the distributor name and visit date in `reason_args`.
 
-On a log with a confirmed delivery, `received` is estimated from the old rate, so the rate for those items does not change on that log (it would only repeat the old rate). The rate learns from logs without a delivery in between. Best practice we tell the owner: take a log when the salesperson comes (that log makes the order), and one after the stock arrives (that log records the visit). Then `received` is exact: count after minus count before.
+An item with no distributor uses `cycle_days = DEFAULT_CYCLE_DAYS` and `days_to_next_visit = DEFAULT_CYCLE_DAYS`.
+
+`core/plan.js` then groups item results by distributor, sorts distributors by next visit, and sorts items inside a card: runs-out first, then order lines, then "no order needed", then "first log".
+
+Why the rate is kept on a delivery or a same-day log: a count that went up gives `sold = 0`, which would pull the rate to 0; `d = 0` has no rate at all. The rate learns from logs without a delivery in between. The demo and the owner's best practice are two logs on the same day: one when the salesperson comes (that log makes the order), one after the stock arrives (that log records the visit).
 
 ### UI tech
 
@@ -305,7 +317,7 @@ KiranaQ variants of Dose: danger red only for "runs out before the visit"; no an
 ### Navigation and menu
 
 - **Bottom tab bar** with 3 tabs: **Home** (`House`), **Orders** (`ClipboardList`), **Settings** (`Settings`). No hamburger menu.
-- **"Take stock log" primary button** (`Camera` icon and the words) sits fixed above the tab bar on Home and Orders, full width.
+- **"Take stock log" primary button** (`Camera` icon and the words) sits fixed above the tab bar on Home only, full width. Orders shows it only in its empty state (each distributor card there has its own confirm button).
 - The log flow is full screen, no tab bar: a top bar with back arrow and a 3-step indicator **Photo → Check → Result**. Back from Check asks "Discard this log?"
 - Language chip **हिं / EN** in the top bar of Home. It switches all text at once.
 
@@ -404,7 +416,7 @@ After speech, a bottom sheet: "I heard: Maggi 8, Surf 5" with the changed rows, 
 ```
 "Read out" speaks one distributor's order list (TTS), so the owner can read it to the salesperson. "Copy list" copies it as plain text (to paste in WhatsApp; the app does not send it).
 
-**Settings**: rows: Distributors (count), Items (count), Language, Theme (System, Light, Dark), Demo data (Reset to demo, asks first), About (version, "Synthetic data only").
+**Settings**: rows: Distributors (count), Items (count), Language, Theme (System, Light, Dark), About (version, "Synthetic data only"). There is no reset button: reset the demo with `pnpm --dir server seed --reset`.
 
 ### Loading, errors, empty states
 
@@ -421,16 +433,16 @@ All tests use `node:test`. API tests start `createApp` on an in-memory SQLite DB
 
 | File | What it proves | Req |
 |---|---|---|
-| `test/rule.test.js` | R6 worked example gives 12; stock-out raises the rate by the step-up; first log gives no suggestion and `no_history`; smoothing with an old rate; rate 0 gives no division error; qty is a multiple of pack size and never negative; same item under a 4-day vs 15-day distributor gives a smaller vs bigger order | R5, R6 |
-| `test/schedule.test.js` | next visit when the visit is today, in the future, missed by one cycle, missed by several cycles, unknown last visit | R9 |
+| `test/rule.test.js` | R6 worked example gives 12; stock-out raises the rate by the step-up; first log gives no suggestion and `no_history`; smoothing with an old rate; rate 0 gives `days_of_cover = null` and no division error; `d = 0` keeps the old rate; `rose = true` keeps the old rate; qty is a multiple of pack size and never negative; same item under a 4-day vs 15-day distributor gives a smaller vs bigger order | R5, R6 |
+| `test/schedule.test.js` | next visit when last visit is today (→ today + cycle), due today, in the future, missed by one cycle, missed by several cycles, unknown last visit (→ today + cycle, `visit_date_set: false`) | R9 |
 | `test/plan.test.js` | cards sorted by next visit; inside a card runs-out first, then order, then enough; items with no distributor go in the last card; `call_early` and `days_out` are right | R7 |
-| `test/restock.test.js` | R13 worked example gives a candidate; a rise below one pack is ignored; rises for two distributors give two candidates; no previous log gives no candidates | R13 |
-| `test/validate.test.js` | vision JSON: unknown `item_id` dropped, count < 0 or > 9999 dropped, bad confidence dropped, non-JSON gives `[]`; parse JSON: unknown item gives `unclear`, confidence < `MIN_CONFIDENCE` gives `unclear` | R2, R3 |
+| `test/restock.test.js` | R13 worked example (Maggi, rise 13 ≥ 6) gives a candidate; a rise below one pack is ignored; rises for two distributors give two candidates; no previous count gives no candidates; an item with no distributor gives no candidate | R13 |
+| `test/validate.test.js` | vision JSON: unknown `item_id` dropped, count < 0 or > 999 dropped, bad confidence dropped, non-JSON gives `[]`; parse JSON: unknown item gives `unclear`, confidence < `MIN_CONFIDENCE` gives `unclear` | R2, R3 |
 | `test/reasons.test.js` | every `reason_key` the rule can emit has an `en` and a `hi` template (reads `web/src/i18n.js` reason block) | R8 |
 | `test/config.test.js` | `core/rule.js` has no numeric literal except 0 and 1 (reads the file) | R10 |
 | `test/api-store.test.js` | store, distributors, items: happy paths, 400 on bad input, 404, 409 on duplicate name | R9 |
-| `test/api-logs.test.js` | save first log (all `no_history`); save second log returns cards with the expected Surf runs-out and Maggi order; `PUT /order` stores final qty and rejects a non-pack qty; `GET /logs` newest first | R1, R5–R8 |
-| `test/api-visits.test.js` | rise gives a candidate; confirm saves visit and receipts and moves next visit; calling confirm twice gives the same rows; `confirmed: false` changes nothing; a non-candidate distributor gives 400 | R13 |
+| `test/api-logs.test.js` | save first log (all `no_history`); save second log returns cards with the expected Surf runs-out and Maggi order; an item left out of a log is not counted and its rate is unchanged; `PUT /order` stores final qty (also for a runs-out line) and rejects a non-pack qty; `GET /logs` newest first | R1, R5–R8 |
+| `test/api-visits.test.js` | a same-day restock log gives a candidate and keeps the old rate; confirm saves visit and receipts and moves next visit to today + cycle; calling confirm twice gives the same rows; `confirmed: false` changes nothing; a non-candidate distributor gives 400 | R13 |
 | `test/api-ai.test.js` | with the fake `ai`: vision success, vision throws (200 with empty list), parse unclear, STT fails (502), TTS too long (400); an `ai_call` row is written each time and holds no text | R2, R3 |
 | `test/tenant.test.js` | with a second store seeded, every list and every write for store 1 never reads or changes store 2 rows | security |
 | `test/seed.test.js` | seed runs twice without error (idempotent) and gives 3 distributors, about 25 items, 3 logs, 1 visit | R11 |
@@ -444,7 +456,7 @@ Web: `pnpm --dir web build` must pass. No web unit tests in the 4-hour build; th
 
 ### 5.3 Demo check (`pnpm --dir server demo:check`, no keys)
 
-`scripts/demo-check.js` runs the demo story against the real server with the fake `ai`: seed → save the "today" log from `evals/demo/today-counts.json` → expect a Sharma card with Surf in runs-out and Maggi in order → confirm the Sharma order → save `evals/demo/after-restock.json` → expect a Sharma delivery candidate → confirm → expect Sharma's next visit moved. Exit code 0 only when every step matches. Run it before the demo and after the Replit deploy.
+`scripts/demo-check.js` runs the demo story against the real server with the fake `ai`: seed → save the "today" log from `evals/demo/today-counts.json` → expect a Sharma card with Surf in runs-out and Maggi in order → confirm the Sharma order → save `evals/demo/after-restock.json` on the same day (`d = 0`) → expect a Sharma delivery candidate and Maggi's rate unchanged → confirm → expect Sharma's next visit = today + 7. Exit code 0 only when every step matches. Run it before the demo and after the Replit deploy.
 
 ### 5.4 Manual walk through (phone-size view, then the phone on Replit)
 
@@ -472,23 +484,25 @@ Evals measure the parts we cannot prove with a unit test: how well the models do
 
 | Eval | Input set | Script | Metric | Bar for the demo | Cost |
 |---|---|---|---|---|---|
-| **E1. Vision count** | 5 shelf photos in `evals/vision/`, taken from the internet with an open licence (Wikimedia Commons, Unsplash, Pexels: search "kirana shop shelf", "Indian grocery shelf"). Each photo's URL, author and licence go in `evals/vision/SOURCES.md`. Pick photos where catalog brands are readable, add any missing brands to `data/catalog.json`, and hand-count each photo into `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 5 vision calls |
+| **E1. Vision count** | 3 shelf photos in `evals/vision/` (2 is enough if time is short), taken from the internet with an open licence (Wikimedia Commons, Unsplash, Pexels: search "kirana shop shelf", "Indian grocery shelf"). Each photo's URL, author and licence go in `evals/vision/SOURCES.md`. Pick photos where catalog brands are readable, add any missing brands to `data/catalog.json`, and hand-count each photo into `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 3 vision calls |
 | **E2. Voice parse** | 20 typed phrases in `evals/voice/phrases.json`: 8 Hindi, 6 Hinglish, 6 English; includes 4 that must re-ask ("thoda kam karo", unknown brand, two items with one number, a number with no item) | `pnpm eval:parse` | exact match of `{item_id, count}` edits; re-ask rate on the 4 unclear ones | ≥ 90% exact on the 16 clear ones; 4/4 unclear ones re-ask (no guess) | 20 small text calls |
 | **E3. Voice end to end** | 5 short clips we record (`evals/voice/hi-0N.wav`, 3 Hindi, 2 English) with expected edits | `pnpm eval:voice` | item and count right after STT + parse | ≥ 4 of 5 | 5 STT + 5 parse calls |
-| **E4. Learning (simulation)** | synthetic store: 25 items, 3 distributors (4, 7, 15 days), hidden true daily demand with noise, 12 cycles, fixed seed | `pnpm eval:sim` | stock-out days and leftover units per cycle, learning rule vs fixed starter quantities; writes `sim-chart.png` and a table | learning beats fixed on stock-out days by cycle 6 and keeps it to cycle 12 | free |
+| **E4. Learning (simulation)** | synthetic store: 25 items, 3 distributors (4, 7, 15 days), hidden true daily demand with noise, 12 cycles, fixed seed | `pnpm eval:sim` | stock-out days and leftover units per cycle, learning rule vs fixed starter quantities; writes `sim-chart.svg` (hand-built SVG string, no chart library) and a Markdown table | learning beats fixed on stock-out days by cycle 6 and keeps it to cycle 12 | free |
 | **E5. Restock detection** | 10 synthetic before/after log pairs in `evals/restock/` (6 with a real delivery, 4 with only count noise) | `pnpm eval:restock` | right distributor asked, no question on noise | 6/6 asked, ≤ 1 false question | free |
 
-The pitch shows E4's chart (it learns), E1 and E2 numbers (the models are good enough and never guess), and states the limits (5 photos, 20 phrases, synthetic demand).
+The pitch shows E4's chart (it learns), E1 and E2 numbers (the models are good enough and never guess), and states the limits (3 photos, 20 phrases, synthetic demand).
 
-Priority if time is short: E2 and E4 first (cheap, strongest story), then E1, then E5, then E3.
+In scope: E2, E4, E1. Stretch only (after the live flow works on Replit): E5, E3.
 
 ## 6. Open questions (proposed answers)
 
-1. **Sarvam models (decided from the docs):** `saaras:v4` for STT, `bulbul:v4-flash` for TTS. Vision stays on Claude; `gemma4` on Sarvam is an option to compare. Still open: not one Sarvam call has run yet (the key is empty). Proposal: Alaf sets `SARVAM_API_KEY` in `server/.env` now.
+1. **Sarvam TTS model.** The key is set and a TTS → STT round trip passed with `bulbul:v3` + `saaras:v4`. The docs suggest `bulbul:v4-flash` with speaker `shubh_enhi_ads` for a Hindi-English voice. Proposal: build on `bulbul:v3` (tested); switch only if `smoke:live` passes with v4-flash before 4:00 PM. Vision stays on Claude; `gemma4` on Sarvam is not built.
 2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. A visit is recorded from the restock photo (R13); the owner can also set the last visit by tap in Settings.
 3. **Received quantity (decided: from the restock photo).** Proposal for the threshold: `RESTOCK_MIN_PACKS = 1` (a rise of at least one pack). Should actual visit dates also correct the cycle (for example Sharma came after 9 days, not 7)? Proposal: keep the visits; show "last 3 visits: every 8 days" in Settings as a stretch; do not change the cycle on its own.
-4. **Deploy target (decided: web first, Replit at the end).** Proposal: deploy to Replit after the live flow works on localhost (about 4:15 PM). Android shell later.
-5. **Simulation chart.** Proposal: stretch only, after the live flow works.
+4. **Deploy target (decided: web first, Replit at the end).** Proposal: do a first Replit deploy of the Phase 0 skeleton at about 3:30 PM (proves the `better-sqlite3` build and HTTPS mic early), and the real deploy at about 4:20 PM. Android shell later.
+5. **Simulation chart.** E4 is in scope as a cheap script (SVG + table). Proposal: if Lane A is late, show the table only.
+6. **Public URL and paid models.** The Replit URL has no auth and calls paid models; judges may open it after the demo. Proposal: the server checks a `DEMO_KEY` env var on the 4 model routes (`x-demo-key` header, the web app reads it from `?key=` once and keeps it in `localStorage`); when `DEMO_KEY` is not set the check is off (localhost). Plus a cap of `MAX_MODEL_CALLS_PER_HOUR` from the `ai_call` table. About 15 lines in Lane C. Alaf decides; without a yes, stop the deployment right after judging.
+7. **Not-counted items on the Result screen.** An item left out of a log has no line in that log's cards, so a runs-out alert from the last log disappears if the owner skips that item. Proposal: accept for the POC; the Result screen says "N items not counted in this log".
 
 Assumptions: starter catalog and seed are synthetic; photo counts are rough and the voice check is the fix; one store only.
 
@@ -502,4 +516,5 @@ The `spec-security-review` skill is not installed, so this is a short manual che
 - **Model output:** treated as data. JSON is schema-validated (known ids, number ranges) before use; never executed.
 - **Network:** the Replit URL is public. No auth, so use synthetic data only, and stop the deployment after the demo. A deployed service can spend model credits if someone finds the URL: add a simple shared demo key header or rate limit before it stays up longer than the demo.
 - **Tenant isolation:** one store; every query still filters by `store_id` so a second store cannot leak.
-- **Findings:** 0 blocking. 1 open: the public URL has no auth and calls paid models (accepted for the demo; stop it after, or add a demo key and rate limit before a longer deploy).
+- **Uploads:** multer memory storage with `MAX_IMAGES`, `MAX_IMAGE_BYTES`, `MAX_AUDIO_BYTES` set as multer `limits`, so a large upload fails with 413 before it fills memory. Photos are re-drawn on a canvas in the browser, which also drops EXIF location.
+- **Findings:** 0 blocking. 1 open: the public URL has no auth and calls paid models (open question 6).

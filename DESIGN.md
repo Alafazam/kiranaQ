@@ -44,7 +44,7 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 
 ## Controls
 - Moulded, from Dose: 52px tall, `--radius-control`, 1px rim and a 3px rim below, sinks 3px on press (`transform` only).
-- Primary: green (`--color-accent` to `--color-accent-deep`), accent-ink text. One primary per screen. Secondary: clear with rule rim.
+- Primary: green (`--color-accent` to `--color-accent-deep`), accent-ink text. One primary per screen, with one exception: on Result and Orders each distributor card has its own primary "Confirm order" (the card is the unit of work), and no other primary shows there. Secondary: clear with rule rim.
 - Stepper (− qty +): two 52px keys around a DM Mono number.
 - Choices (language, theme, yes/no): keys, mint (`--color-accent-soft`) when selected.
 - Every control has 8 states: default, hover, focus-visible, active, disabled, busy, error, success. `:focus-visible` is a 2px `--color-focus` ring, shown at once.
@@ -70,7 +70,7 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 - Content max width 480px, centered. 16px side gutters. `overflow-x: clip` on `html` and `body` (never `hidden`, never `100vw`).
 - Shell: top bar plus a bottom tab bar (Home, Orders, Settings). No sidebar, no hamburger.
 - Meta in separate elements or lines. Never strings joined with middle dots, never arrows glued to text, never decorative status dots.
-- Primary actions in the bottom third of the screen.
+- Primary actions in the bottom third of the screen. "Take stock log" is fixed above the tab bar on Home only.
 
 ## States
 Every region that loads data draws four states: loading (a skeleton in the shape of the content), empty (what belongs here and the one action that fills it), error (what broke and what to do), full. Discard log and reset demo ask first; removing a photo or an item shows an undo toast.
