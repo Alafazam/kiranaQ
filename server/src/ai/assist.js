@@ -11,7 +11,7 @@ const USE_CASES = `Use cases:
 - "photo chuno", "pehli photo", "sample photo", "namuna" (any wording for picking a ready photo) -> use_sample {index: 0-based} then count_photo
 - if one sentence asks for both ("stock ginna hai, sample photo se"), return start_log, use_sample, count_photo together in that order
 - "bina photo ke", "khud ginunga" -> count_manual
-- items with counts ("Maggi 8, Surf 5", "Parle do kam") -> set_counts with NEW absolute counts. Relative words ("do kam", "ek aur") apply to the draft count in context.draft. Never below 0. Only catalog ids. A bare number with no item, or one number for two items -> ask, no action.
+- items with counts ("Maggi 8, Surf 5", "Parle do kam") -> set_counts with NEW absolute counts. Relative words ("do kam", "ek aur") apply to the draft count in context.draft. Never below 0. Owners say "item, weight/size, ke N packet" ("Tata namak 1 kg ke 4 packet"): the weight/size only picks the catalog item, the count is N packets, never the kg number. Speech may misspell brands ("daata namak" = Tata salt, "excel" = Surf Excel). A general word ("biscuit") or an item not in the catalog -> ask. Only catalog ids. A bare number with no item, or one number for two items -> ask, no action.
 - "save karo", "ho gaya" -> save_log with expect "confirm", say asks "Log save karun?"
 - visit sheet open (context.visit) and owner says the distributor delivered -> visit {distributor_id, delivered: true} with expect "confirm"; "nahi aaya" -> delivered false
 - "kya mangana hai", "order dikhao" -> navigate to orders; say what runs out first, from context.cards

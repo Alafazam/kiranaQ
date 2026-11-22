@@ -430,5 +430,200 @@
       ],
       "unclear": false
     }
+  },
+  {
+    "id": "v21",
+    "lang": "hinglish",
+    "text": "Tata namak 1 kg ke 4 packet",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "tata_salt_1kg",
+          "count": 4
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v22",
+    "lang": "hinglish",
+    "text": "daata namak 1 kg ke 4 packets",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "tata_salt_1kg",
+          "count": 4
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v23",
+    "lang": "hinglish",
+    "text": "Surf Excel 1 kg ke 3 packet",
+    "draft": [
+      {
+        "sku_key": "surf_excel_1kg",
+        "count": 6
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "surf_excel_1kg",
+          "count": 3
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v24",
+    "lang": "hinglish",
+    "text": "excel 1 kg ke teen packet",
+    "draft": [
+      {
+        "sku_key": "surf_excel_1kg",
+        "count": 6
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "surf_excel_1kg",
+          "count": 3
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v25",
+    "lang": "hinglish",
+    "text": "Maggi 70 gram ke 8 packet",
+    "draft": [
+      {
+        "sku_key": "maggi_70g",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "maggi_70g",
+          "count": 8
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v26",
+    "lang": "hinglish",
+    "text": "laks 10 packet",
+    "draft": [
+      {
+        "sku_key": "lux_soap_100g",
+        "count": 4
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "lux_soap_100g",
+          "count": 10
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v27",
+    "lang": "hinglish",
+    "text": "cornflakes 1 packet",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v28",
+    "lang": "hinglish",
+    "text": "quantity kam karo",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v29",
+    "lang": "hinglish",
+    "text": "ise kam karo",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v30",
+    "lang": "hinglish",
+    "text": "jalebi 3 packet",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v31",
+    "lang": "hinglish",
+    "text": "biscuit 12",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
   }
 ]

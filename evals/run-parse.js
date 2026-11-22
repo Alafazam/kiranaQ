@@ -8,7 +8,9 @@ import { validateParse } from '../server/src/ai/validate.js';
 
 const PHRASES_FILE = path.join(ROOT, 'evals', 'voice', 'phrases.json');
 const EXACT_BAR = 0.9;
-const phrases = JSON.parse(fs.readFileSync(PHRASES_FILE, 'utf8'));
+const idsArg = process.argv.includes('--ids') ? process.argv[process.argv.indexOf('--ids') + 1].split(',') : undefined;
+const allPhrases = JSON.parse(fs.readFileSync(PHRASES_FILE, 'utf8'));
+const phrases = idsArg ? allPhrases.filter((p) => idsArg.includes(p.id)) : allPhrases;
 const catalog = loadCatalog();
 const idByKey = new Map(catalog.map((it) => [it.sku_key, it.id]));
 const ai = await loadRealAi();
@@ -46,6 +48,7 @@ const provider = process.env.PARSE_PROVIDER ?? 'sarvam';
 
 console.log(`E2: clear ${clearPass}/${clear.length} (${(rate * 100).toFixed(0)}%), unclear re-ask ${unclearPass}/${unclear.length}: ${verdict}`);
 
+if (idsArg) process.exit(0); // partial run: do not write checks.md
 const block =
   `### E2 voice parse (${new Date().toISOString().slice(0, 10)})\n\n` +
   `Provider \`${provider}\`, ${phrases.length} typed phrases, real model.\n\n` +
