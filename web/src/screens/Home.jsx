@@ -3,7 +3,7 @@ import { Camera, AlertTriangle, Truck, ChevronRight } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad, useStore } from '../state.jsx'
-import { Button, Card, EmptyState, ErrorState, Skeleton, stripeClass } from '../ui/kit.jsx'
+import { Button, Card, EmptyState, ErrorState, Skeleton } from '../ui/kit.jsx'
 import { TopBar, LangChip } from '../ui/TopBar.jsx'
 
 function DistributorStrip() {
@@ -26,7 +26,7 @@ function DistributorStrip() {
     <ul className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2 snap-x">
       {list.map((d) => (
         <li key={d.id} className="snap-start shrink-0">
-          <Link to="/distributors" className={`block w-40 h-full rounded-card p-3 shadow-lift ${stripeClass(d.tint_index ?? d.id)}`}>
+          <Link to="/distributors" className="block w-40 h-full rounded-card p-3 shadow-lift bg-surface">
             <p className="font-medium truncate">{d.name}</p>
             <p className="num text-lg mt-1">{t.day(d.next_visit_date)}</p>
             <p className="num">{t.date(d.next_visit_date)}</p>
@@ -83,10 +83,9 @@ function LogList() {
 export default function Home() {
   const t = useT()
   const navigate = useNavigate()
-  const store = useLoad(() => api.store(), [])
   return (
     <>
-      <TopBar title={store.data?.name ?? t('app')} right={<LangChip />} />
+      <TopBar title={t('app')} right={<LangChip />} />
       <main className="mx-auto max-w-app px-4 pb-48">
         <div className="mt-2 mb-3 flex items-center justify-between">
           <h2 className="text-lg">{t('next_visits')}</h2>

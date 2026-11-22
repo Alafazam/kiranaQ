@@ -6,9 +6,11 @@ export default function CardList({ result, onChange }) {
   return (
     <div className="space-y-4">
       {result.not_counted > 0 && <p className="text-ink-2">{result.not_counted === 1 ? t('not_counted_1') : t('not_counted', { n: result.not_counted })}</p>}
-      {result.cards.map((card) => (
-        <DistributorCard key={card.distributor?.id ?? 'none'} card={card} logId={result.log_id} onChange={onChange} />
-      ))}
+      <div className="space-y-4">
+        {result.cards.map((card) => (
+          <DistributorCard key={card.distributor?.id ?? 'none'} card={card} logId={result.log_id} onChange={onChange} />
+        ))}
+      </div>
     </div>
   )
 }

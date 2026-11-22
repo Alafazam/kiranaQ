@@ -50,7 +50,7 @@ export const dict = {
     case_n: '{n} cases', case_1: '1 case',
   },
   hi: {
-    app: 'किरानाQ',
+    app: 'KiranaQ',
     home: 'होम', orders: 'ऑर्डर', settings: 'सेटिंग',
     take_log: 'स्टॉक गिनें',
     next_visits: 'डिस्ट्रीब्यूटर कब आएंगे', stock_logs: 'Saman kab kab aya', distributor_visits: 'डिस्ट्रीब्यूटर कब आएंगे', distributors_tab: 'डिस्ट्रीब्यूटर', see_all: 'सब देखें',

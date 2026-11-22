@@ -29,6 +29,22 @@ h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.
 .stripe-3 { border-left: 6px solid var(--t-3); } .stripe-4 { border-left: 6px solid var(--t-4); }
 .stripe-5 { border-left: 6px solid var(--t-5); }
 
+/* Phone frame: on a wide screen the app sits inside a phone outline (demo view).
+   The transform makes the frame the containing block, so fixed bars stay inside it. */
+@media (min-width: 640px) {
+  html { background: var(--color-paper-3); }
+  body { background: var(--color-paper-3); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+  #root {
+    width: 390px; height: min(844px, calc(100vh - 48px));
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+    transform: translateZ(0);
+    background: var(--color-paper);
+    border: 12px solid var(--color-ink); border-radius: 48px;
+    box-shadow: var(--shadow-lift);
+  }
+  #root::-webkit-scrollbar { display: none; }
+}
+
 .skeleton { background: var(--color-paper-3); border-radius: var(--radius-control); }
 
 .sheet-enter { animation: sheet-in var(--dur-short) var(--ease-out); }

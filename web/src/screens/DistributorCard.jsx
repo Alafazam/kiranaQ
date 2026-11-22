@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Volume2, Copy, ChevronDown } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
-import { Button, Stamp, StatusLabel, Stepper, stripeClass } from '../ui/kit.jsx'
+import { Button, Stamp, StatusLabel, Stepper } from '../ui/kit.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { playBlob } from '../voice.js'
@@ -96,7 +96,7 @@ export default function DistributorCard({ card, logId, onChange }) {
   }
 
   return (
-    <article className={`rounded-card p-3 shadow-lift ${d ? stripeClass(d.tint_index) : 'bg-surface border border-rule'}`}>
+    <article className="pt-4 border-t-[2px] border-rule first:border-t-0 first:pt-0">
       <header className="px-1 pb-3">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-xl">{d ? d.name : t('no_distributor')}</h2>
