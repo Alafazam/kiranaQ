@@ -27,6 +27,7 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AppProvider>
       <ToastProvider>
+        <div className="app-scroll">
         <BrowserRouter>
           <Routes>
             <Route element={<Tabs />}>
@@ -43,6 +44,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="/log/:id/result" element={<Result />} />
           </Routes>
         </BrowserRouter>
+        </div>
       </ToastProvider>
     </AppProvider>
   </React.StrictMode>

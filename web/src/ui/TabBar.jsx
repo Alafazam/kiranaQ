@@ -15,9 +15,9 @@ export function TabBar() {
               {({ isActive }) => (
                 <>
                   {isActive && <span className="absolute top-0 inset-x-3 h-[3px] rounded-pill bg-accent" aria-hidden />}
-                  <span className={`flex items-center justify-center w-14 h-8 rounded-pill ${isActive ? 'bg-accent-soft text-accent-deep' : ''}`}>
-                    <Icon size={22} strokeWidth={isActive ? 2.5 : 2} aria-hidden />
-                  </span>
+                  <Icon size={24} strokeWidth={2} aria-hidden
+                    className={isActive ? 'text-accent-deep' : ''}
+                    fill={isActive ? 'var(--color-accent-soft)' : 'none'} />
                   {t(key)}
                 </>
               )}
