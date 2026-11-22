@@ -10,7 +10,7 @@ From two or more stock logs it learns how fast each item sells. Then it tells th
 
 Built in one day for a buildathon (22 Nov 2026). This is a proof of concept.
 
-- **Landing page:** https://alafazam.github.io/kiranaQ/
+- **Landing page:** https://kirana-q.replit.app/
 - **Live app:** https://kirana-q.replit.app/app/
 
 ## How it works
@@ -90,7 +90,7 @@ Latest results are in [`specs/2026-11-22-kiranaq-stock-log/checks.md`](specs/202
 | `specs/` | One folder per change: spec, tasks, checks, screenshots. |
 | `shell/` | Android WebView shell (deferred, not in the demo). |
 
-Design rules: [`DESIGN.md`](DESIGN.md). Deploy: the app runs on Replit (see `.replit`). The landing page also goes to GitHub Pages on each push to `main` that changes it (`.github/workflows/pages.yml`); there its app links point to the Replit app.
+Design rules: [`DESIGN.md`](DESIGN.md). Deploy: Replit (see `.replit`). The same server serves the landing page and the app.
 
 ## License
 
