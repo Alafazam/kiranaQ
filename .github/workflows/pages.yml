@@ -1,0 +1,47 @@
+# Publish the static landing page (web/public/landing/) to GitHub Pages.
+# Pages has no server, so the app links ("/app/") point to the deployed app on Replit.
+name: Landing page on GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/public/landing/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  APP_URL: https://kirana-q.replit.app/app/
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy the landing page and point app links to the deployed app
+        run: |
+          mkdir -p _site
+          cp -R web/public/landing/. _site/
+          sed -i "s|href=\"/app/\"|href=\"${APP_URL}\"|g" _site/index.html
+          sed -i "s|var APP_URL = '/app/';|var APP_URL = '${APP_URL}';|" _site/landing.js
+          if grep -n "/app/'" _site/landing.js | grep -v "${APP_URL}"; then echo "app link not rewritten in landing.js"; exit 1; fi
+          if grep -n 'href="/app/"' _site/index.html; then echo "app link not rewritten in index.html"; exit 1; fi
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
