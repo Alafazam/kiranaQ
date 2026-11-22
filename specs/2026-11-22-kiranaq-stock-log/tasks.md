@@ -9,7 +9,7 @@ Times are a guide (now ≈ 2:20 PM, submit by 5:00 PM). `[P]` = touches no file 
 - [ ] T4. [P] `ai/vision.js` + `POST /api/vision/count` + validator test. *Check: real shelf photo returns known items.* (R2) ~20 min
 - [ ] T5. [P] `ai/sarvam.js` (STT, TTS) + `ai/parse.js` + routes. *Check: 5 Hindi + 3 English phrases.* (R3) ~25 min
 - [ ] T6. Web screens: Home, Photo, Count review (plus/minus, mic, read-back), "Did X deliver today?" dialog, Result (one card per distributor), Settings (distributors, item → distributor). *Check: phone-size walk through.* (R1–R4, R7–R9, R13) ~45 min
-- [ ] T7. HTTPS URL (cloudflared tunnel now; host deploy if time) and test on a phone browser. *Check: photo and mic work on the phone; screenshot.* (R12) ~10 min
+- [ ] T7. Deploy to Replit (build web, start server, Secrets, seed when DB empty) and test on a phone browser. *Check: photo and mic work on the phone at the Replit URL; screenshot.* (R12) ~15 min
 - [ ] T8. Demo run end to end, README limits, submit. (Alaf submits.)
 
-Cut order: Settings editing (use seed distributors; keep a read-only list), TTS read-back (show text only), host deploy (use the tunnel). Never cut: photo count, voice edit, rule, reason line, call-early alert.
+Cut order: Settings editing (use seed distributors; keep a read-only list), TTS read-back (show text only), Replit deploy (demo from the laptop browser). Never cut: photo count, voice edit, rule, reason line, call-early alert.

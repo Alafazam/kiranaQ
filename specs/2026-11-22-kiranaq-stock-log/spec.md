@@ -69,7 +69,9 @@ Out of scope: bills, prices, cash budget, distributor integration, login, multi-
 
 **Secure context.** Browser microphone access (`getUserMedia`) needs HTTPS or `localhost`. Camera photo upload (`<input type=file capture>`) does not. So the phone must open an HTTPS URL.
 
-**Deploy.** One Node process that serves API and UI, so it deploys as one service. Options, in order: (a) a host with HTTPS and a persistent disk for the SQLite file (for example Render or Fly.io; the seed command restores demo data if the disk is lost); (b) during the build, `cloudflared tunnel --url http://localhost:3000` from the laptop gives an HTTPS URL at once. Keys are set as host env vars, never in git. Fallback: the laptop browser on `localhost` in phone-size view, and a text box for the voice transcript.
+**During the build.** Test in the laptop browser on `localhost` (a secure context, so the mic works) in phone-size view. Photo upload is tested with a saved shelf photo.
+
+**Deploy at the end: Replit.** One Node process serves API and UI, so it runs as one Replit app with HTTPS by default. Build step: `pnpm --dir web build`, run step: `pnpm --dir server start`, port from `PORT`. Keys go in Replit Secrets, never in git. The Replit deploy file system may not keep the SQLite file across restarts, so the server runs the seed when the database is empty. Then the phone opens the Replit URL for the real photo and mic test. Fallback if the deploy fails: demo from the laptop browser, with a text box for the voice transcript.
 
 ### Models
 
@@ -155,7 +157,7 @@ Home (logs + distributor strip with next visits and runs-out counts) → Camera/
 1. **Sarvam model names.** Proposal: Alaf reads them from the credits docs now; until then assume `saarika` (STT) and `bulbul` (TTS) on `api.sarvam.ai`.
 2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. A visit is recorded from the restock photo (R13); the owner can also set the last visit by tap in Settings.
 3. **Received quantity (decided: from the restock photo).** Proposal for the threshold: `RESTOCK_MIN_PACKS = 1` (a rise of at least one pack). Should actual visit dates also correct the cycle (for example Sharma came after 9 days, not 7)? Proposal: keep the visits; show "last 3 visits: every 8 days" in Settings as a stretch; do not change the cycle on its own.
-4. **Deploy target (decided: web first).** Which host? Proposal: cloudflared tunnel for the build and demo today; Render or Fly.io with a disk after, if you have an account. Android shell later.
+4. **Deploy target (decided: web first, Replit at the end).** Proposal: deploy to Replit after the live flow works on localhost (about 4:15 PM). Android shell later.
 5. **Simulation chart.** Proposal: stretch only, after the live flow works.
 
 Assumptions: starter catalog and seed are synthetic; photo counts are rough and the voice check is the fix; one store only.
@@ -168,6 +170,6 @@ The `spec-security-review` skill is not installed, so this is a short manual che
 - **Personal data:** none stored. Synthetic store. No login.
 - **Photos and audio:** sent to Anthropic and Sarvam for processing, not stored on disk after the request (multer memory storage). Use our own test shelf photos and voices only.
 - **Model output:** treated as data. JSON is schema-validated (known ids, number ranges) before use; never executed.
-- **Network:** the tunnel or deployed URL is public. No auth, so use synthetic data only, and stop the tunnel (or the deployed service) after the demo. A deployed service can spend model credits if someone finds the URL: add a simple shared demo key header or rate limit before it stays up longer than the demo.
+- **Network:** the Replit URL is public. No auth, so use synthetic data only, and stop the deployment after the demo. A deployed service can spend model credits if someone finds the URL: add a simple shared demo key header or rate limit before it stays up longer than the demo.
 - **Tenant isolation:** one store; every query still filters by `store_id` so a second store cannot leak.
 - **Findings:** 0 blocking. 1 open: the public URL has no auth and calls paid models (accepted for the demo; stop it after, or add a demo key and rate limit before a longer deploy).
