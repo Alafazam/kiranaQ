@@ -116,6 +116,7 @@ CREATE TABLE ai_call (                      -- one row per model call, no conten
 
 export const MIGRATIONS = [
   { version: 1, name: 'stock log schema', up: (db) => db.exec(SCHEMA_V1) },
+  { version: 2, name: 'distributor phone', up: (db) => db.exec('ALTER TABLE distributor ADD COLUMN phone TEXT') },
 ];
 
 export function currentVersion(db) {
