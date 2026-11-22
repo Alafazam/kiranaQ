@@ -64,7 +64,7 @@
   "history": [
    {
     "role": "assistant",
-    "text": "Photo lenge ya sample photo?"
+    "text": "Nayi photo lenge ya photo chunenge?"
    }
   ],
   "expect": {
@@ -91,7 +91,7 @@
   "history": [
    {
     "role": "assistant",
-    "text": "Photo lenge ya sample photo?"
+    "text": "Nayi photo lenge ya photo chunenge?"
    }
   ],
   "expect": {
@@ -118,7 +118,7 @@
   "history": [
    {
     "role": "assistant",
-    "text": "Take a photo or use a sample photo?"
+    "text": "Take a new photo or choose a photo?"
    }
   ],
   "expect": {
@@ -145,7 +145,7 @@
   "history": [
    {
     "role": "assistant",
-    "text": "Photo lenge ya sample photo?"
+    "text": "Nayi photo lenge ya photo chunenge?"
    }
   ],
   "expect": {
@@ -168,7 +168,7 @@
   "history": [
    {
     "role": "assistant",
-    "text": "Photo lenge ya sample photo?"
+    "text": "Nayi photo lenge ya photo chunenge?"
    }
   ],
   "expect": {
@@ -1539,6 +1539,31 @@
   "history": [],
   "expect": {
    "actions": [],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U1-4",
+  "use_case": "U1",
+  "lang": "hi",
+  "style": "hi",
+  "text": "स्टॉक गिनना है, नमूना फ़ोटो से",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "start_log"
+    },
+    {
+     "type": "use_sample",
+     "index": 0
+    },
+    {
+     "type": "count_photo"
+    }
+   ],
    "expect": "answer"
   }
  }

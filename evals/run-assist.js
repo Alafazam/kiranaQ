@@ -59,7 +59,8 @@ for (const c of cases) {
   const actionOk = actionsMatch(out.actions, c.expect.actions);
   const expectOk = c.expect.expect === undefined || out.expect === c.expect.expect;
   const sayOk = !c.expect.say_contains_any || c.expect.say_contains_any.some((s) => out.say.includes(s));
-  const pass = actionOk && expectOk && sayOk;
+  const noSample = !/sample|namuna|नमूना/i.test(`${out.say} ${(out.options ?? []).join(' ')}`); // Alaf: never say "sample"
+  const pass = actionOk && expectOk && sayOk && noSample;
   results.push({ ...c, pass, actionOk, expectOk, sayOk, error });
   console.log(`${c.id.padEnd(7)} ${c.style.padEnd(8)} ${pass ? 'PASS' : 'FAIL'}${pass ? '' : ` [actions ${actionOk ? 'ok' : `got ${out.actions.map((a) => a.type).join('+') || 'none'}`}${expectOk ? '' : `, expect ${out.expect}`}${sayOk ? '' : ', say'}]`}${error ? ` (${error})` : ''}`);
 }

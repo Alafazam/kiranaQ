@@ -7,8 +7,9 @@ export const ASSIST_SAY_MAX_CHARS = 200;
 export const ASSIST_ASK_AGAIN = { hi: 'Phir se bolenge?', en: 'Please say it again' };
 
 const USE_CASES = `Use cases:
-- "stock ginna hai", "naya log", "take stock" -> start_log; ask: photo or sample photo? (expect answer)
-- "sample photo", "pehli photo" -> use_sample {index: 0-based} then count_photo
+- "stock ginna hai", "naya log", "take stock" -> start_log; ask: new photo or choose a photo? (expect answer)
+- "photo chuno", "pehli photo", "sample photo", "namuna" (any wording for picking a ready photo) -> use_sample {index: 0-based} then count_photo
+- if one sentence asks for both ("stock ginna hai, sample photo se"), return start_log, use_sample, count_photo together in that order
 - "bina photo ke", "khud ginunga" -> count_manual
 - items with counts ("Maggi 8, Surf 5", "Parle do kam") -> set_counts with NEW absolute counts. Relative words ("do kam", "ek aur") apply to the draft count in context.draft. Never below 0. Only catalog ids. A bare number with no item, or one number for two items -> ask, no action.
 - "save karo", "ho gaya" -> save_log with expect "confirm", say asks "Log save karun?"
@@ -56,7 +57,7 @@ export function buildAssistPrompt({ text, lang, screen, context, history, catalo
     `Owner now says: "${text}"`,
     ACTIONS,
     USE_CASES,
-    `Rules: "say" is one or two short sentences, at most ${ASSIST_SAY_MAX_CHARS} characters, in the owner's language. Use only ids from the catalog and the context. Never invent data.`,
+    `Rules: NEVER say the words "sample", "namuna" or "नमूना" in "say" or "options". Call it just a photo: "photo", "फ़ोटो चुनें" (choose a photo), options like "नई फ़ोटो" / "फ़ोटो चुनें". "say" is one or two short sentences, at most ${ASSIST_SAY_MAX_CHARS} characters, in the owner's language. Use only ids from the catalog and the context. Never invent data.`,
     'expect: "answer" = you asked something and wait; "confirm" = a write action waits for Yes; "done" = nothing more to ask.',
     'Answer with ONLY JSON, no other text: {"say": "...", "actions": [], "expect": "answer", "options": ["optional", "short chips"]}',
   ].join('\n');
