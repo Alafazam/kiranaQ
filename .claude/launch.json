@@ -30,6 +30,18 @@
       ],
       "cwd": "web",
       "port": 5174
+    },
+    {
+      "name": "kiranaq-server-test",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "PORT=3005",
+        "DB_PATH=/private/tmp/claude-503/-Users-alafazam-repos-kiranaQ/c44416e0-9c33-49da-9a89-320e885d57c5/scratchpad/test.db",
+        "node",
+        "server.js"
+      ],
+      "cwd": "server",
+      "port": 3005
     }
   ]
 }
