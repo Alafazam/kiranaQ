@@ -1,8 +1,10 @@
 // All Sarvam calls (text to speech, speech to text). The API key comes from the environment.
 import { SarvamAIClient } from 'sarvamai';
 
-export const TTS_MODEL = 'bulbul:v3';
-export const STT_MODEL = 'saaras:v4';
+import { MAX_STT_KEYTERMS, SARVAM_STT_MODEL, SARVAM_TTS_MODEL } from '../core/config.js';
+
+export const TTS_MODEL = SARVAM_TTS_MODEL;
+export const STT_MODEL = SARVAM_STT_MODEL;
 export const DEFAULT_LANGUAGE = 'en-IN';
 export const TTS_MAX_CHARS = 2500; // REST limit per request
 export const STT_MAX_SECONDS = 30; // REST limit per request
@@ -29,13 +31,14 @@ export async function speak(text, { languageCode = DEFAULT_LANGUAGE, speaker } =
 }
 
 // Audio in (Buffer), transcript out. Leave languageCode empty to auto-detect.
-export async function transcribe(audio, { filename = 'audio.wav', mimeType = 'audio/wav', languageCode } = {}) {
+export async function transcribe(audio, { filename = 'audio.wav', mimeType = 'audio/wav', languageCode, keyterms } = {}) {
   const file = new File([audio], filename, { type: mimeType });
   const res = await getClient().speechToText.transcribe({
     file,
     model: STT_MODEL,
     mode: 'codemix',
     ...(languageCode && { language_code: languageCode }),
+    ...(keyterms?.length && { keyterms: keyterms.slice(0, MAX_STT_KEYTERMS) }),
   });
   return { transcript: res.transcript, languageCode: res.language_code };
 }

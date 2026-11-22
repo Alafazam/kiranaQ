@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { withApp } from './helpers.js';
+import { withApp, insertStores } from './helpers.js';
 
 async function withServer(speech, fn) {
-  await withApp(({ base }) => fn(base), { speech });
+  await withApp(({ base }) => fn(base), { speech, setup: insertStores });
 }
 
 test('POST /api/tts returns audio', async () => {
@@ -38,7 +38,7 @@ test('POST /api/stt returns transcript', async () => {
     form.append('audio', new Blob(['x'], { type: 'audio/wav' }), 'a.wav');
     const res = await fetch(`${base}/api/stt`, { method: 'POST', body: form });
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { transcript: 'ok', languageCode: 'en-IN' });
+    assert.deepEqual(await res.json(), { text: 'ok', transcript: 'ok', languageCode: 'en-IN' });
   });
 });
 
