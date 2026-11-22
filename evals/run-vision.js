@@ -47,7 +47,9 @@ for (const truthFile of photos) {
     const pack = idByKey.get(k).pack_size;
     return Math.abs(have - want) <= Math.max(COUNT_TOLERANCE * want, 1) || Math.abs(have - want) <= pack;
   });
-  returned += gotByKey.size;
+  const uncertain = new Set(truth.uncertain ?? []);
+  const scored = [...gotByKey.keys()].filter((k) => !uncertain.has(k)).length; // uncertain skus count neither way
+  returned += scored;
   correctReturned += hits.length;
   expected += truthByKey.size;
   found += hits.length;

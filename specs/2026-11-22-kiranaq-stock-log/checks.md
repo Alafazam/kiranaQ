@@ -25,12 +25,12 @@ Provider `sarvam`, 3 photos with truth files, real model.
 |---|---|---|
 | Precision | 1.00 | ≥ 0.9 |
 | Recall | 1.00 | ≥ 0.6 |
-| Counts within ±20% or ±1 pack | 1.00 | ≥ 0.6 |
+| Counts within ±20% or ±1 pack | 0.80 | ≥ 0.6 |
 
 | Photo | Items returned | Right items / expected | Counts within bar |
 |---|---|---|---|
 | shelf-01 | 3 | 3/3 | 3/3 |
-| shelf-02 | 2 | 2/2 | 2/2 |
+| shelf-02 | 2 | 2/2 | 1/2 |
 | shelf-03 | 0 | 0/0 | 0/0 |
 
 Verdict: **PASS**.
