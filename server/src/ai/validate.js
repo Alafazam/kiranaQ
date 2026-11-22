@@ -90,8 +90,10 @@ export const WRITE_ACTIONS = new Set(['save_log', 'confirm_order', 'visit']);
 const isInt = (v, min, max) => Number.isInteger(v) && v >= min && v <= max;
 
 /** Returns a clean action object, or null when the action is unknown or its params are bad. */
-function cleanAction(a, { itemIds, distributorIds }) {
-  if (!a || typeof a.type !== 'string') return null;
+function cleanAction(raw, { itemIds, distributorIds }) {
+  if (!raw || typeof raw.type !== 'string') return null;
+  // Models sometimes nest the params: {type, params: {...}}. Accept both shapes.
+  const a = raw.params && typeof raw.params === 'object' ? { ...raw.params, type: raw.type } : raw;
   const dist = (id) => distributorIds.has(id);
   switch (a.type) {
     case 'navigate': return NAV_TARGETS.has(a.to) ? { type: a.type, to: a.to } : null;

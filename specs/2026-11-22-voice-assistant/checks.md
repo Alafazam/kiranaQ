@@ -27,3 +27,33 @@ Screenshots: `bolo-home-greet.png`, `bolo-check-voice-edit.png`, `bolo-result-co
 | U8 | "गुप्ता का ऑर्डर पक्का करो" → Yes | pass: `confirm_order:2` with confirm, stamp "ऑर्डर 23 Nov" |
 | Gap | model asked "अब लॉग सेव कर दूँ?" without a `save_log` action | sent to Lane C as a prompt rule |
 | Wording | no "sample" / "नमूना" in UI (Alaf) | web done in ec595f6; prompt change asked from Lane C |
+
+## Lane C (assistant)
+
+### E6 voice assistant (2026-11-22)
+
+Provider `sarvam`, 40 cases (U1–U14, Hindi / Hinglish / English), real model.
+
+| Metric | Result | Bar |
+|---|---|---|
+| Action + expect match | 38/40 | ≥ 80% |
+| Full pass (also says the right thing) | 38/40 | – |
+
+| Use case | Pass |
+|---|---|
+| U1 | 4/4 |
+| U2 | 3/3 |
+| U3 | 2/2 |
+| U4 | 4/4 |
+| U5 | 3/3 |
+| U6 | 3/3 |
+| U7 | 3/3 |
+| U8 | 3/3 |
+| U9 | 0/2 |
+| U10 | 2/2 |
+| U11 | 3/3 |
+| U12 | 2/2 |
+| U13 | 2/2 |
+| U14 | 4/4 |
+
+Verdict: **PASS**. Failed: U9-1, U9-2.

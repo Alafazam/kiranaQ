@@ -3,9 +3,10 @@
 // Usage: node evals/run-assist.js [--limit N] [--use U4,U5]   (pnpm eval:assist). Only a full run writes checks.md.
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, loadCatalog, loadRealAi, writeCheckSection, readCheckSection, replaceBlock } from './lib.js';
+import { ROOT, loadCatalog, loadRealAi, writeCheckSection, readCheckSection, replaceBlock, setChecksFile } from './lib.js';
 import { validateAssist } from '../server/src/ai/validate.js';
 
+setChecksFile(path.join(ROOT, 'specs', '2026-11-22-voice-assistant', 'checks.md'));
 const CASES_FILE = path.join(ROOT, 'evals', 'assist', 'cases.json');
 const ACTION_BAR = 0.8;
 const DIST_IDS = { gupta: 1, mehta: 2, sharma: 3 }; // eval-only ids
@@ -81,5 +82,5 @@ if (!limit && !only) {
     `Provider \`${process.env.PARSE_PROVIDER ?? 'sarvam'}\`, ${results.length} cases (U1–U14, Hindi / Hinglish / English), real model.\n\n` +
     `| Metric | Result | Bar |\n|---|---|---|\n| Action + expect match | ${actionPass}/${results.length} | ≥ 80% |\n| Full pass (also says the right thing) | ${passed}/${results.length} | – |\n\n` +
     `| Use case | Pass |\n|---|---|\n${byUse.join('\n')}\n\nVerdict: **${verdict}**. Failed: ${results.filter((r) => !r.pass).map((r) => r.id).join(', ') || 'none'}.\n`;
-  writeCheckSection('Lane C', replaceBlock(readCheckSection('Lane C'), '### E6', block));
+  writeCheckSection('Lane C (assistant)', replaceBlock(readCheckSection('Lane C (assistant)'), '### E6', block));
 }

@@ -37,7 +37,7 @@ confirm_order {distributor_id}   WRITE
 set_qty {distributor_id, item_id, qty}
 read_out {distributor_id}
 set_language {lang: "hi"|"en"}
-Each action is an object {"type": "...", ...params}. A WRITE action must come with expect "confirm".`;
+Each action is a flat object with its params next to type, e.g. {"type": "set_language", "lang": "hi"} (no nested "params"). A WRITE action must come with expect "confirm".`;
 
 function catalogLines(catalog) {
   return catalog.map((it) => `${it.id} | ${it.name_en} | ${it.name_hi} | ${(it.aliases ?? []).join(', ')} | pack ${it.pack_size}`).join('\n');

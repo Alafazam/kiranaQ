@@ -8,7 +8,12 @@ const ENV_FILE = path.join(ROOT, 'server', '.env');
 if (fs.existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 
 export const CATALOG_FILE = path.join(ROOT, 'server', 'seed', 'catalog.json');
-export const CHECKS_FILE = path.join(ROOT, 'specs', '2026-11-22-kiranaq-stock-log', 'checks.md');
+export let CHECKS_FILE = path.join(ROOT, 'specs', '2026-11-22-kiranaq-stock-log', 'checks.md');
+
+/** Write checks into another file (the assistant eval has its own spec folder). */
+export function setChecksFile(file) {
+  CHECKS_FILE = file;
+}
 
 /** Catalog rows shaped like repo/items.js listItems; ids are 1..N in file order (eval-only). */
 export function loadCatalog() {

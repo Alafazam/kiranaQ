@@ -14,6 +14,11 @@ test('validate: good answer passes', () => {
   assert.deepEqual(out, { say: 'Theek hai', actions: [{ type: 'navigate', to: 'orders' }], expect: 'done', options: ['haan', 'nahi'] });
 });
 
+test('validate: params nested under "params" are accepted', () => {
+  const out = v({ say: 'ok', actions: [{ type: 'set_language', params: { lang: 'hi' } }] });
+  assert.deepEqual(out.actions, [{ type: 'set_language', lang: 'hi' }]);
+});
+
 test('validate: unknown action dropped; all dropped gives ask again', () => {
   const out = v({ say: 'Done', actions: [{ type: 'delete_everything' }], expect: 'done' });
   assert.deepEqual(out, { say: askAgain, actions: [], expect: 'answer' });
