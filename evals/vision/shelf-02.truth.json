@@ -1,0 +1,10 @@
+{
+  "photo": "shelf-02.jpg",
+  "note": "Supermarket rice shelf. Bags are 1-5 kg, the catalog skus are 1 kg; count bags of the brand. Fortune here is rice, not oil: returning fortune_oil_1l is a false positive. Charminar and Devaaya are not in the catalog.",
+  "items": [
+    { "sku_key": "daawat_basmati_1kg", "count": 16 },
+    { "sku_key": "india_gate_basmati_1kg", "count": 3 }
+  ],
+  "uncertain": [],
+  "absent_hint": ["fortune_oil_1l"]
+}

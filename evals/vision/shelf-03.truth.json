@@ -1,0 +1,7 @@
+{
+  "photo": "shelf-03.jpg",
+  "note": "Real small-town kirana, crowded and dark. No catalog brand is clearly readable. Red boxes at the bottom right may be Colgate (a partial 'Colgate' strip is visible); that sku is uncertain and does not count for or against. Any other returned sku is a false positive. Hard case for precision.",
+  "items": [],
+  "uncertain": ["colgate_strong_200g"],
+  "absent_hint": []
+}

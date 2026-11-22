@@ -1,0 +1,12 @@
+{
+  "photo": "shelf-01.jpg",
+  "note": "Supermarket biscuit aisle, dense. Counts are visible packs (facings plus stacked packs that can be seen), estimated by eye by the lead session; use the +-20% band. Golden Arcs, 20-20 and Krackjack are visible but not in the catalog, so a returned item for them is a false positive only if it maps to a catalog sku.",
+  "items": [
+    { "sku_key": "parle_g_80g", "count": 60 },
+    { "sku_key": "parle_g_gold_100g", "count": 12 },
+    { "sku_key": "parle_marie_150g", "count": 50 },
+    { "sku_key": "parle_milano_cookies", "count": 16 }
+  ],
+  "uncertain": [],
+  "absent_hint": ["britannia_good_day_100g", "maggi_70g"]
+}
