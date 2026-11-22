@@ -50,7 +50,7 @@ export function keytermsFromCatalog(catalog) {
 export function speechRouter({ db, ai, clock, speakFn, transcribeFn, assistFn }) {
   const router = express.Router();
   const tts = speakFn ?? ((text, opts) => ai.tts(text, opts));
-  const assist = assistFn ?? (typeof ai.assist === 'function' ? (input) => ai.assist(input) : null);
+  const assist = assistFn ?? (typeof ai.assist === 'function' ? (text, ctx) => ai.assist(text, ctx) : null);
   const stt = transcribeFn ?? ((audio, opts) => ai.stt(audio, opts));
 
   function guardRate(req, _res, next) {
@@ -173,7 +173,7 @@ export function speechRouter({ db, ai, clock, speakFn, transcribeFn, assistFn })
       try {
         if (!assist) throw Object.assign(new Error('no assist'), { code: 'not_implemented' });
         // Logged as kind "parse": the ai_call table has no "assist" kind.
-        const raw = await tracked(req, 'parse', () => assist({ text, lang, screen, context, history: turns, catalog }), 'assist');
+        const raw = await tracked(req, 'parse', () => assist(text, { lang, screen, context, history: turns, catalog }), 'assist');
         out = validateAssist(raw, { catalog, context, askAgain });
       } catch {
         out = null;

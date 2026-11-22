@@ -50,7 +50,7 @@ for (const c of cases) {
   let out;
   let error;
   try {
-    const raw = await ai.assist({ text: c.text, lang: c.lang, screen: c.screen, context: c.context, history: c.history, catalog });
+    const raw = await ai.assist(c.text, { lang: c.lang, screen: c.screen, context: c.context, history: c.history, catalog });
     out = validateAssist(raw, { catalog, context: c.context, askAgain: ASK_AGAIN });
   } catch (err) {
     error = err.code ?? 'error';

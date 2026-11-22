@@ -20,7 +20,7 @@ export function createRealAi() {
     stt: (audio, opts = {}) => transcribe(audio, opts),
     tts: (text, opts = {}) => speak(text, opts),
     parseEdits: (text, ctx) => parseEdits(text, ctx),
-    assist: (input) => assist(input),
+    assist: (text, ctx) => assist({ text, ...ctx }),
     describe: (kind) => DESCRIBE[kind](),
   };
 }

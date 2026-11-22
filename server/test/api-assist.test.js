@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { withApp, insertStores } from './helpers.js';
+import { createFakeAi } from '../src/ai/fake.js';
 import { validateAssist } from '../src/ai/validate.js';
 
 const catalog = [{ id: 1 }, { id: 2 }];
@@ -77,7 +78,7 @@ test('api: no assist function behind the ai gives 200 ask again', async () => {
     const out = await (await post(base, body())).json();
     assert.deepEqual(out.actions, []);
     assert.equal(out.expect, 'answer');
-  }, { setup: insertItems });
+  }, { setup: insertItems, ai: createFakeAi({ assist: undefined }) });
 });
 
 test('api: write action from the model comes back with expect confirm', async () => {
@@ -90,7 +91,7 @@ test('api: write action from the model comes back with expect confirm', async ()
 
 test('api: bad input gives 400; history is cut to last 6 turns', async () => {
   let seen;
-  const assistFn = async (input) => { seen = input; return { say: 'ok', actions: [] }; };
+  const assistFn = async (_text, input) => { seen = input; return { say: 'ok', actions: [] }; };
   await withApp(async ({ base }) => {
     assert.equal((await post(base, body({ text: ' ' }))).status, 400);
     assert.equal((await post(base, body({ lang: 'fr' }))).status, 400);
