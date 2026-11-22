@@ -142,5 +142,9 @@ export function EmptyState({ title, body, children }) {
   )
 }
 
-export const TINT_BG = ['bg-t-1', 'bg-t-1', 'bg-t-2', 'bg-t-3', 'bg-t-4', 'bg-t-5']
-export const tintClass = (i) => TINT_BG[((Math.max(1, i || 1) - 1) % 5) + 1]
+const tintIndex = (i) => ((Math.max(1, i || 1) - 1) % 5) + 1
+const DOT_BG = { 1: 'bg-t-1', 2: 'bg-t-2', 3: 'bg-t-3', 4: 'bg-t-4', 5: 'bg-t-5' }
+// White card with the distributor's colour as a left stripe.
+export const stripeClass = (i) => `bg-surface stripe-${tintIndex(i)}`
+// Small dot or bar in lists, never behind text.
+export const dotClass = (i) => DOT_BG[tintIndex(i)]

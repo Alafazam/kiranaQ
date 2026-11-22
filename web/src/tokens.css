@@ -1,6 +1,6 @@
 /* Design tokens. Source of truth: DESIGN.md. No hex, rgb or font-family outside this file. */
 :root {
-  --color-paper: oklch(97.6% 0.011 88);  --color-paper-2: oklch(96.5% 0.02 160);  --color-paper-3: oklch(93% 0.036 160);
+  --color-paper: oklch(97% 0.022 85);  --color-paper-2: oklch(96.5% 0.02 160);  --color-paper-3: oklch(93% 0.036 160);
   --color-surface: oklch(99.5% 0.004 88);
   --color-ink: oklch(21% 0.025 170);  --color-ink-2: oklch(31% 0.02 170);  --color-muted: oklch(49% 0.024 165);
   --color-rule: oklch(86.5% 0.022 140);
@@ -9,8 +9,9 @@
   --color-focus: oklch(45% 0.14 160);
   --color-danger: oklch(52% 0.17 30);  --color-danger-soft: oklch(93% 0.04 30);
   /* distributor tints: identity only, never a state. Assigned in order. */
-  --t-1: oklch(87.5% 0.058 64);  --t-2: oklch(87% 0.048 210);  --t-3: oklch(84% 0.045 270);
-  --t-4: oklch(91.5% 0.064 98);  --t-5: oklch(84% 0.048 322);
+  /* used only as the card's left stripe and a small dot in lists; text never sits on them */
+  --t-1: oklch(70% 0.12 60);  --t-2: oklch(62% 0.10 230);  --t-3: oklch(58% 0.10 290);
+  --t-4: oklch(72% 0.12 100); --t-5: oklch(60% 0.12 330);
   --font-display: "Schibsted Grotesk", "Noto Sans Devanagari", ui-sans-serif, sans-serif;
   --font-body: "Instrument Sans", "Noto Sans Devanagari", ui-sans-serif, sans-serif;
   --font-label: "DM Mono", ui-monospace, monospace;
@@ -20,23 +21,7 @@
   color-scheme: light;
 }
 
-/* Night ground. Same names. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-paper: oklch(13% 0.01 170);  --color-paper-2: oklch(17% 0.016 165);  --color-paper-3: oklch(22% 0.026 162);
-    --color-surface: oklch(19% 0.012 170);
-    --color-ink: oklch(96% 0.01 160);  --color-ink-2: oklch(88% 0.014 160);  --color-muted: oklch(74% 0.02 160);
-    --color-rule: oklch(33% 0.02 160);
-    --color-accent: oklch(78% 0.13 160);  --color-accent-deep: oklch(70% 0.12 162);
-    --color-accent-soft: oklch(36% 0.07 160);  --color-accent-ink: oklch(16% 0.03 165);
-    --color-focus: oklch(80% 0.14 160);
-    --color-danger: oklch(74% 0.15 30);  --color-danger-soft: oklch(30% 0.06 30);
-    --t-1: oklch(40% 0.058 64);  --t-2: oklch(40% 0.048 210);  --t-3: oklch(40% 0.045 270);
-    --t-4: oklch(40% 0.064 98);  --t-5: oklch(40% 0.048 322);
-    --shadow-lift: 0 1px 1px oklch(0% 0 0 / 0.4), 0 12px 24px -14px oklch(0% 0 0 / 0.6);
-    color-scheme: dark;
-  }
-}
+/* Night ground: only when the owner picks Dark in Settings. Never from the system setting. */
 :root[data-theme="dark"] {
   --color-paper: oklch(13% 0.01 170);  --color-paper-2: oklch(17% 0.016 165);  --color-paper-3: oklch(22% 0.026 162);
   --color-surface: oklch(19% 0.012 170);

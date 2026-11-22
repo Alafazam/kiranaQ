@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Volume2, Copy, ChevronDown } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
-import { Button, Stamp, StatusLabel, Stepper, tintClass } from '../ui/kit.jsx'
+import { Button, Stamp, StatusLabel, Stepper, stripeClass } from '../ui/kit.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { playBlob } from '../voice.js'
@@ -27,7 +27,7 @@ function daysLeftText(t, l) {
 function OrderLine({ line, qty, onQty, locked }) {
   const t = useT()
   return (
-    <li className="bg-surface rounded-control px-3 py-3">
+    <li className="border-t border-rule px-1 py-3">
       <div className="flex items-center justify-between gap-2">
         <ItemLabel item={line} />
         <p className={`shrink-0 whitespace-nowrap text-sm font-medium tabular-nums ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
@@ -96,7 +96,7 @@ export default function DistributorCard({ card, logId, onChange }) {
   }
 
   return (
-    <article className={`rounded-card p-3 shadow-lift ${d ? tintClass(d.tint_index) : 'bg-paper-3'}`}>
+    <article className={`rounded-card p-3 shadow-lift ${d ? stripeClass(d.tint_index) : 'bg-surface border border-rule'}`}>
       <header className="px-1 pb-3">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-xl">{d ? d.name : t('no_distributor')}</h2>
@@ -118,7 +118,7 @@ export default function DistributorCard({ card, logId, onChange }) {
       {card.runs_out.length > 0 && (
         <section className="mb-3">
           <StatusLabel status="runs_out" className="px-1 mb-2" />
-          <ul className="space-y-2">
+          <ul>
             {card.runs_out.map((l) => <OrderLine key={l.item_id} line={l} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
           </ul>
         </section>
@@ -126,13 +126,13 @@ export default function DistributorCard({ card, logId, onChange }) {
       {card.order.length > 0 && (
         <section className="mb-3">
           <StatusLabel status="order" text={d ? t('order_on', { day: t.day(d.next_visit_date) }) : t('order')} className="px-1 mb-2" />
-          <ul className="space-y-2">
+          <ul>
             {card.order.map((l) => <OrderLine key={l.item_id} line={l} qty={qty[l.item_id]} locked={locked} onQty={(v) => setQty({ ...qty, [l.item_id]: v })} />)}
           </ul>
         </section>
       )}
       {card.enough.length > 0 && (
-        <section className="mb-3 bg-surface rounded-control">
+        <section className="mb-3 border-t border-rule">
           <button type="button" aria-expanded={openEnough} onClick={() => setOpenEnough(!openEnough)} className="w-full flex items-center gap-2 px-3 min-h-control text-left">
             <StatusLabel status="ok" />
             <span className="flex-1 truncate text-ink-2">{card.enough.map((l) => t.itemName(l)).join(', ')}</span>
@@ -151,7 +151,7 @@ export default function DistributorCard({ card, logId, onChange }) {
         </section>
       )}
       {firstLog(card).length > 0 && (
-        <section className="mb-3 bg-surface rounded-control px-3 py-2">
+        <section className="mb-3 border-t border-rule px-1 py-2">
           <StatusLabel status="no_history" />
           <ul className="mt-2 space-y-2">{firstLog(card).map((l) => <li key={l.item_id}><ItemLabel item={l} size="sm" /></li>)}</ul>
           <p className="text-sm text-muted">{t.reason('no_history')}</p>

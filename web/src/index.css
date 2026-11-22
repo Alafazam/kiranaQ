@@ -9,20 +9,25 @@ h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .num { font-family: var(--font-label); font-weight: 500; font-variant-numeric: tabular-nums; }
 
-/* Moulded control (Dose): 1px rim, 3px rim below, sinks 3px on press. */
+/* Flat control: 52px, solid fill or a 1.5px border, no bevel or gradient. Press = darker fill. */
 .mould {
   @apply inline-flex items-center justify-center gap-2 min-h-control px-4 rounded-control font-medium select-none;
-  border: 1px solid var(--color-rule); border-bottom-width: 3px;
-  transition: transform var(--dur-micro) var(--ease-out), opacity var(--dur-micro) var(--ease-out);
+  border: 1.5px solid var(--color-rule);
+  transition: background-color var(--dur-micro) var(--ease-out), opacity var(--dur-micro) var(--ease-out);
 }
-.mould:active:not(:disabled) { transform: translateY(3px); }
 .mould:disabled { opacity: 0.5; cursor: not-allowed; }
-.mould-primary { background: linear-gradient(var(--color-accent), var(--color-accent-deep)); color: var(--color-accent-ink); border-color: var(--color-accent-deep); }
+.mould-primary { background: var(--color-accent); color: var(--color-accent-ink); border-color: var(--color-accent); }
+.mould-primary:hover:not(:disabled), .mould-primary:active:not(:disabled) { background: var(--color-accent-deep); border-color: var(--color-accent-deep); }
 .mould-secondary { background: var(--color-surface); color: var(--color-ink); }
-.mould-secondary:hover:not(:disabled) { background: var(--color-paper-2); }
+.mould-secondary:hover:not(:disabled), .mould-secondary:active:not(:disabled) { background: var(--color-paper-2); }
 .mould-selected { background: var(--color-accent-soft); color: var(--color-ink); border-color: var(--color-accent); }
 .mould-text { border-color: transparent; background: transparent; color: var(--color-ink); }
-.mould-text:hover:not(:disabled) { background: var(--color-paper-2); }
+.mould-text:hover:not(:disabled), .mould-text:active:not(:disabled) { background: var(--color-paper-2); }
+
+/* Distributor identity: a 6px stripe on the left of a white card. Text never sits on the colour. */
+.stripe-1 { border-left: 6px solid var(--t-1); } .stripe-2 { border-left: 6px solid var(--t-2); }
+.stripe-3 { border-left: 6px solid var(--t-3); } .stripe-4 { border-left: 6px solid var(--t-4); }
+.stripe-5 { border-left: 6px solid var(--t-5); }
 
 .skeleton { background: var(--color-paper-3); border-radius: var(--radius-control); }
 

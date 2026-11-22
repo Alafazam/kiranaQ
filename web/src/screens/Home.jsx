@@ -3,7 +3,7 @@ import { Camera, AlertTriangle, Truck, ChevronRight } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad, useStore } from '../state.jsx'
-import { Button, Card, EmptyState, ErrorState, Skeleton, tintClass } from '../ui/kit.jsx'
+import { Button, Card, EmptyState, ErrorState, Skeleton, stripeClass } from '../ui/kit.jsx'
 import { TopBar, LangChip } from '../ui/TopBar.jsx'
 
 function DistributorStrip() {
@@ -26,7 +26,7 @@ function DistributorStrip() {
     <ul className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2 snap-x">
       {list.map((d) => (
         <li key={d.id} className="snap-start shrink-0">
-          <Link to="/distributors" className={`block w-40 rounded-card p-3 ${tintClass(d.tint_index ?? d.id)}`}>
+          <Link to="/distributors" className={`block w-40 h-full rounded-card p-3 shadow-lift ${stripeClass(d.tint_index ?? d.id)}`}>
             <p className="font-medium truncate">{d.name}</p>
             <p className="num text-lg mt-1">{t.day(d.next_visit_date)}</p>
             <p className="num">{t.date(d.next_visit_date)}</p>

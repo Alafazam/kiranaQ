@@ -2,7 +2,6 @@
 // Thumbnail from /products/<sku_key>.jpg when products/index.json lists it; else a letter tile.
 import { useEffect, useState } from 'react'
 import { useStore } from '../state.jsx'
-import { tintClass } from './kit.jsx'
 
 let productIndex = null // Promise<Set<string>>, loaded once per page
 function loadProductIndex() {
@@ -37,7 +36,7 @@ export function ItemThumb({ item, size = 'md' }) {
       className={`${box} shrink-0 rounded-control object-cover bg-surface border border-rule`} />
   }
   return (
-    <span aria-hidden className={`${box} shrink-0 rounded-control flex items-center justify-center font-display text-lg text-ink ${tintClass(((item.item_id ?? item.id ?? 0) % 5) + 1)}`}>
+    <span aria-hidden className={`${box} shrink-0 rounded-control flex items-center justify-center font-display text-lg text-ink bg-paper-2 border border-rule`}>
       {(item.name_en || '?').charAt(0).toUpperCase()}
     </span>
   )

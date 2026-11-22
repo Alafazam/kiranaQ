@@ -5,7 +5,7 @@ import { AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad } from '../state.jsx'
-import { Button, EmptyState, ErrorState, Skeleton, tintClass } from '../ui/kit.jsx'
+import { Button, EmptyState, ErrorState, Skeleton, stripeClass } from '../ui/kit.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { TopBar } from '../ui/TopBar.jsx'
 
@@ -37,7 +37,7 @@ export default function Distributors() {
         {res.status === 'ok' && res.data.length > 0 && (
           <ul className="space-y-3">
             {res.data.map((d) => (
-              <li key={d.id} className={`rounded-card p-3 shadow-lift ${tintClass(d.tint_index ?? d.id)}`}>
+              <li key={d.id} className={`rounded-card p-3 shadow-lift ${stripeClass(d.tint_index ?? d.id)}`}>
                 <Link to={`/settings/distributors/${d.id}`} className="flex items-start gap-2 px-1">
                   <div className="flex-1">
                     <h2 className="text-xl">{d.name}</h2>

@@ -16,7 +16,8 @@ function writeLocal(key, value) {
 
 export function applyTheme(theme) {
   const root = document.documentElement
-  if (theme === 'light' || theme === 'dark') root.dataset.theme = theme
+  // Light is the default; dark only when the owner picks it.
+  if (theme === 'dark') root.dataset.theme = 'dark'
   else delete root.dataset.theme
 }
 
@@ -42,7 +43,7 @@ export const useStore = () => useContext(StoreContext)
 
 export function AppProvider({ children }) {
   const [lang, setLangState] = useState(() => readLocal(LANG_KEY, 'hi'))
-  const [theme, setThemeState] = useState(() => readLocal(THEME_KEY, 'system'))
+  const [theme, setThemeState] = useState(() => (readLocal(THEME_KEY, 'light') === 'dark' ? 'dark' : 'light'))
   const items = useLoad(() => api.items(), [])
   const distributors = useLoad(() => api.distributors(), [])
 
