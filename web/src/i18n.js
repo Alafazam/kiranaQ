@@ -69,7 +69,7 @@ export const dict = {
     next_visits: 'डिस्ट्रीब्यूटर कब आएंगे', stock_logs: 'Saman kab kab aya', distributor_visits: 'डिस्ट्रीब्यूटर कब आएंगे', distributors_tab: 'डिस्ट्रीब्यूटर', see_all: 'सब देखें',
     last_visit_on: 'पिछली विज़िट {date}', runs_out_before: 'इस विज़िट से पहले खत्म होगा', no_runs_out: 'इस विज़िट से पहले कुछ खत्म नहीं होगा',
     today: 'आज', in_days: '{n} दिन में', in_one_day: 'कल', on_day: 'आज',
-    items_n: '{n} आइटम', runs_out_n: '{n} khatm honge', runs_out_1: '1 khatm hoga',
+    items_n: '{n} आइटम', runs_out_n: '{n} खत्म होने वाले हैं', runs_out_1: '1 खत्म होने वाला है',
     no_dist_title: 'अभी कोई वितरक नहीं', no_dist_body: 'जो वितरक आपकी दुकान आते हैं, उन्हें जोड़ें।', add_distributor: 'वितरक जोड़ें',
     empty_logs_title: 'अभी कोई स्टॉक लॉग नहीं',
     empty_logs_body: 'पहला स्टॉक लॉग लें। बिक्री की रफ़्तार जानने के लिए दो लॉग चाहिए।',
