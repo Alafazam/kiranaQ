@@ -135,23 +135,28 @@ code { font-family: var(--font-label); font-size: 14px; }
 .compare td { color: var(--color-ink-2); }
 .compare .col-us { background: var(--color-paper-3); color: var(--color-ink); font-weight: 500; }
 .nc { color: var(--color-muted); font-style: italic; }
-.callout { margin-top: 24px; padding: 16px 20px; background: var(--color-surface); border-radius: var(--radius-card); border: 1.5px solid var(--color-rule); display: grid; gap: 8px; }
-.callout p { color: var(--color-ink-2); }
+.price { font-family: var(--font-label); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--color-ink); white-space: nowrap; }
 
-/* Architecture */
-.arch { margin-top: 28px; display: grid; gap: 28px; align-items: start; }
-.arch-figure { margin: 0; display: grid; gap: 12px; justify-items: center; }
+/* Architecture: a left-to-right flow of small cards; stacks on a phone. */
+.arch { margin-top: 28px; display: grid; gap: 24px; align-items: start; }
+.arch-figure { margin: 0; display: grid; gap: 12px; }
 .arch-figure figcaption { font-size: 14px; color: var(--color-muted); }
-.diagram { width: 100%; max-width: 420px; height: auto; }
-.d-box { fill: var(--color-surface); stroke: var(--color-rule); stroke-width: 1.5; }
-.d-box-accent { stroke: var(--color-accent); stroke-width: 2; }
-.d-inner { fill: var(--color-paper-2); stroke: var(--color-rule); }
-.d-line { stroke: var(--color-ink-2); stroke-width: 2; }
-.d-arrowhead { fill: var(--color-ink-2); }
-.d-h { font: 700 19px var(--font-display); letter-spacing: -0.02em; fill: var(--color-ink); }
-.d-t { font: 500 15px var(--font-body); fill: var(--color-ink); }
-.d-m { font: 500 14px var(--font-label); fill: var(--color-muted); }
-.d-l { font: 400 13px var(--font-body); fill: var(--color-muted); }
+.arch-flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; justify-items: stretch; }
+.node {
+  background: var(--color-surface); border: 1.5px solid var(--color-rule); border-radius: var(--radius-card);
+  padding: 12px 16px; display: grid; gap: 8px; align-content: start; box-shadow: var(--shadow-lift);
+}
+.node-accent { border-color: var(--color-accent); border-width: 2px; }
+.node h3 { font-size: 17px; }
+.node > p { font-size: 14px; color: var(--color-muted); }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.chips li { font-size: 14px; padding: 2px 8px; border-radius: var(--radius-control); background: var(--color-paper-2); color: var(--color-ink-2); }
+.kv { margin: 0; display: grid; gap: 4px; }
+.kv div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 12px; font-size: 14px; border-top: 1px solid var(--color-rule); padding-top: 4px; }
+.kv dt { color: var(--color-ink); white-space: nowrap; }
+.kv dd { margin: 0 0 0 auto; font-family: var(--font-label); color: var(--color-muted); text-align: right; }
+.link { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; color: var(--color-muted); font-size: 14px; }
+.arch-arrow { width: 32px; height: 12px; transform: rotate(90deg); fill: none; stroke: var(--color-ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .planned {
   padding: 24px; border: 2px dashed var(--color-muted); border-radius: var(--radius-card);
   background: var(--color-paper); display: grid; gap: 12px;
@@ -176,12 +181,37 @@ code { font-family: var(--font-label); font-size: 14px; }
 .use p { color: var(--color-ink-2); font-size: 14px; }
 .privacy { margin-top: 24px; font-size: 14px; color: var(--color-ink-2); max-width: 72ch; }
 
-/* Proof */
+/* Proof: collapsed by default */
+.proof-details summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; cursor: pointer; list-style: none; padding: 8px 0; border-radius: var(--radius-control); }
+.proof-details summary::-webkit-details-marker { display: none; }
+.proof-details summary::before {
+  content: ""; align-self: center; width: 10px; height: 10px; flex: none;
+  border-right: 2px solid var(--color-ink-2); border-bottom: 2px solid var(--color-ink-2);
+  transform: rotate(-45deg); transition: transform var(--dur-short) var(--ease-out);
+}
+.proof-details[open] summary::before { transform: rotate(45deg); }
+.summary-note { font-size: 14px; color: var(--color-muted); }
 .proof { margin: 24px 0 0; display: grid; gap: 12px; }
 .proof > div { background: var(--color-surface); border-radius: var(--radius-card); box-shadow: var(--shadow-lift); padding: 16px 20px; display: grid; gap: 4px; }
 .proof dt { font-size: 14px; color: var(--color-muted); }
 .proof dd { margin: 0; color: var(--color-ink-2); }
 .num { font-family: var(--font-label); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 20px; color: var(--color-ink); }
+
+/* Tour thumbnails: all five steps in one view; tap one to jump the tour. Scrolls sideways inside itself on a phone. */
+.tour-thumbs {
+  list-style: none; margin: 24px 0 0; padding: 4px 4px 12px; display: grid; gap: 12px;
+  grid-auto-flow: column; grid-auto-columns: 112px; overflow-x: auto; scroll-snap-type: x mandatory;
+}
+.thumb {
+  width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; text-align: left;
+  display: grid; gap: 8px; scroll-snap-align: start; font: inherit; color: var(--color-ink);
+}
+.thumb .phone { border-width: 4px; border-radius: 18px; box-shadow: none; transition: transform var(--dur-short) var(--ease-out); }
+.thumb:hover .phone { transform: translateY(-2px); }
+.thumb[aria-current="step"] .phone { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+.thumb-label { display: flex; gap: 8px; align-items: baseline; font-size: 14px; font-weight: 500; line-height: 1.3; }
+.thumb-n { font-family: var(--font-label); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.thumb[aria-current="step"] .thumb-n { color: var(--color-accent-deep); }
 
 /* Tour */
 .tour { margin-top: 28px; display: grid; gap: 24px; align-items: center; border-radius: var(--radius-card); }
@@ -235,7 +265,11 @@ code { font-family: var(--font-label); font-size: 14px; }
   .hero { padding: 64px 0 80px; }
   .hero-in { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
   .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .arch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arch-flow { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: 8px; }
+  .link { flex-direction: column; gap: 4px; min-height: 0; padding-top: 40px; min-width: 88px; }
+  .arch-arrow { transform: none; width: 48px; height: 16px; }
+  .tour-thumbs { grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: visible; }
+  .thumb .phone { max-width: 150px; }
   .tour { grid-template-columns: auto minmax(0, 1fr); gap: 56px; }
   /* Cap the phone by the viewport height, so the hotspot and the Next key show on one screen. */
   .tour-stage { width: min(320px, calc((100svh - 120px) * 390 / 844)); }

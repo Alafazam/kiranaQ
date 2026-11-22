@@ -56,3 +56,11 @@ Light cream tokens copied from `DESIGN.md`. Mobile first, max 1100 px. Keyboard 
 Screenshots: `desktop-hero.jpg`, `desktop-live-demo.jpg`, `mobile-390-tour.jpg`.
 
 Note: the browser pane used the server already running on port 3000 (the preview slots were full). It serves `server/public` from disk, so it showed this build.
+
+## 8. Changes from Alaf (22 Nov 2026, v2)
+
+- "See the demo" moved up, right after the hero. A row of 5 step thumbnails shows all steps at once. A tap jumps the tour to that step. On a phone the row scrolls sideways inside itself.
+- Comparison: the source note and the "Where they are stronger" block are removed. New row "Price for the store owner", from `research/competitive.md` only: Vyapar paid (₹4,399 or ₹4,799 a year after a 7-day free trial), Khatabook free app with ads and paid plans with price not confirmed, KiranaQ free for the store owner.
+- Architecture: left-to-right flow of three small cards (phone web app, Node server, Sarvam AI) with labelled arrows. It stacks on a phone. The planned on-device panel stays below, labelled "Planned, not built".
+- "What we checked" is a collapsed `<details>` accordion.
+- Checked at 1280×800 and 390×844 on the server at port 3000 (port 3001 was not running): no side scroll, no console errors, thumbnail jump works. Screenshots: `v2-desktop-demo-thumbs.jpg`, `v2-desktop-architecture.jpg`, `v2-390-demo-thumbs.jpg`.

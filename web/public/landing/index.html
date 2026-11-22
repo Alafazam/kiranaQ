@@ -53,6 +53,39 @@
       </div>
     </section>
 
+    <!-- Demo -->
+    <section class="section section-alt" id="demo" aria-labelledby="demo-h">
+      <div class="wrap">
+        <h2 id="demo-h">See the demo</h2>
+        <p class="section-lede">Five steps with screenshots. Tap a step, or walk through them below. Then try the live app in the same phone frame.</p>
+        <ol class="tour-thumbs" id="tour-thumbs" aria-label="Tour steps at a glance"></ol>
+        <div class="tour" id="tour" role="region" aria-roledescription="guided tour" aria-labelledby="demo-h" tabindex="0">
+          <div class="tour-stage">
+            <div class="phone phone-tour" id="tour-phone">
+              <img id="tour-img" src="img/home.jpg" alt="" width="416" height="900">
+              <button type="button" class="hotspot" id="tour-hotspot" aria-label="Next step"><span id="tour-hotspot-n">1</span></button>
+              <div class="live" id="tour-live" hidden></div>
+            </div>
+          </div>
+          <div class="tour-panel">
+            <p class="tour-count" id="tour-count">Step 1 of 5</p>
+            <h3 class="tour-title" id="tour-title">Home</h3>
+            <p class="tour-text" id="tour-text" aria-live="polite"></p>
+            <div class="tour-dots" id="tour-dots" role="tablist" aria-label="Tour steps"></div>
+            <div class="tour-nav">
+              <button type="button" class="btn btn-secondary" id="tour-back">Back</button>
+              <button type="button" class="btn btn-primary" id="tour-next">Next</button>
+            </div>
+            <div class="tour-live-actions" id="tour-live-actions" hidden>
+              <a class="btn btn-secondary" href="/app/" target="_blank" rel="noopener">Open full screen</a>
+              <button type="button" class="btn btn-quiet" id="tour-restart">Back to the tour</button>
+            </div>
+            <p class="fine">Use the left and right arrow keys to move through the tour.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- How it works -->
     <section class="section" id="how" aria-labelledby="how-h">
       <div class="wrap">
@@ -72,10 +105,10 @@
             <p>Drag the box over the part that faces the camera. The vision model counts only inside the box.</p>
           </li>
           <li class="step">
-            <div class="phone phone-sm"><img src="img/check.jpg" alt="Check screen with counts, plus and minus keys and Hold to speak" loading="lazy" width="416" height="900"></div>
+            <div class="phone phone-sm"><img src="img/check.jpg" alt="Check screen: the app heard Parle-G Biscuit 20 and asks yes or no before it changes the count from 12 to 20" loading="lazy" width="416" height="900"></div>
             <span class="step-n">3</span>
             <h3>Voice check</h3>
-            <p>Say “Maggi 8 hai”. The app shows what it heard and changes the count only after you say yes.</p>
+            <p>Say “Parle-G Biscuit 20 hai”. The app shows what it heard and changes the count only after you say yes.</p>
           </li>
           <li class="step">
             <div class="phone phone-sm"><img src="img/result.jpg" alt="Order screen: one card per distributor with items that run out first and what to order" loading="lazy" width="416" height="900"></div>
@@ -105,13 +138,9 @@
               <tr><th scope="row">Restock detection</th><td>Purchase entry by hand</td><td>Purchase entry by hand</td><td class="col-us">From a restock photo</td></tr>
               <tr><th scope="row">Voice in Hindi or Hinglish</th><td>None stated</td><td>Hindi screens listed. Voice: none stated</td><td class="col-us">Yes (Sarvam speech)</td></tr>
               <tr><th scope="row">Works with no POS or bills</th><td>No. Stock follows entries</td><td>Ledger works alone. The stock part sits beside billing</td><td class="col-us">Yes</td></tr>
+              <tr><th scope="row">Price for the store owner</th><td>Paid. <span class="price">₹4,399</span> or <span class="price">₹4,799</span> a year after a 7-day free trial</td><td>Free app with ads. Paid plans exist; price <span class="nc">not confirmed</span></td><td class="col-us">Free for the store owner</td></tr>
             </tbody>
           </table>
-        </div>
-        <p class="fine">Source: public pages and Play Store listings, read 22 Nov 2026 (<code>research/competitive.md</code>). “Not found” means we did not see the feature in public pages. It does not prove the feature is absent.</p>
-        <div class="callout">
-          <h3>Where they are stronger</h3>
-          <p>GST invoicing, accounting, a credit ledger (udhaar) for customers, apps on many devices, mature support, and proven scale: Vyapar 1Cr+ and Khatabook 10Cr+ Play Store downloads. KiranaQ is a proof of concept. Photo counts can be wrong, and sales rates need two or more logs. It does not make bills, does not do GST, and does not track customer credit.</p>
         </div>
       </div>
     </section>
@@ -123,44 +152,25 @@
         <p class="section-lede">One Node process serves the API and the web app. The order rule is plain code with named settings, so every number has a reason line.</p>
         <div class="arch">
           <figure class="arch-figure">
-            <svg class="diagram" viewBox="0 0 360 560" role="img" aria-labelledby="dg-t dg-d">
-              <title id="dg-t">KiranaQ architecture today</title>
-              <desc id="dg-d">The phone web app calls the Node server. The server runs the rule engine and stores logs in SQLite. The server calls Sarvam AI for speech to text, text to speech, vision count and parsing.</desc>
-              <defs>
-                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                  <path d="M0 0 L10 5 L0 10 z" class="d-arrowhead"/>
-                </marker>
-              </defs>
-              <!-- Phone -->
-              <rect x="20" y="10" width="320" height="104" rx="14" class="d-box"/>
-              <text x="40" y="44" class="d-h">Phone web app</text>
-              <text x="40" y="70" class="d-t">React and Vite, mobile first</text>
-              <text x="40" y="94" class="d-t">Camera, microphone, count box</text>
-              <!-- arrow -->
-              <line x1="180" y1="118" x2="180" y2="162" class="d-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-              <text x="192" y="146" class="d-l">HTTPS, JSON</text>
-              <!-- Server -->
-              <rect x="20" y="166" width="320" height="150" rx="14" class="d-box d-box-accent"/>
-              <text x="40" y="200" class="d-h">Node server (Express)</text>
-              <rect x="40" y="216" width="135" height="80" rx="10" class="d-inner"/>
-              <text x="54" y="246" class="d-t">Rule engine</text>
-              <text x="54" y="270" class="d-m">rate, cover,</text>
-              <text x="54" y="288" class="d-m">order qty</text>
-              <rect x="185" y="216" width="135" height="80" rx="10" class="d-inner"/>
-              <text x="199" y="246" class="d-t">SQLite</text>
-              <text x="199" y="270" class="d-m">logs, items,</text>
-              <text x="199" y="288" class="d-m">distributors</text>
-              <!-- arrow -->
-              <line x1="180" y1="320" x2="180" y2="364" class="d-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-              <text x="192" y="348" class="d-l">server only</text>
-              <!-- Sarvam -->
-              <rect x="20" y="368" width="320" height="182" rx="14" class="d-box"/>
-              <text x="40" y="402" class="d-h">Sarvam AI</text>
-              <text x="40" y="432" class="d-t">Speech to text</text><text x="320" y="432" class="d-m" text-anchor="end">saaras:v4</text>
-              <text x="40" y="462" class="d-t">Text to speech</text><text x="320" y="462" class="d-m" text-anchor="end">bulbul:v3</text>
-              <text x="40" y="492" class="d-t">Vision count</text><text x="320" y="492" class="d-m" text-anchor="end">gemma4</text>
-              <text x="40" y="522" class="d-t">Parse voice to edits</text><text x="320" y="522" class="d-m" text-anchor="end">sarvam-105b</text>
-            </svg>
+            <ol class="arch-flow" aria-label="KiranaQ architecture today, left to right">
+              <li class="node">
+                <h3>Phone web app</h3>
+                <p>React and Vite, mobile first</p>
+                <ul class="chips"><li>Camera</li><li>Microphone</li><li>Count box</li></ul>
+              </li>
+              <li class="link" aria-label="talks to"><svg class="arch-arrow" viewBox="0 0 48 16" aria-hidden="true" focusable="false"><path d="M2 8h40M36 3l6 5-6 5M8 3 2 8l6 5"/></svg><span>HTTPS, JSON</span></li>
+              <li class="node node-accent">
+                <h3>Node server</h3>
+                <p>Express. One process for API and web app</p>
+                <dl class="kv"><div><dt>Rule engine</dt><dd>rate, cover, order qty</dd></div><div><dt>SQLite</dt><dd>logs, items, distributors</dd></div></dl>
+              </li>
+              <li class="link" aria-label="calls"><svg class="arch-arrow" viewBox="0 0 48 16" aria-hidden="true" focusable="false"><path d="M2 8h40M36 3l6 5-6 5M8 3 2 8l6 5"/></svg><span>server only</span></li>
+              <li class="node">
+                <h3>Sarvam AI</h3>
+                <p>Speech, vision and parsing</p>
+                <dl class="kv"><div><dt>Speech to text</dt><dd>saaras:v4</dd></div><div><dt>Text to speech</dt><dd>bulbul:v3</dd></div><div><dt>Vision count</dt><dd>gemma4</dd></div><div><dt>Parse voice</dt><dd>sarvam-105b</dd></div></dl>
+              </li>
+            </ol>
             <figcaption>Built and running today. API keys stay on the server.</figcaption>
           </figure>
           <aside class="planned" aria-labelledby="next-h">
@@ -208,7 +218,8 @@
     <!-- Proof -->
     <section class="section" id="proof" aria-labelledby="proof-h">
       <div class="wrap">
-        <h2 id="proof-h">What we checked</h2>
+        <details class="proof-details">
+        <summary><h2 id="proof-h">What we checked</h2><span class="summary-note">Tests and model checks, 22 Nov 2026</span></summary>
         <p class="section-lede">Real results from our checks on 22 Nov 2026, with real Sarvam calls. Small samples: 20 phrases and 3 photos.</p>
         <dl class="proof">
           <div><dt>Server tests</dt><dd><span class="num">99/99</span> pass</dd></div>
@@ -217,40 +228,10 @@
           <div><dt>Vision count (E1)</dt><dd>Precision <span class="num">1.00</span>, recall <span class="num">1.00</span>. Counts within ±20% or ±1 pack: <span class="num">0.80</span></dd></div>
           <div><dt>Live Sarvam smoke</dt><dd>Speech to text, text to speech, parse and vision: all ok</dd></div>
         </dl>
+        </details>
       </div>
     </section>
 
-    <!-- Demo -->
-    <section class="section section-alt" id="demo" aria-labelledby="demo-h">
-      <div class="wrap">
-        <h2 id="demo-h">See the demo</h2>
-        <p class="section-lede">Five steps with screenshots. Then try the live app in the same phone frame.</p>
-        <div class="tour" id="tour" role="region" aria-roledescription="guided tour" aria-labelledby="demo-h" tabindex="0">
-          <div class="tour-stage">
-            <div class="phone phone-tour" id="tour-phone">
-              <img id="tour-img" src="img/home.jpg" alt="" width="416" height="900">
-              <button type="button" class="hotspot" id="tour-hotspot" aria-label="Next step"><span id="tour-hotspot-n">1</span></button>
-              <div class="live" id="tour-live" hidden></div>
-            </div>
-          </div>
-          <div class="tour-panel">
-            <p class="tour-count" id="tour-count">Step 1 of 5</p>
-            <h3 class="tour-title" id="tour-title">Home</h3>
-            <p class="tour-text" id="tour-text" aria-live="polite"></p>
-            <div class="tour-dots" id="tour-dots" role="tablist" aria-label="Tour steps"></div>
-            <div class="tour-nav">
-              <button type="button" class="btn btn-secondary" id="tour-back">Back</button>
-              <button type="button" class="btn btn-primary" id="tour-next">Next</button>
-            </div>
-            <div class="tour-live-actions" id="tour-live-actions" hidden>
-              <a class="btn btn-secondary" href="/app/" target="_blank" rel="noopener">Open full screen</a>
-              <button type="button" class="btn btn-quiet" id="tour-restart">Back to the tour</button>
-            </div>
-            <p class="fine">Use the left and right arrow keys to move through the tour.</p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="footer">

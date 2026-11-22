@@ -56,6 +56,37 @@
     dots.appendChild(d);
   });
 
+  // Thumbnails of all steps in one view. A tap jumps the tour to that step.
+  var thumbs = document.getElementById('tour-thumbs');
+  if (thumbs) {
+    STEPS.forEach(function (s, i) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'thumb';
+      b.innerHTML = '<div class="phone"><img alt="" loading="lazy" width="416" height="900"></div>' +
+        '<span class="thumb-label"><span class="thumb-n"></span><span class="thumb-title"></span></span>';
+      b.querySelector('img').src = s.img;
+      b.querySelector('.thumb-n').textContent = String(i + 1);
+      b.querySelector('.thumb-title').textContent = s.title;
+      b.setAttribute('aria-label', 'Go to step ' + (i + 1) + ': ' + s.title);
+      b.addEventListener('click', function () {
+        show(i);
+        tour.scrollIntoView({ block: 'nearest' });
+      });
+      li.appendChild(b);
+      thumbs.appendChild(li);
+    });
+  }
+
+  function markThumb(k) {
+    if (!thumbs) return;
+    Array.prototype.forEach.call(thumbs.querySelectorAll('.thumb'), function (b, j) {
+      if (j === k) b.setAttribute('aria-current', 'step');
+      else b.removeAttribute('aria-current');
+    });
+  }
+
   function show(i) {
     if (isLive) leaveLive();
     current = Math.max(0, Math.min(STEPS.length - 1, i));
@@ -74,6 +105,7 @@
       d.setAttribute('aria-selected', k === current ? 'true' : 'false');
       d.tabIndex = k === current ? 0 : -1;
     });
+    markThumb(current);
   }
 
   function fitLive() {
@@ -101,6 +133,7 @@
     nav.hidden = true;
     liveActions.hidden = false;
     Array.prototype.forEach.call(dots.children, function (d) { d.setAttribute('aria-selected', 'false'); });
+    markThumb(-1);
   }
 
   function leaveLive() {
