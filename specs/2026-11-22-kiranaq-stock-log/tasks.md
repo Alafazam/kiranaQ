@@ -2,7 +2,7 @@
 
 Written so that 4 agents (sessions) can build at the same time without touching the same files. Now ≈ 2:45 PM, submit by 5:00 PM.
 
-Clock plan: Phase 0 2:50–3:10. Lanes 3:10–4:10 (hard stop; Lane A commits the 4 pure core files by 3:40 so Lane B can run full-flow tests). Integrate and deploy 4:10–4:45. Buffer to 5:00.
+Clock plan: Phase 0 done 3:00 (`7b0a344`). Lanes 3:10–4:10 (hard stop; Lane A commits the 4 pure core files by 3:40 so Lane B can run full-flow tests). Integrate and deploy 4:10–4:45. Buffer to 5:00.
 
 ## How the work is split
 
@@ -26,26 +26,26 @@ All lanes work in the same checkout on `main` (files do not overlap), commit onl
 
 ## Phase 0: contracts (lead)
 
-- [ ] P0.1 `server/package.json`: add every server dependency now (`@anthropic-ai/sdk`; `multer`, `sarvamai`, `dotenv` are already there) and scripts `seed`, `demo:check`, `smoke:live`, `eval:parse`, `eval:vision`, `eval:voice`, `eval:sim`, `eval:restock`. Lanes do not edit `package.json`.
-- [ ] P0.2 `server/src/migrations.js`: migration 1 with the full schema from spec section "Data model".
-- [ ] P0.3 `server/src/core/config.js`: every named constant from the spec (rule, restock, limits, model names, timeouts). `server/src/config.js` keeps paths, port and host only.
-- [ ] P0.4 `server/src/core/reasons.js`: `REASON_KEYS` list and the args each key takes.
-- [ ] P0.5 Stubs with JSDoc signatures that throw `not implemented`, with the exact input and output shapes from spec "The rule > Contracts": `core/rule.js` `computeItem({p, c, d, o, rose, pack_size, cycle_days, days_to_next_visit})`, `core/schedule.js` `nextVisit(lastVisitDate, cycleDays, today)`, `core/plan.js` `buildCards(lines, distributors)`, `core/restock.js` `findDeliveryCandidates(rows)`.
-- [ ] P0.6 `server/src/app.js` `createApp({db, ai, clock, publicDir?})` (replaces `createApp(db, opts)`; update `server.js` and `test/health.test.js` to the new signature and the `{ok, db, keys}` health shape): middleware (`req.storeId = 1`, JSON, errors), mounts `routes/store.js`, `routes/logs.js` (stub routers) and the existing `routes/speech.js`, serves `public/` with SPA fallback. `server.js` wires real `db`, `ai`, `clock` (`Asia/Kolkata` date) and listens.
-- [ ] P0.7 `server/src/ai/index.js` interface (`countItems`, `stt`, `tts`, `parseEdits`) and `server/src/ai/fake.js` (fixed answers for tests and `demo:check`).
-- [ ] P0.7b `server/src/repo/items.js` `listItems(db, storeId)` and `server/src/repo/aiCalls.js` `logAiCall(db, storeId, row)`, real and small, so Lane C needs no SQL from Lane B.
-- [ ] P0.8 `web/src/contract.js`: JSDoc shapes for `card` and `line` copied from the spec, plus one `web/src/mock/result.json` (2 cards). Lane D fills the other mocks.
-- [ ] P0.9 `server/.env` has keys (Sarvam done; Anthropic: Alaf). Skeleton deploy to Replit at ~3:30 (see spec open question 4). Commit "chore: contracts for parallel lanes".
+- [x] P0.1 `server/package.json`: add every server dependency now (`@anthropic-ai/sdk`; `multer`, `sarvamai`, `dotenv` are already there) and scripts `seed`, `demo:check`, `smoke:live`, `eval:parse`, `eval:vision`, `eval:voice`, `eval:sim`, `eval:restock`. Lanes do not edit `package.json`.
+- [x] P0.2 `server/src/migrations.js`: migration 1 with the full schema from spec section "Data model".
+- [x] P0.3 `server/src/core/config.js`: every named constant from the spec (rule, restock, limits, model names, timeouts). `server/src/config.js` keeps paths, port and host only.
+- [x] P0.4 `server/src/core/reasons.js`: `REASON_KEYS` list and the args each key takes.
+- [x] P0.5 Stubs with JSDoc signatures that throw `not implemented`, with the exact input and output shapes from spec "The rule > Contracts": `core/rule.js` `computeItem({p, c, d, o, rose, pack_size, cycle_days, days_to_next_visit})`, `core/schedule.js` `nextVisit(lastVisitDate, cycleDays, today)`, `core/plan.js` `buildCards(lines, distributors)`, `core/restock.js` `findDeliveryCandidates(rows)`.
+- [x] P0.6 `server/src/app.js` `createApp({db, ai, clock, publicDir?})` (replaces `createApp(db, opts)`; update `server.js` and `test/health.test.js` to the new signature and the `{ok, db, keys}` health shape): middleware (`req.storeId = 1`, JSON, errors), mounts `routes/store.js`, `routes/logs.js` (stub routers) and the existing `routes/speech.js`, serves `public/` with SPA fallback. `server.js` wires real `db`, `ai`, `clock` (`Asia/Kolkata` date) and listens.
+- [x] P0.7 `server/src/ai/index.js` interface (`countItems`, `stt`, `tts`, `parseEdits`) and `server/src/ai/fake.js` (fixed answers for tests and `demo:check`).
+- [x] P0.7b `server/src/repo/items.js` `listItems(db, storeId)` and `server/src/repo/aiCalls.js` `logAiCall(db, storeId, row)`, real and small, so Lane C needs no SQL from Lane B.
+- [x] P0.8 `web/src/contract.js`: JSDoc shapes for `card` and `line` copied from the spec, plus one `web/src/mock/result.json` (2 cards). Lane D fills the other mocks.
+- [x] P0.9 `server/.env` has keys (Sarvam done; Anthropic: Alaf). Skeleton deploy to Replit at ~3:30 (see spec open question 4). Commit "chore: contracts for parallel lanes".
 
 ## Lane A: core rule, seed, simulation (agent 1)
 
-Owns: `server/src/core/rule.js`, `schedule.js`, `plan.js`, `restock.js`, `server/seed/catalog.json` (not `server/data/`, git ignores it), `server/scripts/seed.js`, `server/test/{rule,schedule,plan,restock,config,reasons,seed}.test.js`, `evals/sim/`, `evals/restock/`.
+Owns: `server/src/core/rule.js`, `schedule.js`, `plan.js`, `restock.js`, `server/scripts/seed.js`, `server/test/{rule,schedule,plan,restock,config,reasons,seed}.test.js`, `evals/sim/`, `evals/restock/`.
 Reads, never edits: `core/config.js`, `core/reasons.js`, `migrations.js`.
 
 - [ ] A1. `rule.js` + `rule.test.js` (R6 example, stock-out, first log, smoothing, rate 0, `d = 0`, `rose`, pack rounding, 4-day vs 15-day). (R5, R6, R10) Do A1–A3 first and commit by 3:40.
 - [ ] A2. `schedule.js` + test; `plan.js` + test. (R7, R9)
 - [ ] A3. `restock.js` + test. (R13)
-- [ ] A4. `catalog.json` (~25 items, en/hi names, aliases, group, unit, pack, distributor key) and `seed.js` (idempotent, `--reset`, dates relative to today: 1 store, 3 distributors at 4/7/15 days, 3 past logs with results from `core/`, 1 visit; its own INSERTs) + `seed.test.js`. The server runs the seed on start when the store table is empty. (R11) Coordinate brand list with Lane C's web photos.
+- [ ] A4. `seed.js` (reads `server/seed/catalog.json`, written by the photos-and-catalog session; do not edit it) (idempotent, `--reset`, dates relative to today: 1 store, 3 distributors at 4/7/15 days, 3 past logs with results from `core/`, 1 visit; its own INSERTs) + `seed.test.js`. The server runs the seed on start when the store table is empty. (R11) Coordinate brand list with Lane C's web photos.
 - [ ] A5. `config.test.js` (no numeric literals in `rule.js`) and `reasons.test.js`. (R8, R10)
 - [ ] A6. `evals/sim/simulate.js` (E4: 12 cycles, SVG chart + Markdown table, no chart library). Stretch: `evals/restock/` (E5).
 
@@ -75,7 +75,7 @@ Reads, never edits: `ai/index.js`, `ai/fake.js`, `core/config.js`, `repo/items.j
 - [ ] C3. `sarvam.js`: add `keyterms` to STT; model names and limits from `core/config.js`; TTS stays `bulbul:v3` (spec open question 1). (R3)
 - [ ] C4. `routes/speech.js`: add `/vision` and `/parse` (multer memory storage, size limits, `MAX_MODEL_CALLS_PER_HOUR` → 429) + `api-ai.test.js` with the fake. (R2, R3)
 - [ ] C5. `smoke-live.js` (one real call each). Needs keys.
-- [ ] C6. Evals: E2 `evals/voice/phrases.json` (20 phrases) + runner first; then E1: 3–5 openly licensed **Indian** shelf photos into `evals/vision/` and `web/public/samples/`, `SOURCES.md`, runner (send Lane A the brands seen by 3:30; the lead writes the truth files by reading the photos). Stretch: E3 clips.
+- [ ] C6. Evals: E2 runner first (`evals/voice/phrases.json` is written by the photos-and-catalog session; uses `sku_key`); then E1: 3–5 openly licensed **Indian** shelf photos into `evals/vision/` and `web/public/samples/`, `SOURCES.md`, runner (send Lane A the brands seen by 3:30; the lead writes the truth files by reading the photos). Stretch: E3 clips.
 
 Done: Lane C tests pass; `smoke:live` all ok; E2 and E1 numbers in `checks.md`.
 

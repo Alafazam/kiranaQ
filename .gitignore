@@ -12,3 +12,4 @@ build/
 local.properties
 *.apk
 .DS_Store
+.dl-untrusted/
