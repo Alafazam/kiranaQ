@@ -70,8 +70,8 @@ export function AssistantPanel() {
   const last = a.messages[a.messages.length - 1]
 
   return (
-    <section className="fixed inset-x-0 bottom-0 z-40 max-h-[62%] flex flex-col justify-end sheet-enter" aria-label={t('assist_title')}>
-      <div className="mx-auto max-w-app bg-surface rounded-t-[14px] border-t border-rule shadow-lift flex flex-col min-h-0 max-h-full">
+    <section className="fixed inset-x-0 bottom-0 z-40 h-[62%] flex flex-col sheet-fast" aria-label={t('assist_title')}>
+      <div className="w-full h-full bg-surface rounded-t-[14px] border-t border-rule shadow-lift flex flex-col min-h-0">
         <header className="flex items-center gap-2 px-4 pt-3">
                     <h2 className="text-lg flex-1">{t('assist_title')}</h2>
           <button type="button" onClick={a.close} aria-label={t('close')} className="mould mould-text w-11 min-h-[44px] px-0"><X size={22} aria-hidden /></button>
