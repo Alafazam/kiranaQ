@@ -260,30 +260,18 @@ On a log with a confirmed delivery, `received` is estimated from the old rate, s
 | Audio | `MediaRecorder` (webm/opus or mp4 on Safari) → upload; `<audio>` plays TTS | Browser built-in. |
 | Camera | `<input type="file" accept="image/*" capture="environment" multiple>`; images resized to max 1600 px on a canvas before upload | Works on every phone browser, no camera library. Smaller upload, cheaper vision call. |
 | Text | `web/src/i18n.js`: one dictionary `{en:{…}, hi:{…}}` and a `t(key, args)` helper; reason templates live here too | Hindi and English from day one. |
-| Fonts | Noto Sans + Noto Sans Devanagari (Google Fonts), `font-variant-numeric: tabular-nums` for counts | Same look for Hindi and English; numbers line up. |
+| Fonts | Schibsted Grotesk (heads), Instrument Sans (body), DM Mono (counts, dates), Noto Sans Devanagari (Hindi fallback), from Google Fonts | Per `DESIGN.md`. |
 
-### Theming
+### Theming and design rules
 
-Colors are tokens in `web/src/index.css` on `:root`, with a dark set under `prefers-color-scheme: dark` and under `[data-theme="dark"]`. Tailwind maps names to the tokens (`bg-surface`, `text-ink`, `bg-primary`, …), so no component uses a raw hex value.
+**`DESIGN.md` at the repo root is the design system.** It is based on the Hallmark design rules (app-screen scope) and Hallmark's Dose theme: warm paper, one green for every positive signal, DM Mono for counts and dates like a stock label, moulded 52px controls, and a pale tint per distributor. Tokens live in `web/src/tokens.css`; Tailwind maps names to them, so no component uses a raw color or font. Light and dark come from the same token names. Theme choice (system, light, dark) is in Settings and kept in `localStorage`.
 
-| Token | Light | Use |
-|---|---|---|
-| `--bg` | warm off-white | page |
-| `--surface` | white | cards, sheets |
-| `--ink` / `--ink-muted` | near-black / grey | text |
-| `--primary` | deep green | main actions, "enough stock" |
-| `--accent` | turmeric amber | "order needed" |
-| `--danger` | brick red | "runs out before visit" |
-| `--line` | light grey | borders |
-
-Status is never shown by color alone: each status has an icon and a word (red + `AlertTriangle` + "Runs out", amber + `ShoppingCart` + "Order", green + `CheckCircle2` + "Enough", grey + `Clock` + "First log").
-
-Size rules: base font 17 px, numbers 20–28 px, tap targets at least 48 px, primary actions in the bottom third of the screen (one-hand use), max content width 480 px (centered on a laptop). Theme choice (system, light, dark) is in Settings and kept in `localStorage`.
+KiranaQ variants of Dose: danger red only for "runs out before the visit"; no animated light or 3D plastic (speed on a phone). Status is never color alone: each status has an icon and a word.
 
 ### Navigation and menu
 
 - **Bottom tab bar** with 3 tabs: **Home** (`House`), **Orders** (`ClipboardList`), **Settings** (`Settings`). No hamburger menu.
-- **Big round "Take stock log" button** (`Camera`) floats above the tab bar, center, on Home and Orders.
+- **"Take stock log" primary button** (`Camera` icon and the words) sits fixed above the tab bar on Home and Orders, full width.
 - The log flow is full screen, no tab bar: a top bar with back arrow and a 3-step indicator **Photo → Check → Result**. Back from Check asks "Discard this log?"
 - Language chip **हिं / EN** in the top bar of Home. It switches all text at once.
 
@@ -313,69 +301,76 @@ flowchart LR
 
 ### Screens (layout)
 
+Icons below are named in brackets (`[camera]` = lucide `Camera`). The app never uses emoji.
+
 **Home**
 ```
 ┌──────────────────────────────┐
-│ Demo Kirana        [हिं|EN]  │
+│ Demo Kirana         [हिं|EN] │
 │ Next visits                  │
-│ ┌──────┐┌──────┐┌──────┐     │  ← horizontal chips, scroll
-│ │Sharma││Gupta ││Mehta │     │
-│ │in 2d ││in 6d ││in 11d│     │
-│ │⚠ 2   ││      ││⚠ 1   │     │  ← items that run out first
-│ └──────┘└──────┘└──────┘     │
+│ ┌────────┐┌────────┐┌──────┐ │  ← cards in each distributor's tint, scroll
+│ │Sharma  ││Gupta   ││Mehta │ │
+│ │Tue     ││Sat     ││3 Dec │ │
+│ │in 2 days││in 6 days│      │ │
+│ │[alert] 2 runs out│ │      │ │
+│ └────────┘└────────┘└──────┘ │
 │ Stock logs                   │
-│ Today 22 Nov · 24 items · ⚠3 │
-│ Fri 20 Nov · 23 items  ·🚚 S │  ← 🚚 = visit recorded
-│ Tue 17 Nov · 22 items        │
-│            ( 📷 )            │  ← Take stock log
-│ [Home]   [Orders]  [Settings]│
+│ Today, 22 Nov                │
+│   24 items   [alert] 3       │
+│ Fri, 20 Nov                  │
+│   23 items   [truck] Sharma  │  ← a visit was recorded
+│ Tue, 17 Nov                  │
+│   22 items                   │
+│ [camera] Take stock log      │  ← primary, fixed
+│ [house] Home [list] Orders [gear] Settings │
 └──────────────────────────────┘
 ```
-Empty state (no logs): one card "Take your first stock log. Two logs are needed to learn how fast items sell."
+Empty state (no logs): one card "Take your first stock log. Two logs are needed to learn how fast items sell." with the primary button.
 
-**Step 1 Photo**: big dashed area "Take a photo of your shelf" (opens camera), thumbnails of up to 3 photos with remove ×, a secondary link "Count without photo", primary button "Count items" (disabled until one photo). While waiting: skeleton list and "Counting items…" (vision call, target under 15 s).
+**Step 1 Photo**: big dashed area "Take a photo of your shelf" (opens camera), thumbnails of up to 3 photos with a remove button (undo toast), a text button "Count without photo", primary "Count items" (disabled until one photo). While waiting: skeleton rows and "Counting items…" (vision call, target under 15 s).
 
 **Step 2 Check**
 ```
 ┌──────────────────────────────┐
-│ ←  Photo · CHECK · Result    │
-│ 🔊 Read out   18 items found │
-│ Maggi 70g       ⓘ 92%        │
-│ [−]  12 pcs  (1 case+0) [+]  │
-│ Parle-G         ⓘ 61% low    │  ← low confidence: amber outline
-│ [−]  30 pcs             [+]  │
-│ + Add item                   │
+│ [back]  Photo  Check  Result │  ← step 2 marked
+│ [speaker] Read out           │
+│ 18 items found               │
+│ Maggi 70g                    │
+│ [−]   12 pcs   [+]   1 case  │
+│ Parle-G       Not sure       │  ← low confidence: muted tag, rim in rule color
+│ [−]   30 pcs   [+]           │
+│ [plus] Add item              │
 │ ┌──────────────────────────┐ │
-│ │ 🎤 Hold to speak         │ │  ← sticky bottom
+│ │ [mic] Hold to speak      │ │  ← sticky bottom
 │ └──────────────────────────┘ │
-│ [ Save log ]                 │
+│ Save log                     │  ← primary
 └──────────────────────────────┘
 ```
-After speech, a bottom sheet: "I heard: Maggi 8, Surf 5" with the changed rows, buttons **Yes, apply** and **No, try again**. An unclear phrase shows the question from the parser ("Which Surf: 500 g or 1 kg?"). A text box under the mic is the fallback.
+After speech, a bottom sheet: "I heard: Maggi 8, Surf 5" with the changed rows, buttons **Yes, apply** and **No, try again**. An unclear phrase shows the parser's question ("Which Surf: 500 g or 1 kg?"). A text box under the mic is the fallback.
 
-**Visit sheet** (after Save, only when items went up): "Did Sharma Traders deliver today? Maggi +12, Surf +6, Rin +4" with **Yes, delivered** / **No**. One sheet per distributor.
+**Visit sheet** (after Save, only when items went up): "Did Sharma Traders deliver today?" with rows "Maggi +12", "Surf +6", "Rin +4", and **Yes, delivered** / **No**. One sheet per distributor.
 
 **Step 3 Result / Orders**
 ```
-┌──────────────────────────────┐
-│ Sharma Traders · Tue 24 Nov  │
-│ in 2 days · every 7 days     │
-│ ⚠ RUNS OUT FIRST             │
-│ Surf 1kg   1 day left        │
-│  "Runs out tomorrow, Sharma  │
-│   comes in 2 days. Call      │
-│   early."        [📞 note]   │
-│ 🛒 ORDER ON TUE              │
-│ Maggi     [−] 2 cases [+]    │
-│  "1.5/day, 5 days left…"     │
-│ ✓ Enough: Rin, Vim (tap)     │
-│ [ Confirm Sharma order ]     │
+┌──────────────────────────────┐  ← band in Sharma's tint
+│ Sharma Traders               │
+│ Next visit Tue, 24 Nov       │
+│ in 2 days, every 7 days      │
+│ [alert] Runs out first       │
+│ Surf 1kg          1 day left │
+│  Runs out tomorrow. Sharma   │
+│  comes in 2 days. Call early.│
+│ [cart] Order on Tuesday      │
+│ Maggi   [−]  2 cases  [+]    │
+│  1.5 a day, 5 days left.     │
+│ [check] Enough: Rin, Vim     │  ← collapsed, tap to open
+│ Confirm Sharma order         │  ← primary; then a green stamp
 └──────────────────────────────┘
-  (next card: Gupta Agency …)
+  (next band: Gupta Agency …)
 ```
-"Read out" button speaks the order list for one distributor (TTS), so the owner can read it to the salesperson. "Copy list" copies it as plain text (to paste in WhatsApp; the app does not send it).
+"Read out" speaks one distributor's order list (TTS), so the owner can read it to the salesperson. "Copy list" copies it as plain text (to paste in WhatsApp; the app does not send it).
 
-**Settings**: list rows: Distributors (count), Items (count), Language, Theme (System / Light / Dark), Demo data (Reset to demo, asks first), About (version, "Synthetic data only").
+**Settings**: rows: Distributors (count), Items (count), Language, Theme (System, Light, Dark), Demo data (Reset to demo, asks first), About (version, "Synthetic data only").
 
 ### Loading, errors, empty states
 
