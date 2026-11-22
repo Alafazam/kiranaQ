@@ -25,12 +25,12 @@ Provider `sarvam`, 3 photos with truth files, real model.
 |---|---|---|
 | Precision | 1.00 | ≥ 0.9 |
 | Recall | 1.00 | ≥ 0.6 |
-| Counts within ±20% or ±1 pack | 0.80 | ≥ 0.6 |
+| Counts within ±20% or ±1 pack | 1.00 | ≥ 0.6 |
 
 | Photo | Items returned | Right items / expected | Counts within bar |
 |---|---|---|---|
 | shelf-01 | 3 | 3/3 | 3/3 |
-| shelf-02 | 2 | 2/2 | 1/2 |
+| shelf-02 | 1 | 1/1 | 1/1 |
 | shelf-03 | 0 | 0/0 | 0/0 |
 
 Verdict: **PASS**.
@@ -55,3 +55,15 @@ Screenshots: `walk-1-home.jpg`, `walk-2-sample-photos.jpg`, `walk-3-count-box.jp
 | `pnpm --dir web build` | pass |
 | Bolo, real Sarvam, built app on :3001 at 390×844 (typed into the assistant text box; the pane has no mic) | "stock ginna hai" → log opened and the assistant offered photo choices; "फ़ोटो चुनें" → photo picked, vision counted 3 items; "Parle-G 20 hai" → count set to 20 and the assistant offered "Save karun". Pass |
 | Landing `/landing/#demo` | 5-step tour works (Next, dots, hotspots); "Try the live demo" loads the live app in the phone frame. Open: steps 2–3 screenshots show the old UI |
+
+## Lead: sample photo check (2026-11-22, 16:45)
+
+Recounted each sample inside its count box at zoom, ran the real model (Sarvam `gemma4`) on each box, and fixed what was wrong.
+
+| Sample | Truth (front-facing, inside box) | Model before | Model after | Fix |
+|---|---|---|---|---|
+| Biscuit aisle | Parle-G 12 (10 small + 2 big; the bottom row hides behind the rail), Gold 12, Marie ~24 | 10, 12, 20 | 12, 10, 18 | Truth Parle-G 18 → 12 after zoom recount |
+| Rice shelf | India Gate 3 | Daawat 3, India Gate 6 (box covered stacked bags) | India Gate 3 | Box tightened to the top row; prompt rule: brand and product type must both match (stopped "Fortune oil 1" on a Fortune rice bag) |
+| Small-town kirana | nothing readable | [] | [] | none |
+
+`pnpm --dir server eval:vision` after the fix: precision 1.00, recall 1.00, counts within ±20% or ±1 pack 1.00. PASS. The model gave the same answer on repeated runs. In the app (390 px, :3000) the rice sample shows "India Gate Basmati Rice 1kg — 3 packet".

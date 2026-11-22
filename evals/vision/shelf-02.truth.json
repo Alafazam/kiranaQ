@@ -1,24 +1,22 @@
 {
   "photo": "shelf-02.jpg",
-  "note": "Supermarket rice shelf. Bags are 1-5 kg, the catalog skus are 1 kg; count bags of the brand. Fortune here is rice, not oil: returning fortune_oil_1l is a false positive. Charminar and Devaaya are not in the catalog. Front view: the box is the whole photo (shelf-02.box.jpg is the same file).",
+  "note": "Supermarket rice shelf, front view. The box is the top row only (the lower shelf has stacked bags that cannot be counted from the front). India Gate: 3 bags (Select x2, Dubar x1). Daawat Rozana is half visible at the left edge: uncertain. Fortune here is rice, not oil: returning fortune_oil_1l is a false positive. Devaaya, Bemisal and Fortune rice are not in the catalog.",
   "items": [
-    {
-      "sku_key": "daawat_basmati_1kg",
-      "count": 16
-    },
     {
       "sku_key": "india_gate_basmati_1kg",
       "count": 3
     }
   ],
-  "uncertain": [],
+  "uncertain": [
+    "daawat_basmati_1kg"
+  ],
   "absent_hint": [
     "fortune_oil_1l"
   ],
   "box": {
-    "x0": 0,
+    "x0": 0.14,
     "y0": 0,
     "x1": 1,
-    "y1": 1
+    "y1": 0.24
   }
 }

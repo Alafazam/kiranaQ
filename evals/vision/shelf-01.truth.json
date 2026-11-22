@@ -1,10 +1,10 @@
 {
   "photo": "shelf-01.jpg",
-  "note": "Supermarket biscuit aisle shot at an angle. Count only inside the preset box (right, front-facing section: Parle-G, Parle-G Gold, Marie); the eval sends shelf-01.box.jpg. Counts are front-facing packs seen, estimated by eye by the lead session; use the +-20% band. Milano is outside the box: returning it is a false positive.",
+  "note": "Supermarket biscuit aisle shot at an angle. Count only inside the preset box (right, front-facing section). Recounted at zoom: Parle-G = 10 small packs fully visible (the bottom row hides behind the price rail) + 2 big packs; Parle-G Gold 12; Marie about 24 front-facing. Use the +-20% band. Milano is outside the box: returning it is a false positive.",
   "items": [
     {
       "sku_key": "parle_g_80g",
-      "count": 18
+      "count": 12
     },
     {
       "sku_key": "parle_g_gold_100g",

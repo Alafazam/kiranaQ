@@ -11,12 +11,12 @@
   },
   {
     "file": "shelf-02.jpg",
-    "title": "Rice shelf (front view)",
+    "title": "Rice shelf (top row, boxed)",
     "box": {
-      "x0": 0,
+      "x0": 0.14,
       "y0": 0,
       "x1": 1,
-      "y1": 1
+      "y1": 0.24
     }
   },
   {
