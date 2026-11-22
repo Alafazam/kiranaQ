@@ -13,6 +13,9 @@ import { BoxOverlay } from '../ui/BoxEditor.jsx'
 
 // Below this vision confidence a row shows "Not sure".
 const LOW_CONFIDENCE = 0.7
+// Count sources the API accepts (spec "Data model": who set the final value).
+// Older drafts in sessionStorage may still hold photo / edited / manual.
+const COUNT_SOURCE = { vision: 'vision', voice: 'voice', tap: 'tap', photo: 'vision', edited: 'tap', manual: 'tap' }
 
 export default function Check() {
   const t = useT()
@@ -39,7 +42,7 @@ export default function Check() {
     writeDraft({ ...draft, ...(readDraft() || {}), counts: next })
   }
   function setCount(itemId, value) {
-    update(counts.map((c) => (c.item_id === itemId ? { ...c, count: value, source: c.source === 'photo' && c.vision_count !== value ? 'edited' : c.source } : c)))
+    update(counts.map((c) => (c.item_id === itemId ? { ...c, count: value, source: c.source === 'vision' && c.vision_count === value ? 'vision' : 'tap' } : c)))
   }
   function removeRow(itemId) {
     const i = counts.findIndex((c) => c.item_id === itemId)
@@ -50,7 +53,7 @@ export default function Check() {
   }
   function addRow(itemId) {
     setAddOpen(false)
-    update([...counts, { item_id: itemId, count: 0, source: 'manual' }])
+    update([...counts, { item_id: itemId, count: 0, source: 'tap' }])
   }
 
   async function understand(text) {
@@ -110,7 +113,11 @@ export default function Check() {
   async function save() {
     setSaving(true)
     try {
-      const body = { source: draft.source || 'manual', photo_count: draft.photo_count || 0, counts }
+      const body = {
+        source: draft.source || 'manual',
+        photo_count: draft.photo_count || 0,
+        counts: counts.map((c) => ({ ...c, source: COUNT_SOURCE[c.source] ?? 'tap' })),
+      }
       const res = await api.createLog(body)
       clearDraft()
       const goResult = () => navigate(`/log/${res.log_id}/result`, { replace: true, state: { not_counted: res.not_counted } })
@@ -153,7 +160,7 @@ export default function Check() {
                 {counts.map((c) => {
                   const it = byId.get(c.item_id)
                   if (!it) return null
-                  const unsure = c.source === 'photo' && c.vision_confidence != null && c.vision_confidence < LOW_CONFIDENCE
+                  const unsure = c.source === 'vision' && c.vision_confidence != null && c.vision_confidence < LOW_CONFIDENCE
                   const cases = Math.floor(c.count / it.pack_size)
                   return (
                     <li key={c.item_id} className="px-4 py-3">

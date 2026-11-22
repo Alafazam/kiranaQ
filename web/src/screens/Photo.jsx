@@ -76,7 +76,7 @@ export default function Photo() {
       const blobs = await Promise.all(photos.map((p) => cropToBlob(p.src, p.box)))
       const res = await api.vision(blobs)
       if (res.error_code || res.items.length === 0) toast(t('vision_failed'))
-      counts = res.items.map((it) => ({ item_id: it.item_id, count: it.count, source: 'photo', vision_count: it.count, vision_confidence: it.confidence }))
+      counts = res.items.map((it) => ({ item_id: it.item_id, count: it.count, source: 'vision', vision_count: it.count, vision_confidence: it.confidence }))
     } catch (e) {
       console.error('vision failed', e)
       toast(t('vision_failed'))

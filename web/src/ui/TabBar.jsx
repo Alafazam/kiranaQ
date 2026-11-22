@@ -4,7 +4,7 @@ import { useT } from '../i18n.js'
 
 export function TabBar() {
   const t = useT()
-  const tabs = [['/', 'home', House], ['/distributors', 'distributor_visits', Truck], ['/orders', 'orders', ClipboardList], ['/settings', 'settings', Settings]]
+  const tabs = [['/', 'home', House], ['/distributors', 'distributors_tab', Truck], ['/orders', 'orders', ClipboardList], ['/settings', 'settings', Settings]]
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-surface border-t border-rule" aria-label="Main">
       <ul className="mx-auto max-w-app grid grid-cols-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
