@@ -1,0 +1,434 @@
+[
+  {
+    "id": "v01",
+    "lang": "hi",
+    "text": "मैगी 8 है",
+    "draft": [
+      {
+        "sku_key": "maggi_70g",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "maggi_70g",
+          "count": 8
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v02",
+    "lang": "hi",
+    "text": "चीनी दो कम",
+    "draft": [
+      {
+        "sku_key": "sugar_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "sugar_1kg",
+          "count": 8
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v03",
+    "lang": "hi",
+    "text": "टाटा नमक पांच और सर्फ एक्सेल तीन है",
+    "draft": [
+      {
+        "sku_key": "tata_salt_1kg",
+        "count": 10
+      },
+      {
+        "sku_key": "surf_excel_1kg",
+        "count": 6
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "tata_salt_1kg",
+          "count": 5
+        },
+        {
+          "sku_key": "surf_excel_1kg",
+          "count": 3
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v04",
+    "lang": "hi",
+    "text": "एक केस पारले जी",
+    "draft": [
+      {
+        "sku_key": "parle_g_80g",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "parle_g_80g",
+          "count": 24
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v05",
+    "lang": "hi",
+    "text": "आटा चार पैकेट हैं",
+    "draft": [
+      {
+        "sku_key": "aashirvaad_atta_5kg",
+        "count": 2
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "aashirvaad_atta_5kg",
+          "count": 4
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v06",
+    "lang": "hi",
+    "text": "लक्स दस और लाइफबॉय पंद्रह",
+    "draft": [
+      {
+        "sku_key": "lux_soap_100g",
+        "count": 20
+      },
+      {
+        "sku_key": "lifebuoy_soap_100g",
+        "count": 20
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "lux_soap_100g",
+          "count": 10
+        },
+        {
+          "sku_key": "lifebuoy_soap_100g",
+          "count": 15
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v07",
+    "lang": "hi",
+    "text": "थोड़ा कम करो",
+    "draft": [
+      {
+        "sku_key": "maggi_70g",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v08",
+    "lang": "hi",
+    "text": "बिंटू बिस्कुट बारह हैं",
+    "draft": [
+      {
+        "sku_key": "parle_g_80g",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v09",
+    "lang": "hinglish",
+    "text": "chini do kam",
+    "draft": [
+      {
+        "sku_key": "sugar_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "sugar_1kg",
+          "count": 8
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v10",
+    "lang": "hinglish",
+    "text": "Kurkure 6 aur Lays 4 hai",
+    "draft": [
+      {
+        "sku_key": "kurkure_masala_munch",
+        "count": 10
+      },
+      {
+        "sku_key": "lays_classic_52g",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "kurkure_masala_munch",
+          "count": 6
+        },
+        {
+          "sku_key": "lays_classic_52g",
+          "count": 4
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v11",
+    "lang": "hinglish",
+    "text": "ek case Vim bar",
+    "draft": [
+      {
+        "sku_key": "vim_bar_200g",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "vim_bar_200g",
+          "count": 36
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v12",
+    "lang": "hinglish",
+    "text": "Maggi aur Parle-G paanch hai",
+    "draft": [
+      {
+        "sku_key": "maggi_70g",
+        "count": 8
+      },
+      {
+        "sku_key": "parle_g_80g",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v13",
+    "lang": "hinglish",
+    "text": "Fortune oil teen kam karo",
+    "draft": [
+      {
+        "sku_key": "fortune_oil_1l",
+        "count": 9
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "fortune_oil_1l",
+          "count": 6
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v14",
+    "lang": "hinglish",
+    "text": "Colgate 12 hai, Dettol 3 bottle",
+    "draft": [
+      {
+        "sku_key": "colgate_strong_200g",
+        "count": 8
+      },
+      {
+        "sku_key": "dettol_liquid_250ml",
+        "count": 6
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "colgate_strong_200g",
+          "count": 12
+        },
+        {
+          "sku_key": "dettol_liquid_250ml",
+          "count": 3
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v15",
+    "lang": "en",
+    "text": "Set Aashirvaad atta to six",
+    "draft": [
+      {
+        "sku_key": "aashirvaad_atta_5kg",
+        "count": 2
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "aashirvaad_atta_5kg",
+          "count": 6
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v16",
+    "lang": "en",
+    "text": "Add three Good Day packets",
+    "draft": [
+      {
+        "sku_key": "britannia_good_day_100g",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "britannia_good_day_100g",
+          "count": 13
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v17",
+    "lang": "en",
+    "text": "Sugar is 15 and toor dal is 8",
+    "draft": [
+      {
+        "sku_key": "sugar_1kg",
+        "count": 10
+      },
+      {
+        "sku_key": "toor_dal_1kg",
+        "count": 12
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "sugar_1kg",
+          "count": 15
+        },
+        {
+          "sku_key": "toor_dal_1kg",
+          "count": 8
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v18",
+    "lang": "en",
+    "text": "One case of Coca-Cola",
+    "draft": [
+      {
+        "sku_key": "coca_cola_600ml",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "coca_cola_600ml",
+          "count": 24
+        }
+      ],
+      "unclear": false
+    }
+  },
+  {
+    "id": "v19",
+    "lang": "en",
+    "text": "Twelve",
+    "draft": [
+      {
+        "sku_key": "maggi_70g",
+        "count": 5
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v20",
+    "lang": "en",
+    "text": "Remove two Lux and add four Rin",
+    "draft": [
+      {
+        "sku_key": "lux_soap_100g",
+        "count": 10
+      },
+      {
+        "sku_key": "rin_bar_250g",
+        "count": 6
+      }
+    ],
+    "expect": {
+      "edits": [
+        {
+          "sku_key": "lux_soap_100g",
+          "count": 8
+        },
+        {
+          "sku_key": "rin_bar_250g",
+          "count": 10
+        }
+      ],
+      "unclear": false
+    }
+  }
+]

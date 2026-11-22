@@ -1,0 +1,429 @@
+[
+  {
+    "sku_key": "maggi_70g",
+    "name_en": "Maggi Noodles 70g",
+    "name_hi": "मैगी नूडल्स 70 ग्राम",
+    "aliases": [
+      "maggi",
+      "maggie",
+      "noodles",
+      "मैगी",
+      "नूडल्स"
+    ],
+    "item_group": "snacks",
+    "unit": "pcs",
+    "pack_size": 12,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "parle_g_80g",
+    "name_en": "Parle-G Biscuit 80g",
+    "name_hi": "पारले-जी बिस्कुट 80 ग्राम",
+    "aliases": [
+      "parle g",
+      "parle-g",
+      "parleji",
+      "parle",
+      "पारले",
+      "पारले जी"
+    ],
+    "item_group": "biscuits",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "parle_g_gold_100g",
+    "name_en": "Parle-G Gold 100g",
+    "name_hi": "पारले-जी गोल्ड 100 ग्राम",
+    "aliases": [
+      "parle g gold",
+      "gold biscuit",
+      "parle gold",
+      "पारले गोल्ड"
+    ],
+    "item_group": "biscuits",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "parle_marie_150g",
+    "name_en": "Marie Biscuit 150g",
+    "name_hi": "मैरी बिस्कुट 150 ग्राम",
+    "aliases": [
+      "marie",
+      "mary biscuit",
+      "marie biscuit",
+      "मैरी"
+    ],
+    "item_group": "biscuits",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "parle_milano_cookies",
+    "name_en": "Milano Cookies",
+    "name_hi": "मिलानो कुकीज़",
+    "aliases": [
+      "milano",
+      "milano cookies",
+      "मिलानो"
+    ],
+    "item_group": "biscuits",
+    "unit": "pcs",
+    "pack_size": 12,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "britannia_good_day_100g",
+    "name_en": "Britannia Good Day 100g",
+    "name_hi": "ब्रिटानिया गुड डे 100 ग्राम",
+    "aliases": [
+      "good day",
+      "gud day",
+      "britannia",
+      "ब्रिटानिया",
+      "गुड डे"
+    ],
+    "item_group": "biscuits",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "kurkure_masala_munch",
+    "name_en": "Kurkure Masala Munch",
+    "name_hi": "कुरकुरे मसाला मंच",
+    "aliases": [
+      "kurkure",
+      "kurkure masala",
+      "कुरकुरे"
+    ],
+    "item_group": "snacks",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "lays_classic_52g",
+    "name_en": "Lay's Classic Salted 52g",
+    "name_hi": "लेज़ क्लासिक सॉल्टेड 52 ग्राम",
+    "aliases": [
+      "lays",
+      "lay's",
+      "chips",
+      "wafers",
+      "लेज़",
+      "चिप्स"
+    ],
+    "item_group": "snacks",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "haldirams_bhujia_200g",
+    "name_en": "Haldiram's Aloo Bhujia 200g",
+    "name_hi": "हल्दीराम आलू भुजिया 200 ग्राम",
+    "aliases": [
+      "haldiram",
+      "haldirams",
+      "bhujia",
+      "namkeen",
+      "हल्दीराम",
+      "भुजिया",
+      "नमकीन"
+    ],
+    "item_group": "snacks",
+    "unit": "packet",
+    "pack_size": 20,
+    "distributor_key": "gupta"
+  },
+  {
+    "sku_key": "aashirvaad_atta_5kg",
+    "name_en": "Aashirvaad Atta 5kg",
+    "name_hi": "आशीर्वाद आटा 5 किलो",
+    "aliases": [
+      "aashirvaad",
+      "ashirvad",
+      "atta",
+      "aata",
+      "flour",
+      "आशीर्वाद",
+      "आटा"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 4,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "tata_salt_1kg",
+    "name_en": "Tata Salt 1kg",
+    "name_hi": "टाटा नमक 1 किलो",
+    "aliases": [
+      "tata salt",
+      "salt",
+      "namak",
+      "नमक",
+      "टाटा नमक"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 25,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "fortune_oil_1l",
+    "name_en": "Fortune Sunlite Refined Oil 1L",
+    "name_hi": "फॉर्च्यून सनलाइट तेल 1 लीटर",
+    "aliases": [
+      "fortune",
+      "fortune oil",
+      "oil",
+      "tel",
+      "refined oil",
+      "तेल",
+      "फॉर्च्यून"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 12,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "daawat_basmati_1kg",
+    "name_en": "Daawat Basmati Rice 1kg",
+    "name_hi": "दावत बासमती चावल 1 किलो",
+    "aliases": [
+      "daawat",
+      "dawat",
+      "basmati",
+      "rice",
+      "chawal",
+      "दावत",
+      "चावल",
+      "बासमती"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 10,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "india_gate_basmati_1kg",
+    "name_en": "India Gate Basmati Rice 1kg",
+    "name_hi": "इंडिया गेट बासमती चावल 1 किलो",
+    "aliases": [
+      "india gate",
+      "indiagate",
+      "इंडिया गेट"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 10,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "sugar_1kg",
+    "name_en": "Sugar 1kg",
+    "name_hi": "चीनी 1 किलो",
+    "aliases": [
+      "sugar",
+      "chini",
+      "cheeni",
+      "shakkar",
+      "चीनी",
+      "चिनी",
+      "शक्कर"
+    ],
+    "item_group": "staples",
+    "unit": "kg",
+    "pack_size": 30,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "toor_dal_1kg",
+    "name_en": "Toor Dal 1kg",
+    "name_hi": "तूर दाल 1 किलो",
+    "aliases": [
+      "toor dal",
+      "arhar dal",
+      "dal",
+      "daal",
+      "तूर दाल",
+      "अरहर दाल",
+      "दाल"
+    ],
+    "item_group": "staples",
+    "unit": "kg",
+    "pack_size": 20,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "tata_tea_gold_250g",
+    "name_en": "Tata Tea Gold 250g",
+    "name_hi": "टाटा टी गोल्ड 250 ग्राम",
+    "aliases": [
+      "tata tea",
+      "chai patti",
+      "tea",
+      "chai",
+      "चाय पत्ती",
+      "टाटा टी",
+      "चाय"
+    ],
+    "item_group": "staples",
+    "unit": "packet",
+    "pack_size": 12,
+    "distributor_key": "mehta"
+  },
+  {
+    "sku_key": "surf_excel_1kg",
+    "name_en": "Surf Excel Easy Wash 1kg",
+    "name_hi": "सर्फ एक्सेल 1 किलो",
+    "aliases": [
+      "surf excel",
+      "surf",
+      "detergent",
+      "washing powder",
+      "सर्फ",
+      "सर्फ एक्सेल",
+      "कपड़े धोने का पाउडर"
+    ],
+    "item_group": "home_care",
+    "unit": "packet",
+    "pack_size": 12,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "vim_bar_200g",
+    "name_en": "Vim Dishwash Bar 200g",
+    "name_hi": "विम बर्तन धोने का बार 200 ग्राम",
+    "aliases": [
+      "vim",
+      "vim bar",
+      "dishwash",
+      "bartan bar",
+      "विम"
+    ],
+    "item_group": "home_care",
+    "unit": "pcs",
+    "pack_size": 36,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "rin_bar_250g",
+    "name_en": "Rin Detergent Bar 250g",
+    "name_hi": "रिन डिटर्जेंट बार 250 ग्राम",
+    "aliases": [
+      "rin",
+      "rin bar",
+      "kapde ka sabun",
+      "रिन"
+    ],
+    "item_group": "home_care",
+    "unit": "pcs",
+    "pack_size": 36,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "lux_soap_100g",
+    "name_en": "Lux Soap 100g",
+    "name_hi": "लक्स साबुन 100 ग्राम",
+    "aliases": [
+      "lux",
+      "lux soap",
+      "sabun",
+      "लक्स",
+      "साबुन"
+    ],
+    "item_group": "personal_care",
+    "unit": "pcs",
+    "pack_size": 36,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "lifebuoy_soap_100g",
+    "name_en": "Lifebuoy Soap 100g",
+    "name_hi": "लाइफबॉय साबुन 100 ग्राम",
+    "aliases": [
+      "lifebuoy",
+      "life buoy",
+      "lifebuoy soap",
+      "लाइफबॉय"
+    ],
+    "item_group": "personal_care",
+    "unit": "pcs",
+    "pack_size": 36,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "colgate_strong_200g",
+    "name_en": "Colgate Strong Teeth 200g",
+    "name_hi": "कोलगेट स्ट्रॉन्ग टीथ 200 ग्राम",
+    "aliases": [
+      "colgate",
+      "toothpaste",
+      "paste",
+      "कोलगेट",
+      "टूथपेस्ट",
+      "पेस्ट"
+    ],
+    "item_group": "personal_care",
+    "unit": "pcs",
+    "pack_size": 24,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "dettol_liquid_250ml",
+    "name_en": "Dettol Antiseptic Liquid 250ml",
+    "name_hi": "डेटॉल एंटीसेप्टिक लिक्विड 250 मिली",
+    "aliases": [
+      "dettol",
+      "antiseptic",
+      "डेटॉल"
+    ],
+    "item_group": "personal_care",
+    "unit": "bottle",
+    "pack_size": 12,
+    "distributor_key": "sharma"
+  },
+  {
+    "sku_key": "amul_butter_100g",
+    "name_en": "Amul Butter 100g",
+    "name_hi": "अमूल बटर 100 ग्राम",
+    "aliases": [
+      "amul",
+      "amul butter",
+      "butter",
+      "makhan",
+      "अमूल",
+      "बटर",
+      "मक्खन"
+    ],
+    "item_group": "staples",
+    "unit": "pcs",
+    "pack_size": 20,
+    "distributor_key": null
+  },
+  {
+    "sku_key": "coca_cola_600ml",
+    "name_en": "Coca-Cola 600ml",
+    "name_hi": "कोका-कोला 600 मिली",
+    "aliases": [
+      "coca cola",
+      "coke",
+      "cold drink",
+      "कोका कोला",
+      "कोक",
+      "कोल्ड ड्रिंक"
+    ],
+    "item_group": "drinks",
+    "unit": "bottle",
+    "pack_size": 24,
+    "distributor_key": null
+  }
+]
