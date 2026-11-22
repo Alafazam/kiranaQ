@@ -49,7 +49,7 @@ flowchart TD
 - **R9. Distributors.** The store has a list of distributors. Each has a name, `cycle_days` and `last_visit_date`. Next visit = the first `last_visit_date + k × cycle_days` that is today or later. Each item has one distributor. The owner can add a distributor, change its cycle and last visit, and move an item to another distributor in a settings screen. When an item has no distributor, it uses `DEFAULT_CYCLE_DAYS` and shows "no distributor set".
 - **R10. Named config.** All numbers in the rule (`SAFETY_MARGIN`, `STOCKOUT_STEP_UP`, `RATE_SMOOTHING`, `DEFAULT_CYCLE_DAYS`, `MIN_CONFIDENCE`) live in `server/src/core/config.js`. No number is hard-coded in the rule.
 - **R11. Demo seed.** One command loads a synthetic store with ~25 items, 3 distributors with different cycles (for example 4, 7 and 15 days), and 3 past logs, so rates and alerts show at once for more than one distributor.
-- **R12. Runs on a phone.** The UI works on a phone-size screen inside the Android shell, or in a phone browser over HTTPS.
+- **R12. Web app on a phone.** The POC is a web app only. It works in a phone browser (Chrome on Android, Safari on iOS) over HTTPS, so camera and microphone work. It can be deployed to one public HTTPS URL. The Android shell is deferred.
 
 Out of scope: bills, prices, cash budget, distributor integration, login, multi-store, real owner data. Stretch only: the 12-cycle simulation chart from the idea spec, Kannada.
 
@@ -59,9 +59,11 @@ Out of scope: bills, prices, cash budget, distributor integration, login, multi-
 
 - `server/`: Node 22, Express, better-sqlite3. One process. Serves the API and the built web UI. All model calls live in `server/src/ai/` (the only place with network I/O to models). The rule lives in `server/src/core/` (pure functions, no I/O).
 - `web/`: React + Vite + Tailwind, mobile first, built into `server/public`.
-- `shell/`: a minimal Kotlin WebView app (one activity). It loads the server URL and grants camera and microphone to the page. This is the KidQueue idea (thin native host, web UI from the server) without its 2000 lines of kiosk code.
+- `shell/`: a minimal Kotlin WebView app is in the repo from the skeleton, but it is **deferred** (not built, not in the demo). The web app is the POC. The shell stays as the later path to an Android app (KidQueue idea: thin native host, web UI from the server).
 
-**Secure context.** Browser microphone access (`getUserMedia`) needs HTTPS or `localhost`. Camera photo upload (`<input type=file capture>`) does not. For the demo: run `cloudflared tunnel --url http://localhost:3000` and point the shell (or the phone browser) at the HTTPS URL. Fallback: the laptop browser on `localhost` in phone-size view, and a text box for the voice transcript.
+**Secure context.** Browser microphone access (`getUserMedia`) needs HTTPS or `localhost`. Camera photo upload (`<input type=file capture>`) does not. So the phone must open an HTTPS URL.
+
+**Deploy.** One Node process that serves API and UI, so it deploys as one service. Options, in order: (a) a host with HTTPS and a persistent disk for the SQLite file (for example Render or Fly.io; the seed command restores demo data if the disk is lost); (b) during the build, `cloudflared tunnel --url http://localhost:3000` from the laptop gives an HTTPS URL at once. Keys are set as host env vars, never in git. Fallback: the laptop browser on `localhost` in phone-size view, and a text box for the voice transcript.
 
 ### Models
 
@@ -132,14 +134,14 @@ Home (logs + distributor strip with next visits and runs-out counts) → Camera/
 | R9 | `node --test` for `next_visit` (visit today, visit missed, long cycle); manual: change a distributor's cycle, its card changes and other cards do not; move an item, it moves card |
 | R10 | `rg -n "[0-9]" server/src/core/rule.js` shows only 0 and 1 |
 | R11 | `pnpm seed` then Home shows rates and at least one alert |
-| R12 | Screenshot from the shell or phone browser |
+| R12 | Phone browser on the HTTPS URL: photo and mic both work; screenshot |
 
 ## 6. Open questions (proposed answers)
 
 1. **Sarvam model names.** Proposal: Alaf reads them from the credits docs now; until then assume `saarika` (STT) and `bulbul` (TTS) on `api.sarvam.ai`.
 2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. Can the voice check also set "Sharma aaya tha aaj" (distributor visited today)? Proposal: stretch only; tap in Settings for now.
 3. **Received quantity.** Proposal: assume the last confirmed order arrived in full; one toggle per log "order did not arrive".
-4. **Demo device.** Proposal: Android shell over a cloudflared HTTPS URL; fallback laptop browser.
+4. **Deploy target (decided: web first).** Which host? Proposal: cloudflared tunnel for the build and demo today; Render or Fly.io with a disk after, if you have an account. Android shell later.
 5. **Simulation chart.** Proposal: stretch only, after the live flow works.
 
 Assumptions: starter catalog and seed are synthetic; photo counts are rough and the voice check is the fix; one store only.
@@ -152,6 +154,6 @@ The `spec-security-review` skill is not installed, so this is a short manual che
 - **Personal data:** none stored. Synthetic store. No login.
 - **Photos and audio:** sent to Anthropic and Sarvam for processing, not stored on disk after the request (multer memory storage). Use our own test shelf photos and voices only.
 - **Model output:** treated as data. JSON is schema-validated (known ids, number ranges) before use; never executed.
-- **Network:** the HTTPS tunnel exposes the demo server publicly while it runs. No auth, so stop the tunnel after the demo and use synthetic data only.
+- **Network:** the tunnel or deployed URL is public. No auth, so use synthetic data only, and stop the tunnel (or the deployed service) after the demo. A deployed service can spend model credits if someone finds the URL: add a simple shared demo key header or rate limit before it stays up longer than the demo.
 - **Tenant isolation:** one store; every query still filters by `store_id` so a second store cannot leak.
-- **Findings:** 0 blocking. 1 open: the public tunnel has no auth (accepted for the demo, stop it after).
+- **Findings:** 0 blocking. 1 open: the public URL has no auth and calls paid models (accepted for the demo; stop it after, or add a demo key and rate limit before a longer deploy).
