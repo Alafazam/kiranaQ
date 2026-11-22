@@ -8,18 +8,22 @@ Build window: 22 Nov 2026, now until the 5:00 PM submit lock. Scope is cut to fi
 
 ## 1. Why
 
-A kirana owner has no POS and no bills. He orders by gut feel when the distributor's salesperson visits, so fast items run out and slow items pile up. KiranaQ lets him take a **stock log** in under a minute (photo plus a short voice check). From two or more logs the app knows how fast each item sells, how many days of stock are left, and what to order at the next visit. When an item will run out before the next visit, the app tells him to call the distributor early.
+A kirana owner has no POS and no bills. He buys from several distributors (for example one for HUL items, one for biscuits, one for staples). Each distributor's salesperson comes back on its own cycle (every 4 days, every 7 days, every 15 days). He orders by gut feel when each salesperson visits, so fast items run out and slow items pile up. KiranaQ lets him take a **stock log** in under a minute (photo plus a short voice check). From two or more logs the app knows how fast each item sells and how many days of stock are left. For each distributor it tells him two things: what to order at that distributor's next visit so stock lasts until the visit after, and which items will run out before that distributor comes back (so he can call that distributor early).
 
 ## 2. The story
 
-1. **Home.** The owner opens the app. He sees his past stock logs: date, number of items, and items that are low. A banner shows "Next distributor visit: Tue 24 Nov (in 2 days)".
+1. **Home.** The owner opens the app. He sees his past stock logs: date, number of items, and items that are low. A strip shows each distributor and its next visit: "Sharma Traders (HUL): Tue 24 Nov, in 2 days", "Gupta Agency (biscuits): Sat 28 Nov, in 6 days".
 2. **Take a stock log.** He taps "Take stock log". The camera opens. He takes one or more photos of the shelf.
 3. **The vision model counts.** The server sends each photo to Claude vision with the store's item list. It returns items it can see and a count for each, with a confidence.
 4. **Voice check.** The app reads the counts back in Hindi (text to speech): "Maggi 12, Parle-G 30, chini 4 kilo. Sahi hai?" The owner answers by voice: "Maggi 8 hai, aur Surf bhi 5 hai". Sarvam turns speech into text. Claude turns text into edits `{item, count}`. The app shows "I heard: Maggi 8, Surf 5. Correct?" and applies the edits on yes. Items not in the photo can be added by voice or by tap. Plus and minus buttons always work too.
 5. **Save the log.** The log is saved with today's date.
-6. **Compute.** For each item, the server compares this log with the last one: stock then, plus what arrived, minus stock now, gives what sold. Sold divided by days gives a daily rate. Stock now divided by rate gives **days of cover**.
-7. **Result screen.** For each item: stock now, rate per day, days of cover, and the suggested order quantity for the next visit, with a one-line reason ("Maggi: 1.5/day, 5 days left, visit in 2 days → order 2 cases"). Items that run out before the next visit are on top in red with "Call distributor early".
-8. **Order.** The owner confirms the order quantities (plus/minus). At the next log the app assumes the order arrived, unless he says it did not.
+6. **Compute.** For each item, the server compares this log with the last one: stock then, plus what arrived, minus stock now, gives what sold. Sold divided by days gives a daily rate. Stock now divided by rate gives **days of cover**. Each item belongs to one distributor, so the server also knows when that item can next be restocked.
+7. **Result screen, one card per distributor**, sorted by next visit:
+   - Header: "Sharma Traders: next visit Tue 24 Nov (in 2 days), then every 7 days".
+   - **Runs out first** (red): items whose cover ends before this distributor's next visit. "Surf: 1 day left, Sharma comes in 2 days. Call Sharma early, or you are out for 1 day."
+   - **Order at next visit**: for each item, the quantity to order so stock lasts until the visit after next, with a reason. "Maggi: 1.5/day, 5 days left. Order 2 cases on Tue so you still have stock on 1 Dec."
+   - Items with enough stock until the visit after next show "No order needed".
+8. **Order.** The owner confirms the order quantities per distributor (plus/minus). At the next log the app assumes each order arrived, unless he says it did not.
 
 ```mermaid
 flowchart TD
@@ -28,7 +32,7 @@ flowchart TD
   V --> C[Voice check: Sarvam STT/TTS + Claude parse]
   C --> S[Save stock log]
   S --> R[Rule: rate, days of cover, order qty]
-  R --> O[Result: order list, call-early alerts, reasons]
+  R --> O[Result per distributor: runs-out alerts, order for next visit, reasons]
   O --> H
 ```
 
@@ -39,12 +43,12 @@ flowchart TD
 - **R3. Voice check.** The app speaks the counts in Hindi or English. The owner speaks corrections. The app shows what it understood and applies it only after yes. When the item or number is unclear (low confidence or unknown item), the app asks again and does not guess.
 - **R4. Manual edit.** Every count has plus and minus buttons and a remove button. Voice is never the only way.
 - **R5. Rate and days of cover.** For each item with a previous log: `sold = prev_count + received − count_now`, `rate = sold ÷ days`, smoothed with the old rate. `days_of_cover = count_now ÷ rate`. When `count_now = 0`, the rate is raised by the stock-out step-up (true demand is hidden).
-- **R6. Order suggestion.** `order_qty = roundup_to_pack(rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − count_now)`, never below 0. Example: rate 1.5/day, next visit in 2 days, cycle 7 days, safety 1.15, stock 5 → `1.5 × 9 × 1.15 − 5 = 10.5` → pack 6 → 12.
-- **R7. Call-early alert.** When `days_of_cover < days_to_next_visit`, the item shows "Call distributor early: runs out in N days, visit in M days". Home shows the count of such items.
+- **R6. Order suggestion per distributor.** Each item uses its own distributor's `days_to_next_visit` and `cycle_days`. The order placed at the next visit must last until the visit after: `order_qty = roundup_to_pack(rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − count_now)`, never below 0. Example: rate 1.5/day, Sharma comes in 2 days, Sharma's cycle 7 days, safety 1.15, stock 5 → `1.5 × 9 × 1.15 − 5 = 10.5` → pack 6 → 12. When the same item had a 15-day distributor, the order is bigger.
+- **R7. Runs-out alert per distributor.** When `days_of_cover < days_to_next_visit` of that item's distributor, the item shows "Runs out in N days, <distributor> comes in M days: call early, or out for M − N days". Home shows the count of such items per distributor.
 - **R8. Reason line.** Every suggested quantity has a one-line reason in the owner's language.
-- **R9. Distribution cycle config.** The store has `cycle_days` (default 7) and `last_visit_date`. Next visit = last visit + cycle. The owner can change both in a settings screen.
-- **R10. Named config.** All numbers in the rule (`SAFETY_MARGIN`, `STOCKOUT_STEP_UP`, `RATE_SMOOTHING`, default `cycle_days`, `MIN_CONFIDENCE`) live in `server/src/core/config.js`. No number is hard-coded in the rule.
-- **R11. Demo seed.** One command loads a synthetic store with ~25 items and 3 past logs, so rates and alerts show at once.
+- **R9. Distributors.** The store has a list of distributors. Each has a name, `cycle_days` and `last_visit_date`. Next visit = the first `last_visit_date + k × cycle_days` that is today or later. Each item has one distributor. The owner can add a distributor, change its cycle and last visit, and move an item to another distributor in a settings screen. When an item has no distributor, it uses `DEFAULT_CYCLE_DAYS` and shows "no distributor set".
+- **R10. Named config.** All numbers in the rule (`SAFETY_MARGIN`, `STOCKOUT_STEP_UP`, `RATE_SMOOTHING`, `DEFAULT_CYCLE_DAYS`, `MIN_CONFIDENCE`) live in `server/src/core/config.js`. No number is hard-coded in the rule.
+- **R11. Demo seed.** One command loads a synthetic store with ~25 items, 3 distributors with different cycles (for example 4, 7 and 15 days), and 3 past logs, so rates and alerts show at once for more than one distributor.
 - **R12. Runs on a phone.** The UI works on a phone-size screen inside the Android shell, or in a phone browser over HTTPS.
 
 Out of scope: bills, prices, cash budget, distributor integration, login, multi-store, real owner data. Stretch only: the 12-cycle simulation chart from the idea spec, Kannada.
@@ -74,27 +78,29 @@ Vision prompt gets the store catalog (id, names in en/hi, pack) and must answer 
 
 ### Data model (SQLite)
 
-- `store`: id, name (synthetic), language, cycle_days, last_visit_date
-- `item`: id, name_en, name_hi, group, pack_size, unit, active
+- `store`: id, name (synthetic), language
+- `distributor`: id, store_id, name, cycle_days, last_visit_date
+- `item`: id, store_id, distributor_id (nullable), name_en, name_hi, group, pack_size, unit, active
 - `stock_log`: id, store_id, taken_at, source (`photo` | `manual`)
 - `stock_count`: log_id, item_id, count, source (`vision` | `voice` | `tap`), vision_confidence
-- `order_line`: log_id, item_id, suggested_qty, final_qty, received (bool, default true)
+- `order_line`: log_id, item_id, distributor_id, suggested_qty, final_qty, received (bool, default true)
 - `item_state`: item_id, rate_per_day, updated_at
 
 ### API
 
-- `GET /api/store`, `PUT /api/store` (cycle_days, last_visit_date, language)
-- `GET /api/items`
+- `GET /api/store`, `PUT /api/store` (language)
+- `GET /api/distributors`, `POST /api/distributors`, `PUT /api/distributors/:id` (name, cycle_days, last_visit_date)
+- `GET /api/items`, `PUT /api/items/:id` (distributor_id, active)
 - `GET /api/logs`, `GET /api/logs/:id`
 - `POST /api/vision/count` (multipart images) → draft counts
 - `POST /api/voice/stt` (multipart audio) → text; `POST /api/voice/tts` (text, lang) → audio
 - `POST /api/voice/parse` (text, current draft) → `{edits:[{item_id, count}], unclear:bool, ask?:string}`
-- `POST /api/logs` (final counts) → saves log, runs rule, returns result
+- `POST /api/logs` (final counts) → saves log, runs rule, returns result grouped by distributor
 - `PUT /api/logs/:id/order` (final order qty)
 
 ### The rule (`core/rule.js`, pure)
 
-For each active item, given previous count `p`, received `r` (last `final_qty` if `received`), current count `c`, days `d` since last log, old rate `o`:
+For each active item, given previous count `p`, received `r` (last `final_qty` if `received`), current count `c`, days `d` since last log, old rate `o`, and its distributor's `cycle_days` and `days_to_next_visit` (from `core/schedule.js`, pure: `next_visit(last_visit_date, cycle_days, today)`):
 
 1. `sold = max(p + r − c, 0)`
 2. `observed = sold ÷ d`; if `c = 0` then `observed × (1 + STOCKOUT_STEP_UP)`
@@ -102,14 +108,16 @@ For each active item, given previous count `p`, received `r` (last `final_qty` i
 4. `days_of_cover = rate > 0 ? c ÷ rate : Infinity`
 5. `need = rate × (days_to_next_visit + cycle_days) × SAFETY_MARGIN − c`
 6. `order_qty = roundup_to_pack(max(need, 0))`
-7. `call_early = days_of_cover < days_to_next_visit`
-8. `reason`: built from a template per case (ran out / low / about right / no history).
+7. `call_early = days_of_cover < days_to_next_visit`; `days_out = days_to_next_visit − days_of_cover` when true
+8. `reason`: built from a template per case (runs out before visit / order needed / no order needed / ran out last time / no history), with the distributor name and visit date.
+
+`core/plan.js` (pure) then groups item results by distributor, sorts distributors by next visit, and sorts items inside a card: runs-out first, then order lines, then "no order needed".
 
 First log of an item (no history): no rate, no order suggestion, reason "first log, need one more".
 
 ### Screens
 
-Home (logs + next visit + call-early count) → Camera/photo → Count review (list, plus/minus, mic button, read-back dialog) → Result (order list, alerts, reasons, confirm) → Settings (cycle, last visit, language).
+Home (logs + distributor strip with next visits and runs-out counts) → Camera/photo → Count review (list, plus/minus, mic button, read-back dialog) → Result (one card per distributor: runs-out, order lines, reasons, confirm) → Settings (distributors: name, cycle, last visit; item → distributor; language).
 
 ## 5. Verification
 
@@ -119,9 +127,9 @@ Home (logs + next visit + call-early count) → Camera/photo → Count review (l
 | R2 | Live: photo of a real shelf returns known items only; unit test: validator drops unknown ids and bad counts; kill key → empty list, no crash |
 | R3 | 5 Hindi + 3 English spoken phrases parse right or re-ask; unclear phrase re-asks |
 | R4 | Manual walk through on phone-size view |
-| R5, R6, R7 | `node --test`: worked example in R6, stock-out case, first-log case, call-early case |
+| R5, R6, R7 | `node --test`: worked example in R6, stock-out case, first-log case, call-early case, same item under a 4-day vs 15-day distributor gives a smaller vs bigger order |
 | R8 | Manual: every row has a reason |
-| R9 | Change cycle to 3 days, result changes |
+| R9 | `node --test` for `next_visit` (visit today, visit missed, long cycle); manual: change a distributor's cycle, its card changes and other cards do not; move an item, it moves card |
 | R10 | `rg -n "[0-9]" server/src/core/rule.js` shows only 0 and 1 |
 | R11 | `pnpm seed` then Home shows rates and at least one alert |
 | R12 | Screenshot from the shell or phone browser |
@@ -129,7 +137,7 @@ Home (logs + next visit + call-early count) → Camera/photo → Count review (l
 ## 6. Open questions (proposed answers)
 
 1. **Sarvam model names.** Proposal: Alaf reads them from the credits docs now; until then assume `saarika` (STT) and `bulbul` (TTS) on `api.sarvam.ai`.
-2. **"Distribution cycle 750 days"** in the voice note is likely "7 days". Proposal: default `cycle_days = 7`, editable.
+2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. Can the voice check also set "Sharma aaya tha aaj" (distributor visited today)? Proposal: stretch only; tap in Settings for now.
 3. **Received quantity.** Proposal: assume the last confirmed order arrived in full; one toggle per log "order did not arrive".
 4. **Demo device.** Proposal: Android shell over a cloudflared HTTPS URL; fallback laptop browser.
 5. **Simulation chart.** Proposal: stretch only, after the live flow works.
