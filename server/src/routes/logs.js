@@ -108,7 +108,7 @@ export function logsRouter({ db, clock }) {
   /** {log_id, log_date, cards, not_counted, delivery_candidates} for one log. */
   function buildResult(storeId, log) {
     const distributors = distributorSchedules(db, storeId, clock.today()).map((d) => ({
-      id: d.id, name: d.name, tint_index: d.tint_index, next_visit_date: d.next_visit_date,
+      id: d.id, name: d.name, phone: d.phone, tint_index: d.tint_index, next_visit_date: d.next_visit_date,
       days_to_next_visit: d.days_to_next_visit, cycle_days: d.cycle_days, visit_date_set: d.visit_date_set,
     }));
     const lines = resultLines(db, storeId, log.id).map(({ next_visit_date, ...line }) => line);

@@ -138,3 +138,33 @@ test('PUT /logs/:id/order stores final qty (also runs-out lines) and rejects a n
     assert.deepEqual(again.body, ok.body);
   }, opts);
 });
+
+test('GET /distributors/:id/orders: confirmed orders only, newest first, qty > 0, 404', async () => {
+  const { clock, opts } = setup();
+  await withApp(async ({ base, db }) => {
+    const { body } = await saveHistory(base, clock);
+    const url = `/distributors/${DIST.sharma}/orders`;
+    assert.deepEqual((await call(base, 'GET', url)).body, [], 'nothing confirmed yet');
+
+    await call(base, 'PUT', `/logs/${body.log_id}/order`, { distributor_id: DIST.sharma, lines: [{ item_id: ITEM.surf, final_qty: 18 }] });
+    const log2 = db.prepare("SELECT id FROM stock_log WHERE log_date = '2026-11-20'").get().id;
+    await call(base, 'PUT', `/logs/${log2}/order`, { distributor_id: DIST.sharma, lines: [{ item_id: ITEM.surf, final_qty: 6 }] });
+
+    const orders = (await call(base, 'GET', url)).body;
+    assert.deepEqual(orders.map((o) => o.log_date), ['2026-11-22', '2026-11-20']);
+    assert.equal(orders[0].log_id, body.log_id);
+    assert.equal(orders[0].confirmed_at, null);
+    const byItem = Object.fromEntries(orders[0].lines.map((l) => [l.sku_key, l.final_qty]));
+    assert.deepEqual(byItem, { maggi_70g: 12, surf_1kg: 18 }, 'Rin (enough, no final qty) is left out');
+    assert.deepEqual(Object.keys(orders[0].lines[0]).sort(), ['final_qty', 'item_id', 'name_en', 'name_hi', 'pack_size', 'sku_key', 'unit']);
+
+    await call(base, 'PUT', `/logs/${body.log_id}/order`, { distributor_id: DIST.sharma, lines: [{ item_id: ITEM.maggi, final_qty: 0 }] });
+    const after = (await call(base, 'GET', url)).body;
+    assert.deepEqual(after[0].lines.map((l) => l.sku_key), ['surf_1kg'], 'a 0 qty line is left out');
+
+    assert.deepEqual((await call(base, 'GET', `/distributors/${DIST.gupta}/orders`)).body, []);
+    assert.equal((await call(base, 'GET', '/distributors/999/orders')).status, 404);
+    const card = (await call(base, 'GET', '/orders/latest')).body.cards.find((c) => c.distributor?.id === DIST.sharma);
+    assert.equal(card.distributor.phone, null);
+  }, opts);
+});

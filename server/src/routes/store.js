@@ -7,7 +7,7 @@ import {
   getStore, setStoreLanguage, listDistributors, getDistributor, getDistributorByName,
   insertDistributor, updateDistributor, activeItemCounts,
 } from '../repo/store.js';
-import { latestRunsOutCounts } from '../repo/logs.js';
+import { latestRunsOutCounts, distributorOrders } from '../repo/logs.js';
 import { isValidDate } from '../repo/dates.js';
 
 // Same limits as the distributor.cycle_days CHECK in migrations.js.
@@ -16,6 +16,23 @@ const MAX_CYCLE_DAYS = 60;
 // Distributor tints in the UI: 1..TINT_COUNT by position, wrapping.
 const TINT_COUNT = 5;
 const LANGUAGES = ['hi', 'en'];
+// Phone rule (distributor-actions R6): digits, spaces, + and - only; 10-15 digits after cleaning.
+const PHONE_CHARS = /^[0-9+\- ]+$/;
+const MIN_PHONE_DIGITS = 10;
+const MAX_PHONE_DIGITS = 15;
+
+/** Trimmed phone, or null when empty. Throws 400 bad_phone when it breaks R6. Never logs the value. */
+function cleanPhone(raw) {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== 'string') throw httpError(400, 'bad_phone', 'phone must be text');
+  const phone = raw.trim();
+  if (phone === '') return null;
+  const digits = phone.replace(/\D/g, '').length;
+  if (!PHONE_CHARS.test(phone) || digits < MIN_PHONE_DIGITS || digits > MAX_PHONE_DIGITS) {
+    throw httpError(400, 'bad_phone', `phone must have ${MIN_PHONE_DIGITS}-${MAX_PHONE_DIGITS} digits; only digits, spaces, + and -`);
+  }
+  return phone;
+}
 
 /**
  * Every distributor of the store with its schedule as of `today`, in id order.
@@ -53,6 +70,7 @@ function validateDistributorFields(body, { partial }) {
     if (body.note !== null && typeof body.note !== 'string') throw httpError(400, 'bad_note', 'note must be text');
     out.note = body.note;
   }
+  if ('phone' in body) out.phone = cleanPhone(body.phone);
   if ('last_visit_date' in body) {
     if (body.last_visit_date !== null && !isValidDate(body.last_visit_date)) {
       throw httpError(400, 'bad_date', 'last_visit_date must be YYYY-MM-DD or null');
@@ -110,6 +128,12 @@ export function storeRouter({ db, clock }) {
     updateDistributor(db, req.storeId, id, fields);
     console.log(`[kiranaq] distributor ${id} updated (${Object.keys(fields).join(', ')})`);
     res.json(distributorView(req.storeId, id));
+  });
+
+  router.get('/distributors/:id/orders', (req, res) => {
+    const id = parseId(req.params.id);
+    if (!getDistributor(db, req.storeId, id)) throw httpError(404, 'not_found', 'Distributor not found');
+    res.json(distributorOrders(db, req.storeId, id));
   });
 
   router.get('/items', (req, res) => {

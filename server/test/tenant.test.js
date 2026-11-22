@@ -16,8 +16,8 @@ function seedStore2(db) {
   db.prepare("INSERT INTO stock_log (id, store_id, log_date, created_at, source) VALUES (900, 2, '2026-11-21', '2026-11-21T06:30:00Z', 'manual')").run();
   db.prepare("INSERT INTO stock_count (log_id, item_id, store_id, count, source) VALUES (900, 6, 2, 50, 'tap')").run();
   db.prepare(
-    `INSERT INTO item_result (log_id, item_id, store_id, distributor_id, status, suggested_qty, reason_key, reason_args)
-     VALUES (900, 6, 2, 3, 'runs_out', 6, 'runs_out_before_visit', '{}')`,
+    `INSERT INTO item_result (log_id, item_id, store_id, distributor_id, status, suggested_qty, final_qty, reason_key, reason_args)
+     VALUES (900, 6, 2, 3, 'runs_out', 6, 6, 'runs_out_before_visit', '{}')`,
   ).run();
   db.prepare("INSERT INTO item_state (store_id, item_id, rate_per_day, last_log_id, updated_at) VALUES (2, 6, 9, 900, '2026-11-21')").run();
   db.prepare("INSERT INTO visit (id, store_id, distributor_id, log_id, visited_on, created_at) VALUES (900, 2, 3, 900, '2026-11-21', '2026-11-21')").run();
@@ -35,6 +35,7 @@ test('store 1 lists and writes never read or change store 2', async () => {
     assert.deepEqual((await call(base, 'GET', '/logs')).body, []);
     assert.deepEqual((await call(base, 'GET', '/orders/latest')).body, { cards: [] });
     assert.equal((await call(base, 'GET', '/logs/900')).status, 404);
+    assert.equal((await call(base, 'GET', `/distributors/${DIST.otherStore}/orders`)).status, 404);
     assert.equal((await call(base, 'GET', '/logs/900/result')).status, 404);
 
     // Writes to store 2 ids are refused.
@@ -56,5 +57,6 @@ test('store 1 lists and writes never read or change store 2', async () => {
     assert.deepEqual(store2Rows(db), before, 'store 2 rows unchanged');
     assert.equal(db.prepare('SELECT language FROM store WHERE id = 2').get().language, 'en');
     assert.ok((await call(base, 'GET', '/logs')).body.every((l) => l.id !== 900));
+    assert.ok((await call(base, 'GET', `/distributors/${DIST.sharma}/orders`)).body.every((o) => o.log_id !== 900));
   }, { setup: seedStore2, clock });
 });

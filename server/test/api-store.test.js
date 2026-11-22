@@ -78,3 +78,40 @@ test('GET /items and PUT /items/:id', async () => {
     assert.equal((await call(base, 'PUT', '/items/999', { active: true })).status, 404);
   }, opts);
 });
+
+test('distributor phone: optional, trimmed, 400 bad_phone when it breaks the rule', async () => {
+  await withApp(async ({ base }) => {
+    const list = (await call(base, 'GET', '/distributors')).body;
+    assert.ok(list.every((d) => d.phone === null), 'null when not set');
+
+    const created = await call(base, 'POST', '/distributors', { name: 'Mehta Stores', cycle_days: 15, phone: '  +91 98765-43210 ' });
+    assert.equal(created.status, 201);
+    assert.equal(created.body.phone, '+91 98765-43210');
+
+    const put = await call(base, 'PUT', `/distributors/${DIST.sharma}`, { phone: '9876543210' });
+    assert.equal(put.body.phone, '9876543210');
+    assert.equal((await call(base, 'PUT', `/distributors/${DIST.sharma}`, { phone: null })).body.phone, null);
+
+    for (const phone of ['12345', '+91 98765 43210 12345', '98765abc10', '(987) 654-3210', 9876543210]) {
+      const res = await call(base, 'PUT', `/distributors/${DIST.sharma}`, { phone });
+      assert.equal(res.status, 400, String(phone));
+      assert.equal(res.body.error.code, 'bad_phone');
+    }
+    assert.equal((await call(base, 'POST', '/distributors', { name: 'Bad', cycle_days: 7, phone: '123' })).status, 400);
+  }, opts);
+});
+
+test('seed gives the 3 demo distributors fake phones, also on an older seeded DB', async () => {
+  const { seedIfEmpty } = await import('../scripts/seed.js');
+  await withApp(async ({ base, db }) => {
+    seedIfEmpty(db, { today: () => '2026-11-22', now: () => '2026-11-22T06:30:00.000Z' });
+    const phones = (await call(base, 'GET', '/distributors')).body.map((d) => d.phone).sort();
+    assert.deepEqual(phones, ['+91 90000 00001', '+91 90000 00002', '+91 90000 00003']);
+    const card = (await call(base, 'GET', '/orders/latest')).body.cards.find((c) => c.distributor);
+    assert.match(card.distributor.phone, /^\+91 90000 0000\d$/);
+
+    db.prepare('UPDATE distributor SET phone = NULL').run();
+    assert.equal(seedIfEmpty(db, { today: () => '2026-11-22', now: () => '2026-11-22T06:30:00.000Z' }), false);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM distributor WHERE phone IS NOT NULL').get().n, 3);
+  });
+});

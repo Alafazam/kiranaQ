@@ -17,9 +17,9 @@ const MS_PER_DAY = 86400000;
 
 // last_visit_days_ago is the visit before the first seeded log.
 const DISTRIBUTORS = [
-  { key: 'sharma', name: 'Sharma Traders', note: 'HUL and Nestle', cycle_days: 7, tint_index: 1, last_visit_days_ago: 12 },
-  { key: 'gupta', name: 'Gupta Wholesale', note: 'Biscuits and snacks', cycle_days: 4, tint_index: 2, last_visit_days_ago: 7 },
-  { key: 'mehta', name: 'Mehta Distributors', note: 'Staples and oil', cycle_days: 15, tint_index: 3, last_visit_days_ago: 20 },
+  { key: 'sharma', name: 'Sharma Traders', note: 'HUL and Nestle', phone: '+91 90000 00001', cycle_days: 7, tint_index: 1, last_visit_days_ago: 12 },
+  { key: 'gupta', name: 'Gupta Wholesale', note: 'Biscuits and snacks', phone: '+91 90000 00002', cycle_days: 4, tint_index: 2, last_visit_days_ago: 7 },
+  { key: 'mehta', name: 'Mehta Distributors', note: 'Staples and oil', phone: '+91 90000 00003', cycle_days: 15, tint_index: 3, last_visit_days_ago: 20 },
 ];
 const LOG_DAYS_AGO = [6, 3, 1];
 const DELIVERY_DISTRIBUTOR_KEY = 'gupta';    // delivered on the second log
@@ -72,8 +72,8 @@ export function seedStore(db, clock) {
     const distributors = new Map();
     for (const d of DISTRIBUTORS) {
       const info = db.prepare(
-        'INSERT INTO distributor (store_id, name, note, cycle_days, last_visit_date, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-      ).run(DEMO_STORE_ID, d.name, d.note, d.cycle_days, addDays(today, -d.last_visit_days_ago), now);
+        'INSERT INTO distributor (store_id, name, note, phone, cycle_days, last_visit_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      ).run(DEMO_STORE_ID, d.name, d.note, d.phone, d.cycle_days, addDays(today, -d.last_visit_days_ago), now);
       distributors.set(d.key, { ...d, id: Number(info.lastInsertRowid), last_visit: addDays(today, -d.last_visit_days_ago) });
     }
 
@@ -156,10 +156,22 @@ export function seedStore(db, clock) {
   })();
 }
 
+/** Fake phones for demo distributors that have none (databases seeded before migration 2). Idempotent. */
+export function fillDemoPhones(db) {
+  const set = db.prepare('UPDATE distributor SET phone = ? WHERE store_id = ? AND name = ? AND phone IS NULL');
+  let filled = 0;
+  for (const d of DISTRIBUTORS) filled += set.run(d.phone, DEMO_STORE_ID, d.name).changes;
+  if (filled > 0) console.log(`[kiranaq] demo phones filled for ${filled} distributors`);
+  return filled;
+}
+
 /** Seed only when the store table is empty. Safe to call on every start. */
 export function seedIfEmpty(db, clock) {
   const { n } = db.prepare('SELECT COUNT(*) AS n FROM store').get();
-  if (n > 0) return false;
+  if (n > 0) {
+    fillDemoPhones(db);
+    return false;
+  }
   seedStore(db, clock);
   console.log('[kiranaq] demo store seeded');
   return true;

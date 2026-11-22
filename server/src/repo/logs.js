@@ -181,3 +181,36 @@ export function latestRunsOutCounts(db, storeId) {
 export function setHasRestock(db, storeId, logId, hasRestock) {
   db.prepare('UPDATE stock_log SET has_restock = ? WHERE store_id = ? AND id = ?').run(hasRestock ? 1 : 0, storeId, logId);
 }
+
+/**
+ * Past confirmed orders of one distributor, newest first:
+ * [{log_id, log_date, confirmed_at, lines:[{item_id, sku_key, name_en, name_hi, pack_size, unit, final_qty}]}].
+ * A log counts as confirmed for the distributor when one of its order lines has a final_qty
+ * (PUT /logs/:id/order sets every runs-out and order line). Only lines with final_qty > 0 are listed.
+ * confirmed_at is null: the schema keeps no confirm time (only log_date).
+ */
+export function distributorOrders(db, storeId, distributorId) {
+  const rows = db
+    .prepare(
+      `SELECT l.id AS log_id, l.log_date, r.item_id, i.sku_key, i.name_en, i.name_hi, i.pack_size, i.unit, r.final_qty
+         FROM item_result r
+         JOIN stock_log l ON l.id = r.log_id AND l.store_id = r.store_id
+         JOIN item i ON i.id = r.item_id AND i.store_id = r.store_id
+        WHERE r.store_id = ? AND r.distributor_id = ? AND r.final_qty > 0
+          AND EXISTS (SELECT 1 FROM item_result x
+                       WHERE x.store_id = r.store_id AND x.log_id = r.log_id AND x.distributor_id = r.distributor_id
+                         AND x.final_qty IS NOT NULL AND x.status IN ('runs_out', 'order'))
+        ORDER BY l.log_date DESC, l.id DESC, i.name_en`,
+    )
+    .all(storeId, distributorId);
+  const orders = [];
+  for (const { log_id, log_date, ...line } of rows) {
+    let order = orders.at(-1);
+    if (!order || order.log_id !== log_id) {
+      order = { log_id, log_date, confirmed_at: null, lines: [] };
+      orders.push(order);
+    }
+    order.lines.push(line);
+  }
+  return orders;
+}
