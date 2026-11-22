@@ -8,6 +8,10 @@
 // parseEdits(text, {lang, draft: [{item_id, count}], catalog})
 //   -> {edits: [{item_id, count, confidence}], ask?: string}   raw, validated by ai/validate.js
 //
+// assist(text, {lang, screen, context, history, catalog})   OPTIONAL (Bolo voice assistant, spec 2026-11-22-voice-assistant)
+//   -> {say, actions: [{type, ...}], expect: 'answer'|'confirm'|'done', options?: string[]}   raw, validated by ai/validate.js
+//   Not in AI_METHODS: routes must check `typeof ai.assist === 'function'` and fall back when it is missing.
+//
 // Every real call writes one ai_call row (repo/aiCalls.js). Each function may throw; routes handle it.
 
 export const AI_METHODS = ['countItems', 'stt', 'tts', 'parseEdits'];

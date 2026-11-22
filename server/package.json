@@ -15,7 +15,8 @@
     "eval:vision": "node ../evals/run-vision.js",
     "eval:voice": "node ../evals/run-voice.js",
     "eval:sim": "node ../evals/sim/simulate.js",
-    "eval:restock": "node ../evals/restock/run.js"
+    "eval:restock": "node ../evals/restock/run.js",
+    "eval:assist": "node ../evals/run-assist.js"
   },
   "engines": {
     "node": ">=22"
