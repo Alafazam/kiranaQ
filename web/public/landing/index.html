@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KiranaQ: stock by photo and voice</title>
+  <meta name="description" content="KiranaQ tells a kirana owner with no POS what to order from each distributor, from a shelf photo and a short voice check in Hindi.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;700&family=Schibsted+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="wrap topbar-in">
+      <a class="brand" href="#top">KiranaQ</a>
+      <nav aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#different">Different</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#business">Business</a>
+        <a class="nav-cta" href="#demo">See the demo</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="wrap hero-in">
+        <div class="hero-text">
+          <p class="eyebrow">For kirana owners with no POS and no bills</p>
+          <h1>A kirana owner does not know what is left on the shelf. KiranaQ counts it from one photo.</h1>
+          <p class="lede">Take a shelf photo. Fix the count by voice in Hindi or Hinglish. KiranaQ learns how fast each item sells and tells you, per distributor, what to order at the next visit and what runs out before that visit.</p>
+          <a class="btn btn-primary" href="#demo">See the demo</a>
+        </div>
+        <figure class="hero-phone">
+          <div class="phone"><img src="img/home.jpg" alt="KiranaQ home screen in Hindi: next visit of each distributor and past stock logs" width="416" height="900"></div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how" aria-labelledby="how-h">
+      <div class="wrap">
+        <h2 id="how-h">How it works</h2>
+        <p class="section-lede">Four steps. About a minute per stock log. No bill, no sale entry.</p>
+        <ol class="steps">
+          <li class="step">
+            <div class="phone phone-sm"><img src="img/home.jpg" alt="Home screen with the Stock ginen button" loading="lazy" width="416" height="900"></div>
+            <span class="step-n">1</span>
+            <h3>Photo of the shelf</h3>
+            <p>Tap "Stock ginen" and take a photo, or use a sample photo.</p>
+          </li>
+          <li class="step">
+            <div class="phone phone-sm"><img src="img/count-box.jpg" alt="Count box drawn over the front-facing part of a biscuit shelf" loading="lazy" width="416" height="900"></div>
+            <span class="step-n">2</span>
+            <h3>Count box</h3>
+            <p>Drag the box over the part that faces the camera. The vision model counts only inside the box.</p>
+          </li>
+          <li class="step">
+            <div class="phone phone-sm"><img src="img/check.jpg" alt="Check screen with counts, plus and minus keys and Hold to speak" loading="lazy" width="416" height="900"></div>
+            <span class="step-n">3</span>
+            <h3>Voice check</h3>
+            <p>Say "Maggi 8 hai". The app shows what it heard and changes the count only after you say yes.</p>
+          </li>
+          <li class="step">
+            <div class="phone phone-sm"><img src="img/result.jpg" alt="Order screen: one card per distributor with items that run out first and what to order" loading="lazy" width="416" height="900"></div>
+            <span class="step-n">4</span>
+            <h3>Order per distributor</h3>
+            <p>One card per distributor: what runs out before the next visit (call early) and what to order.</p>
+          </li>
+        </ol>
+        <p class="note">From two or more logs: sales rate = (stock before + delivered − stock now) ÷ days. A restock photo shows which items went up, and the app asks which distributor delivered.</p>
+      </div>
+    </section>
+
+    <!-- Different -->
+    <section class="section section-alt" id="different" aria-labelledby="diff-h">
+      <div class="wrap">
+        <h2 id="diff-h">How KiranaQ is different</h2>
+        <p class="section-lede">Billing apps track stock from sale and purchase entries. A kirana owner with no POS does not make those entries. KiranaQ needs a photo and a short voice check.</p>
+        <div class="table-scroll" role="region" aria-labelledby="diff-h" tabindex="0">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col"></th><th scope="col">Vyapar</th><th scope="col">Khatabook</th><th scope="col" class="col-us">KiranaQ</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Input needed</th><td>Bills and sale entries</td><td>Ledger, bills and sale entries</td><td class="col-us">Shelf photo and a short voice check</td></tr>
+              <tr><th scope="row">Learns demand without sales data</th><td>No. Uses past sales</td><td>No <span class="nc">(not confirmed)</span></td><td class="col-us">Yes. From successive stock logs</td></tr>
+              <tr><th scope="row">Visit cycle per distributor, "call early" alert</th><td>Not found. Alert at a minimum level the owner sets</td><td>Not found. Low-stock alerts only</td><td class="col-us">Yes. One card per distributor</td></tr>
+              <tr><th scope="row">Restock detection</th><td>Purchase entry by hand</td><td>Purchase entry by hand</td><td class="col-us">From a restock photo</td></tr>
+              <tr><th scope="row">Voice in Hindi or Hinglish</th><td>None stated</td><td>Hindi screens listed. Voice: none stated</td><td class="col-us">Yes (Sarvam speech)</td></tr>
+              <tr><th scope="row">Works with no POS or bills</th><td>No. Stock follows entries</td><td>Ledger works alone. The stock part sits beside billing</td><td class="col-us">Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="fine">Source: public pages and Play Store listings, read 22 Nov 2026 (<code>research/competitive.md</code>). "Not found" means we did not see the feature in public pages. It does not prove the feature is absent.</p>
+        <div class="callout">
+          <h3>Where they are stronger</h3>
+          <p>GST invoicing, accounting, a credit ledger (udhaar) for customers, apps on many devices, mature support, and proven scale: Vyapar 1Cr+ and Khatabook 10Cr+ Play Store downloads. KiranaQ is a proof of concept. Photo counts can be wrong, and sales rates need two or more logs. It does not make bills, does not do GST, and does not track customer credit.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="section" id="architecture" aria-labelledby="arch-h">
+      <div class="wrap">
+        <h2 id="arch-h">Technical architecture</h2>
+        <p class="section-lede">One Node process serves the API and the web app. The order rule is plain code with named settings, so every number has a reason line.</p>
+        <div class="arch">
+          <figure class="arch-figure">
+            <svg class="diagram" viewBox="0 0 360 560" role="img" aria-labelledby="dg-t dg-d">
+              <title id="dg-t">KiranaQ architecture today</title>
+              <desc id="dg-d">The phone web app calls the Node server. The server runs the rule engine and stores logs in SQLite. The server calls Sarvam AI for speech to text, text to speech, vision count and parsing.</desc>
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M0 0 L10 5 L0 10 z" class="d-arrowhead"/>
+                </marker>
+              </defs>
+              <!-- Phone -->
+              <rect x="20" y="10" width="320" height="104" rx="14" class="d-box"/>
+              <text x="40" y="44" class="d-h">Phone web app</text>
+              <text x="40" y="70" class="d-t">React and Vite, mobile first</text>
+              <text x="40" y="94" class="d-t">Camera, microphone, count box</text>
+              <!-- arrow -->
+              <line x1="180" y1="118" x2="180" y2="162" class="d-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+              <text x="192" y="146" class="d-l">HTTPS, JSON</text>
+              <!-- Server -->
+              <rect x="20" y="166" width="320" height="150" rx="14" class="d-box d-box-accent"/>
+              <text x="40" y="200" class="d-h">Node server (Express)</text>
+              <rect x="40" y="216" width="135" height="80" rx="10" class="d-inner"/>
+              <text x="54" y="246" class="d-t">Rule engine</text>
+              <text x="54" y="270" class="d-m">rate, cover,</text>
+              <text x="54" y="288" class="d-m">order qty</text>
+              <rect x="185" y="216" width="135" height="80" rx="10" class="d-inner"/>
+              <text x="199" y="246" class="d-t">SQLite</text>
+              <text x="199" y="270" class="d-m">logs, items,</text>
+              <text x="199" y="288" class="d-m">distributors</text>
+              <!-- arrow -->
+              <line x1="180" y1="320" x2="180" y2="364" class="d-line" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+              <text x="192" y="348" class="d-l">server only</text>
+              <!-- Sarvam -->
+              <rect x="20" y="368" width="320" height="182" rx="14" class="d-box"/>
+              <text x="40" y="402" class="d-h">Sarvam AI</text>
+              <text x="40" y="432" class="d-t">Speech to text</text><text x="320" y="432" class="d-m" text-anchor="end">saaras:v4</text>
+              <text x="40" y="462" class="d-t">Text to speech</text><text x="320" y="462" class="d-m" text-anchor="end">bulbul:v3</text>
+              <text x="40" y="492" class="d-t">Vision count</text><text x="320" y="492" class="d-m" text-anchor="end">gemma4</text>
+              <text x="40" y="522" class="d-t">Parse voice to edits</text><text x="320" y="522" class="d-m" text-anchor="end">sarvam-105b</text>
+            </svg>
+            <figcaption>Built and running today. API keys stay on the server.</figcaption>
+          </figure>
+          <aside class="planned" aria-labelledby="next-h">
+            <p class="tag">Planned, not built</p>
+            <h3 id="next-h">Next: on-device</h3>
+            <p>An Alpine Linux environment inside the app runs a small language model (SLM) on the phone.</p>
+            <ul>
+              <li>The SLM drives the UI actions from voice ("Maggi 8 hai", "save log") without a network.</li>
+              <li>It calls the server AI only for translation and heavy vision counts.</li>
+              <li>Result: the app keeps working in a shop with a weak signal, and fewer calls go to the server.</li>
+            </ul>
+            <p class="fine">Today all model calls go through the server. This panel is a proposal.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Business -->
+    <section class="section section-alt" id="business" aria-labelledby="biz-h">
+      <div class="wrap">
+        <h2 id="biz-h">Business model: demand-side data</h2>
+        <p class="section-lede">The app stays free for the store owner. Revenue comes from what the stock logs show about demand.</p>
+        <ol class="flow">
+          <li>
+            <h3>Store owner</h3>
+            <p>Takes stock logs for free. Gets orders per distributor and "call early" alerts.</p>
+          </li>
+          <li>
+            <h3>Demand signal</h3>
+            <p>Each log shows what sells, in which neighbourhood store, how fast, and from which distributor.</p>
+          </li>
+          <li>
+            <h3>Brands and distributor companies</h3>
+            <p>Buy aggregated, anonymised demand insights.</p>
+          </li>
+        </ol>
+        <div class="uses">
+          <div class="use"><h3>Launch tracking</h3><p>Does a new product reach neighbourhood stores, and how fast does it sell there?</p></div>
+          <div class="use"><h3>Stock-outs</h3><p>Which items run out, in which areas, before the distributor comes back?</p></div>
+          <div class="use"><h3>Reorder timing</h3><p>When will stores on a route need stock, so the visit plan fits the real sales rate?</p></div>
+        </div>
+        <p class="privacy"><strong>Consent and privacy.</strong> The owner opts in. Data is shared only as aggregates across stores, never as one store's numbers. No personal data is collected.</p>
+      </div>
+    </section>
+
+    <!-- Proof -->
+    <section class="section" id="proof" aria-labelledby="proof-h">
+      <div class="wrap">
+        <h2 id="proof-h">What we checked</h2>
+        <p class="section-lede">Real results from our checks on 22 Nov 2026, with real Sarvam calls. Small samples: 20 phrases and 3 photos.</p>
+        <dl class="proof">
+          <div><dt>Server tests</dt><dd><span class="num">88/88</span> pass</dd></div>
+          <div><dt>Demo check</dt><dd><span class="num">15</span> checks pass</dd></div>
+          <div><dt>Voice parse (E2)</dt><dd><span class="num">16/16</span> clear phrases exact. <span class="num">4/4</span> unclear phrases ask again, no guess</dd></div>
+          <div><dt>Vision count (E1)</dt><dd>Precision <span class="num">1.00</span>, recall <span class="num">1.00</span>. Counts within ±20% or ±1 pack: <span class="num">0.80</span></dd></div>
+          <div><dt>Live Sarvam smoke</dt><dd>Speech to text, text to speech, parse and vision: all ok</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Demo -->
+    <section class="section section-alt" id="demo" aria-labelledby="demo-h">
+      <div class="wrap">
+        <h2 id="demo-h">See the demo</h2>
+        <p class="section-lede">Five steps with screenshots. Then try the live app in the same phone frame.</p>
+        <div class="tour" id="tour" role="region" aria-roledescription="guided tour" aria-labelledby="demo-h" tabindex="0">
+          <div class="tour-stage">
+            <div class="phone phone-tour" id="tour-phone">
+              <img id="tour-img" src="img/home.jpg" alt="" width="416" height="900">
+              <button type="button" class="hotspot" id="tour-hotspot" aria-label="Next step"><span id="tour-hotspot-n">1</span></button>
+              <div class="live" id="tour-live" hidden></div>
+            </div>
+          </div>
+          <div class="tour-panel">
+            <p class="tour-count" id="tour-count">Step 1 of 5</p>
+            <h3 class="tour-title" id="tour-title">Home</h3>
+            <p class="tour-text" id="tour-text" aria-live="polite"></p>
+            <div class="tour-dots" id="tour-dots" role="tablist" aria-label="Tour steps"></div>
+            <div class="tour-nav">
+              <button type="button" class="btn btn-secondary" id="tour-back">Back</button>
+              <button type="button" class="btn btn-primary" id="tour-next">Next</button>
+            </div>
+            <div class="tour-live-actions" id="tour-live-actions" hidden>
+              <a class="btn btn-secondary" href="/" target="_blank" rel="noopener">Open full screen</a>
+              <button type="button" class="btn btn-quiet" id="tour-restart">Back to the tour</button>
+            </div>
+            <p class="fine">Use the left and right arrow keys to move through the tour.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>KiranaQ is a proof of concept built on 22 Nov 2026. Speech, vision and parsing by Sarvam AI.</p>
+    </div>
+  </footer>
+
+  <script src="landing.js"></script>
+</body>
+</html>
