@@ -28,8 +28,10 @@ export function buildParsePrompt(text, { lang, draft, catalog }) {
     'Rules:',
     '- Return the NEW absolute count for each item the owner changes. "Maggi 8 hai" -> count 8.',
     '- Relative words ("do kam", "2 more", "teen aur") are applied to the draft count of that item. "do kam" = minus 2, "ek aur" = plus 1. Never below 0.',
+    '- only the words "case", "carton", "peti" mean pack-size units ("packet", "packets", "pieces" are plain units, never multiply): "1 case" = pack size units, "2 case" = 2 x pack size (and it is a new absolute count, not added).',
     '- Use only catalog ids. Do not guess an item that is not in the catalog.',
     '- If the item is not clear, the number is not clear, or one number could belong to several items, return an empty edits list and put a short question in "ask" in the owner\'s language.',
+    '- If the owner names no item (only a number), or names two items with one number, always ask; never assume the item from the draft.',
     '- confidence is 0 to 1 for each edit.',
     'Answer with ONLY JSON, no other text: {"edits": [{"item_id": 1, "count": 8, "confidence": 0.9}], "ask": ""}',
   ].join('\n');

@@ -34,3 +34,22 @@ export function writeCheckSection(heading, body) {
   const after = next === -1 ? '' : `\n${current.slice(next + 1)}`;
   fs.writeFileSync(CHECKS_FILE, `${current.slice(0, start)}${section}${after}`);
 }
+
+/** Body of the "## <heading>" section (without the heading line), or ''. */
+export function readCheckSection(heading) {
+  if (!fs.existsSync(CHECKS_FILE)) return '';
+  const text = fs.readFileSync(CHECKS_FILE, 'utf8');
+  const marker = `## ${heading}`;
+  const start = text.indexOf(marker);
+  if (start === -1) return '';
+  const next = text.indexOf('\n## ', start + marker.length);
+  return text.slice(start + marker.length, next === -1 ? undefined : next).trim();
+}
+
+/** Replace the "### ..." block that starts with `blockHeading` inside a section body (or append it). */
+export function replaceBlock(body, blockHeading, block) {
+  const start = body.indexOf(blockHeading);
+  if (start === -1) return `${body}\n\n${block}`.trim();
+  const next = body.indexOf('\n### ', start + blockHeading.length);
+  return `${body.slice(0, start)}${block}${next === -1 ? '' : `\n${body.slice(next + 1)}`}`.trim();
+}

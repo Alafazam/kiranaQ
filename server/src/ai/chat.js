@@ -6,6 +6,7 @@ import { MODEL_TIMEOUT_MS } from '../core/config.js';
 // Reasoning models spend tokens thinking first; a low limit gives empty content.
 export const CHAT_MAX_TOKENS = 4096;
 const DEFAULT_TEMPERATURE = 0;
+const EMPTY_RETRIES = 1; // reasoning models sometimes return empty content; ask once more
 
 let sarvam;
 let anthropic;
@@ -44,9 +45,11 @@ function withTimeout(promise, ms) {
  */
 export async function askModel({ provider, model, system, prompt, images = [], timeoutMs = MODEL_TIMEOUT_MS }) {
   const call = provider === 'claude' ? askClaude : askSarvam;
-  const text = await withTimeout(call({ model, system, prompt, images }), timeoutMs);
-  if (typeof text !== 'string' || !text.trim()) throw codedError('empty_response', 'model returned no content');
-  return text;
+  for (let attempt = 1; attempt <= EMPTY_RETRIES + 1; attempt += 1) {
+    const text = await withTimeout(call({ model, system, prompt, images }), timeoutMs);
+    if (typeof text === 'string' && text.trim()) return text;
+  }
+  throw codedError('empty_response', 'model returned no content');
 }
 
 async function askSarvam({ model, system, prompt, images }) {

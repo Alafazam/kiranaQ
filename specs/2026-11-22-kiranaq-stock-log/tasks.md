@@ -70,13 +70,13 @@ Done: Lane B tests pass (full-flow ones once Lane A is merged); `pnpm demo:check
 Owns: `server/src/ai/vision.js`, `ai/sarvam.js`, `ai/parse.js`, `ai/validate.js`, `ai/real.js` (builds the real `ai` object from `VISION_PROVIDER` / `PARSE_PROVIDER`), `server/src/routes/speech.js` (exists: `/tts`, `/stt`; add `/vision`, `/parse`), `server/test/speech.test.js`, `server/test/{validate,api-ai}.test.js`, `server/scripts/smoke-live.js`, `evals/vision/`, `evals/voice/`, `evals/run-*.js` for E1–E3.
 Reads, never edits: `ai/index.js`, `ai/fake.js`, `core/config.js`, `repo/items.js`, `repo/aiCalls.js`. Keeps `speak`/`transcribe` in `ai/sarvam.js`; `real.js` maps them to `tts`/`stt`. Removes `server/sarvam-hello.js` and `server/sarvam-voice-test.js` once `smoke:live` works.
 
-- [ ] C1. `validate.js` + `validate.test.js` (vision and parse JSON rules). (R2, R3)
-- [ ] C2. `vision.js` (Sarvam `gemma4` default, Claude option; catalog in prompt, JSON only, timeout) and `parse.js` (Sarvam `sarvam-105b` default, Claude Haiku option; draft + catalog aliases in prompt, `unclear` + `ask`). Each writes an `ai_call` row through `logAiCall`. (R2, R3)
-- [ ] C3. `sarvam.js`: add `keyterms` to STT; model names and limits from `core/config.js`; TTS stays `bulbul:v3` (spec open question 1). (R3)
-- [ ] C4. `routes/speech.js`: add `/vision` and `/parse` (multer memory storage, size limits, `MAX_MODEL_CALLS_PER_HOUR` → 429) + `api-ai.test.js` with the fake. (R2, R3)
+- [x] C1. `validate.js` + `validate.test.js` (vision and parse JSON rules). (R2, R3)
+- [x] C2. `vision.js` (Sarvam `gemma4` default, Claude option; catalog in prompt, JSON only, timeout) and `parse.js` (Sarvam `sarvam-105b` default, Claude Haiku option; draft + catalog aliases in prompt, `unclear` + `ask`). Each writes an `ai_call` row through `logAiCall`. (R2, R3)
+- [x] C3. `sarvam.js`: add `keyterms` to STT; model names and limits from `core/config.js`; TTS stays `bulbul:v3` (spec open question 1). (R3)
+- [x] C4. `routes/speech.js`: add `/vision` and `/parse` (multer memory storage, size limits, `MAX_MODEL_CALLS_PER_HOUR` → 429) + `api-ai.test.js` with the fake. (R2, R3)
 - [ ] C2b. Vision prompt (R2b): "count only packs whose front faces the camera; ignore packs seen from the side or far down an aisle". `run-vision.js` sends `evals/vision/shelf-0N.box.jpg` (already cropped to the preset box by the lead; no image library needed). Truth files count inside the box only.
-- [ ] C5. `smoke-live.js` (one real call each). Needs keys.
-- [ ] C6. Evals: E2 runner first (`evals/voice/phrases.json` is written by the photos-and-catalog session; uses `sku_key`); then E1: 3–5 openly licensed **Indian** shelf photos into `evals/vision/` and `web/public/samples/`, `SOURCES.md`, runner (send Lane A the brands seen by 3:30; the lead writes the truth files by reading the photos). Stretch: E3 clips.
+- [x] C5. `smoke-live.js` (one real call each). Needs keys.
+- [x] C6 (E2, E1 done; E3 not run). Evals: E2 runner first (`evals/voice/phrases.json` is written by the photos-and-catalog session; uses `sku_key`); then E1: 3–5 openly licensed **Indian** shelf photos into `evals/vision/` and `web/public/samples/`, `SOURCES.md`, runner (send Lane A the brands seen by 3:30; the lead writes the truth files by reading the photos). Stretch: E3 clips.
 
 Done: Lane C tests pass; `smoke:live` all ok; E2 and E1 numbers in `checks.md`.
 
