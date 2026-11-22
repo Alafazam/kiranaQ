@@ -14,6 +14,16 @@ export const ACTION_SCREEN = {
   confirm_order: '/orders', set_qty: '/orders', read_out: '/orders',
 }
 
+// Screen names /api/assist accepts (spec section 5). Other paths map to the nearest one.
+export function screenName(path) {
+  if (/^\/log\/\d+\/result$/.test(path)) return '/log/:id/result'
+  if (path.startsWith('/log/new/check')) return '/log/new/check'
+  if (path.startsWith('/log/new')) return '/log/new'
+  if (path.startsWith('/settings')) return '/settings'
+  if (path === '/orders' || path === '/distributors') return path
+  return '/'
+}
+
 export const MAX_TEXT_CHARS = 500
 export const MAX_HISTORY_TURNS = 6
 

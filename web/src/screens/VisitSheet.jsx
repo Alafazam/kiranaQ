@@ -14,7 +14,10 @@ export default function VisitSheet({ logId, candidates, onDone }) {
   const [index, setIndex] = useState(0)
   const [busy, setBusy] = useState(null)
   const c = candidates[index]
-  const assistant = useAssistant({ handlers: { visit: (a) => answer(Boolean(a.delivered)) } })
+  const assistant = useAssistant({
+    context: c ? { visit: { distributor_id: c.distributor_id, name: c.name } } : undefined,
+    handlers: { visit: (a) => answer(Boolean(a.delivered)) },
+  })
   const askedFor = useRef(-1) // React dev mode runs effects twice; ask once per candidate
   useEffect(() => {
     if (!c || askedFor.current === index) return

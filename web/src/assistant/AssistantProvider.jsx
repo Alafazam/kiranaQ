@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api.js'
 import { useLang, useT } from '../i18n.js'
 import { playBlob } from '../voice.js'
-import { ACTION_SCREEN, MAX_HISTORY_TURNS, MAX_TEXT_CHARS, NAV_TARGETS, WRITE_TYPES, cleanActions } from './actions.js'
+import { ACTION_SCREEN, MAX_HISTORY_TURNS, MAX_TEXT_CHARS, NAV_TARGETS, WRITE_TYPES, cleanActions, screenName } from './actions.js'
 import { isNo, isYes, localAssist } from './local.js'
 
 const HANDLER_WAIT_MS = 3000
@@ -154,7 +154,7 @@ export function AssistantProvider({ children }) {
     const history = messagesRef.current.slice(-MAX_HISTORY_TURNS).map(({ role, text: tx }) => ({ role, text: tx }))
     setMessages((m) => [...m, { role: 'user', text }])
     setBusy(true)
-    const body = { text, lang, screen: routeRef.current, context: context(), history }
+    const body = { text, lang, screen: screenName(routeRef.current), context: context(), history }
     let res
     try {
       res = await api.assist(body)
