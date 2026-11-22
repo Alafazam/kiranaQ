@@ -8,14 +8,14 @@
 
 ### E2 voice parse (2026-11-22)
 
-Provider `sarvam`, 31 typed phrases, real model.
+Provider `sarvam`, 35 typed phrases, real model.
 
 | Metric | Result | Bar |
 |---|---|---|
-| Exact match on clear phrases | 21/22 (95%) | ≥ 90% |
-| Unclear phrases that re-ask (no guess) | 9/9 | 4/4 |
+| Exact match on clear phrases | 22/22 (100%) | ≥ 90% |
+| Unclear phrases that re-ask (no guess) | 13/13 | 4/4 |
 
-Verdict: **PASS**. Failed ids: v04.
+Verdict: **PASS**. Failed ids: none.
 
 ### E1 vision count (2026-11-22)
 
