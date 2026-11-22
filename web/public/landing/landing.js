@@ -133,3 +133,35 @@
 
   show(0);
 })();
+
+// Hero: play a short recorded explainer (English or Hindi).
+(function () {
+  var btn = document.getElementById('hear-btn');
+  var audio = document.getElementById('hear-audio');
+  var label = document.getElementById('hear-label');
+  if (!btn || !audio) return;
+  var lang = 'en';
+  var SRC = { en: 'audio/kiranaq-en.mp3', hi: 'audio/kiranaq-hi.mp3' };
+  var LABEL = { idle: 'Hear what KiranaQ is', playing: 'Pause' };
+
+  function setPlaying(on) {
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    label.textContent = on ? LABEL.playing : LABEL.idle;
+  }
+  function play() {
+    if (!audio.src || audio.dataset.lang !== lang) { audio.src = SRC[lang]; audio.dataset.lang = lang; }
+    audio.play().then(function () { setPlaying(true); }).catch(function () { setPlaying(false); });
+  }
+  btn.addEventListener('click', function () { if (audio.paused) play(); else audio.pause(); });
+  audio.addEventListener('pause', function () { setPlaying(false); });
+  audio.addEventListener('ended', function () { setPlaying(false); audio.currentTime = 0; });
+
+  document.querySelectorAll('.hear-lang-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      lang = b.getAttribute('data-lang');
+      document.querySelectorAll('.hear-lang-btn').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      audio.pause(); audio.removeAttribute('src'); audio.dataset.lang = '';
+      play();
+    });
+  });
+})();

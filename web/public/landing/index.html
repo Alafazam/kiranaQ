@@ -33,7 +33,19 @@
         <div class="hero-text">
           <h1>A kirana owner does not know what is left on the shelf. KiranaQ counts it from one photo.</h1>
           <p class="lede">For kirana owners with no POS and no bills. Take a shelf photo. Fix the count by voice in Hindi or Hinglish. KiranaQ learns how fast each item sells and tells you, per distributor, what to order at the next visit and what runs out before that visit.</p>
-          <a class="btn btn-primary" href="#demo">See the demo</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#demo">See the demo</a>
+            <button class="btn btn-secondary" type="button" id="hear-btn" aria-describedby="hear-note">
+              <svg class="hear-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="hear-play" d="M8 5v14l11-7z" fill="currentColor"/><g class="hear-pause" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></g></svg>
+              <span id="hear-label">Hear what KiranaQ is</span>
+            </button>
+          </div>
+          <div class="hear-lang" role="group" aria-label="Language of the audio">
+            <button type="button" class="hear-lang-btn" data-lang="en" aria-pressed="true">English</button>
+            <button type="button" class="hear-lang-btn" data-lang="hi" aria-pressed="false" lang="hi">हिंदी</button>
+            <span id="hear-note" class="hear-note">17 seconds. Voice by Sarvam AI.</span>
+          </div>
+          <audio id="hear-audio" preload="none"></audio>
         </div>
         <figure class="hero-phone">
           <div class="phone"><img src="img/result.jpg" alt="KiranaQ order screen: one card per distributor with items that run out before the next visit and what to order" width="416" height="900"></div>

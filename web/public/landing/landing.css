@@ -245,3 +245,15 @@ code { font-family: var(--font-label); font-size: 14px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition-duration: 0s !important; }
 }
+
+/* Hero: demo + listen */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+#hear-btn { display: inline-flex; align-items: center; gap: 8px; }
+#hear-btn .hear-pause { display: none; }
+#hear-btn[aria-pressed="true"] .hear-play { display: none; }
+#hear-btn[aria-pressed="true"] .hear-pause { display: inline; }
+.hear-lang { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.hear-lang-btn { font: inherit; font-size: 15px; min-height: 36px; padding: 0 12px; border-radius: var(--radius-pill, 999px); border: 1px solid var(--color-rule); background: transparent; color: var(--color-ink-2, var(--color-ink)); cursor: pointer; }
+.hear-lang-btn[aria-pressed="true"] { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-ink); }
+.hear-lang-btn:focus-visible, #hear-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.hear-note { font-size: 14px; color: var(--color-muted); }
