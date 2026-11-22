@@ -1,0 +1,15 @@
+# Replit config for KiranaQ: one Node process serves the API and the built web app.
+modules = ["nodejs-22"]
+run = "pnpm --dir server install && pnpm --dir web install && pnpm --dir web build && pnpm --dir server start"
+
+[env]
+NODE_ENV = "production"
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["sh", "-c", "corepack enable && pnpm --dir server install --frozen-lockfile && pnpm --dir web install --frozen-lockfile && pnpm --dir web build"]
+run = ["sh", "-c", "pnpm --dir server start"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80

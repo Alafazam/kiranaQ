@@ -18,7 +18,7 @@
       <a class="brand" href="#top">KiranaQ</a>
       <nav aria-label="Sections">
         <a href="#how">How it works</a>
-        <a href="#different">Different</a>
+        <a href="#different">Compare</a>
         <a href="#architecture">Architecture</a>
         <a href="#business">Business</a>
         <a class="nav-cta" href="#demo">See the demo</a>
@@ -31,13 +31,12 @@
     <section class="hero" id="top">
       <div class="wrap hero-in">
         <div class="hero-text">
-          <p class="eyebrow">For kirana owners with no POS and no bills</p>
           <h1>A kirana owner does not know what is left on the shelf. KiranaQ counts it from one photo.</h1>
-          <p class="lede">Take a shelf photo. Fix the count by voice in Hindi or Hinglish. KiranaQ learns how fast each item sells and tells you, per distributor, what to order at the next visit and what runs out before that visit.</p>
+          <p class="lede">For kirana owners with no POS and no bills. Take a shelf photo. Fix the count by voice in Hindi or Hinglish. KiranaQ learns how fast each item sells and tells you, per distributor, what to order at the next visit and what runs out before that visit.</p>
           <a class="btn btn-primary" href="#demo">See the demo</a>
         </div>
         <figure class="hero-phone">
-          <div class="phone"><img src="img/home.jpg" alt="KiranaQ home screen in Hindi: next visit of each distributor and past stock logs" width="416" height="900"></div>
+          <div class="phone"><img src="img/result.jpg" alt="KiranaQ order screen: one card per distributor with items that run out before the next visit and what to order" width="416" height="900"></div>
         </figure>
       </div>
     </section>
@@ -52,7 +51,7 @@
             <div class="phone phone-sm"><img src="img/home.jpg" alt="Home screen with the Stock ginen button" loading="lazy" width="416" height="900"></div>
             <span class="step-n">1</span>
             <h3>Photo of the shelf</h3>
-            <p>Tap "Stock ginen" and take a photo, or use a sample photo.</p>
+            <p>Tap “Stock ginen” and take a photo, or choose a photo.</p>
           </li>
           <li class="step">
             <div class="phone phone-sm"><img src="img/count-box.jpg" alt="Count box drawn over the front-facing part of a biscuit shelf" loading="lazy" width="416" height="900"></div>
@@ -64,13 +63,13 @@
             <div class="phone phone-sm"><img src="img/check.jpg" alt="Check screen with counts, plus and minus keys and Hold to speak" loading="lazy" width="416" height="900"></div>
             <span class="step-n">3</span>
             <h3>Voice check</h3>
-            <p>Say "Maggi 8 hai". The app shows what it heard and changes the count only after you say yes.</p>
+            <p>Say “Maggi 8 hai”. The app shows what it heard and changes the count only after you say yes.</p>
           </li>
           <li class="step">
             <div class="phone phone-sm"><img src="img/result.jpg" alt="Order screen: one card per distributor with items that run out first and what to order" loading="lazy" width="416" height="900"></div>
             <span class="step-n">4</span>
             <h3>Order per distributor</h3>
-            <p>One card per distributor: what runs out before the next visit (call early) and what to order.</p>
+            <p>One card per distributor: what runs out before the next visit (“call early”) and what to order.</p>
           </li>
         </ol>
         <p class="note">From two or more logs: sales rate = (stock before + delivered − stock now) ÷ days. A restock photo shows which items went up, and the app asks which distributor delivered.</p>
@@ -90,14 +89,14 @@
             <tbody>
               <tr><th scope="row">Input needed</th><td>Bills and sale entries</td><td>Ledger, bills and sale entries</td><td class="col-us">Shelf photo and a short voice check</td></tr>
               <tr><th scope="row">Learns demand without sales data</th><td>No. Uses past sales</td><td>No <span class="nc">(not confirmed)</span></td><td class="col-us">Yes. From successive stock logs</td></tr>
-              <tr><th scope="row">Visit cycle per distributor, "call early" alert</th><td>Not found. Alert at a minimum level the owner sets</td><td>Not found. Low-stock alerts only</td><td class="col-us">Yes. One card per distributor</td></tr>
+              <tr><th scope="row">Visit cycle per distributor, “call early” alert</th><td>Not found. Alert at a minimum level the owner sets</td><td>Not found. Low-stock alerts only</td><td class="col-us">Yes. One card per distributor</td></tr>
               <tr><th scope="row">Restock detection</th><td>Purchase entry by hand</td><td>Purchase entry by hand</td><td class="col-us">From a restock photo</td></tr>
               <tr><th scope="row">Voice in Hindi or Hinglish</th><td>None stated</td><td>Hindi screens listed. Voice: none stated</td><td class="col-us">Yes (Sarvam speech)</td></tr>
               <tr><th scope="row">Works with no POS or bills</th><td>No. Stock follows entries</td><td>Ledger works alone. The stock part sits beside billing</td><td class="col-us">Yes</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="fine">Source: public pages and Play Store listings, read 22 Nov 2026 (<code>research/competitive.md</code>). "Not found" means we did not see the feature in public pages. It does not prove the feature is absent.</p>
+        <p class="fine">Source: public pages and Play Store listings, read 22 Nov 2026 (<code>research/competitive.md</code>). “Not found” means we did not see the feature in public pages. It does not prove the feature is absent.</p>
         <div class="callout">
           <h3>Where they are stronger</h3>
           <p>GST invoicing, accounting, a credit ledger (udhaar) for customers, apps on many devices, mature support, and proven scale: Vyapar 1Cr+ and Khatabook 10Cr+ Play Store downloads. KiranaQ is a proof of concept. Photo counts can be wrong, and sales rates need two or more logs. It does not make bills, does not do GST, and does not track customer credit.</p>
@@ -153,11 +152,10 @@
             <figcaption>Built and running today. API keys stay on the server.</figcaption>
           </figure>
           <aside class="planned" aria-labelledby="next-h">
-            <p class="tag">Planned, not built</p>
-            <h3 id="next-h">Next: on-device</h3>
+            <h3 id="next-h">Planned, not built: on-device</h3>
             <p>An Alpine Linux environment inside the app runs a small language model (SLM) on the phone.</p>
             <ul>
-              <li>The SLM drives the UI actions from voice ("Maggi 8 hai", "save log") without a network.</li>
+              <li>The SLM drives the UI actions from voice (“Maggi 8 hai”, “save log”) without a network.</li>
               <li>It calls the server AI only for translation and heavy vision counts.</li>
               <li>Result: the app keeps working in a shop with a weak signal, and fewer calls go to the server.</li>
             </ul>
@@ -175,7 +173,7 @@
         <ol class="flow">
           <li>
             <h3>Store owner</h3>
-            <p>Takes stock logs for free. Gets orders per distributor and "call early" alerts.</p>
+            <p>Takes stock logs for free. Gets orders per distributor and “call early” alerts.</p>
           </li>
           <li>
             <h3>Demand signal</h3>
@@ -191,7 +189,7 @@
           <div class="use"><h3>Stock-outs</h3><p>Which items run out, in which areas, before the distributor comes back?</p></div>
           <div class="use"><h3>Reorder timing</h3><p>When will stores on a route need stock, so the visit plan fits the real sales rate?</p></div>
         </div>
-        <p class="privacy"><strong>Consent and privacy.</strong> The owner opts in. Data is shared only as aggregates across stores, never as one store's numbers. No personal data is collected.</p>
+        <p class="privacy"><strong>Consent and privacy.</strong> The owner opts in. Data is shared only as aggregates across stores, never as one store’s numbers. No personal data is collected.</p>
       </div>
     </section>
 

@@ -625,5 +625,65 @@
       "edits": [],
       "unclear": true
     }
+  },
+  {
+    "id": "v32",
+    "lang": "hinglish",
+    "text": "cheeni 1-2 kg",
+    "draft": [
+      {
+        "sku_key": "sugar_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v33",
+    "lang": "hinglish",
+    "text": "laks chhote wale 10",
+    "draft": [
+      {
+        "sku_key": "lux_soap_100g",
+        "count": 4
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v34",
+    "lang": "hinglish",
+    "text": "life boy bade wale 15",
+    "draft": [
+      {
+        "sku_key": "lifebuoy_soap_100g",
+        "count": 4
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
+  },
+  {
+    "id": "v35",
+    "lang": "hinglish",
+    "text": "cheeni 2 kg kam karo",
+    "draft": [
+      {
+        "sku_key": "sugar_1kg",
+        "count": 10
+      }
+    ],
+    "expect": {
+      "edits": [],
+      "unclear": true
+    }
   }
 ]

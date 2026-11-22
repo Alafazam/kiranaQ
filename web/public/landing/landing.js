@@ -4,19 +4,19 @@
 
   // Hotspot x and y are percent of the screenshot, measured on the source images.
   var STEPS = [
-    { img: 'img/home.jpg', x: 50, y: 88, title: 'Home',
-      text: 'Tap "Stock ginen" (स्टॉक गिनें) to start a stock log.',
-      alt: 'Home screen. The Stock ginen button is at the bottom.' },
-    { img: 'img/count-box.jpg', x: 76, y: 63, title: 'Photo and count box',
-      text: 'Pick a sample shelf photo. Drag the count box over the part that faces the camera.',
+    { img: 'img/home.jpg', x: 50, y: 86, title: 'Home',
+      text: 'Tap “स्टॉक गिनें” (Stock ginen) to start a stock log.',
+      alt: 'Home screen in Hindi. The Stock ginen button is above the tab bar, with the Bolo mic in the centre of the tab bar.' },
+    { img: 'img/count-box.jpg', x: 72, y: 66, title: 'Photo and count box',
+      text: 'Tap “फ़ोटो चुनें” and pick a shelf photo. Drag the count box over the part that faces the camera.',
       alt: 'Photo screen with a biscuit aisle photo and a count box over the front-facing packs.' },
-    { img: 'img/check.jpg', x: 50, y: 82, title: 'Voice check',
-      text: 'Check the counts. Hold to speak and say "Maggi 8 hai". The count changes after you say yes.',
-      alt: 'Check screen with item counts, plus and minus keys, and the Hold to speak button.' },
-    { img: 'img/result.jpg', x: 30, y: 30.5, title: 'Result per distributor',
+    { img: 'img/check.jpg', x: 73.5, y: 94, title: 'Voice check',
+      text: 'Tap “दबाकर बोलें” and say “Parle-G Biscuit 20 hai”. The count changes after you say yes.',
+      alt: 'Check screen with the heard sheet: Parle-G Biscuit 80g, count 12 changes to 20, with No and Yes buttons.' },
+    { img: 'img/result.jpg', x: 8, y: 32, title: 'Result per distributor',
       text: 'One card per distributor: what runs out before the next visit, and what to order.',
-      alt: 'Order screen: Gupta Wholesale card with items that run out first and order quantities.' },
-    { img: 'img/distributors.jpg', x: 37.5, y: 95, title: 'Distributors',
+      alt: 'Result screen: Gupta Wholesale card with two items that run out first and order quantities.' },
+    { img: 'img/distributors.jpg', x: 30, y: 95.4, title: 'Distributors',
       text: 'Tap the Distributors tab: who comes when, and what runs out before each visit.',
       alt: 'Distributors screen: three distributors with next visit dates and items that run out.' }
   ];
@@ -97,7 +97,7 @@
     fitLive();
     count.textContent = 'Live demo';
     title.textContent = 'Try it yourself';
-    text.textContent = 'This is the real app. Tap "Stock ginen", pick a sample photo, then count.';
+    text.textContent = 'This is the real app. Tap “Stock ginen”, choose a photo, then count.';
     nav.hidden = true;
     liveActions.hidden = false;
     Array.prototype.forEach.call(dots.children, function (d) { d.setAttribute('aria-selected', 'false'); });

@@ -30,6 +30,7 @@ export function buildParsePrompt(text, { lang, draft, catalog }) {
     '- Relative words ("do kam", "2 more", "teen aur") are applied to the draft count of that item. "do kam" = minus 2, "ek aur" = plus 1. Never below 0.',
     '- only the words "case", "carton", "peti" mean pack-size units ("packet", "packets", "pieces" are plain units, never multiply): "1 case" = pack size units, "2 case" = 2 x pack size (and it is a new absolute count, not added).',
     '- Owners often say: item, then weight or size, then "ke N packet" ("Tata namak 1 kg ke 4 packet"). The weight/size (1 kg, 70 gram) only picks the right catalog item; the count is N, the number of packets. Never use the kg or gram number as the count. Speech may misspell brands ("daata namak" = Tata salt, "excel" = Surf Excel, "laks" = Lux).',
+    '- Always ask (no edit) when: the owner picks a size with a vague word ("chhote wale", "bade wale", "small", "big"); gives a range ("1-2 kg"); or changes a count by a weight instead of packets ("2 kg kam karo") - ask how many packets.',
     '- A general word like "biscuit" or "soap", or a product not in the catalog (cornflakes, jalebi), is not an item: ask.',
     '- Use only catalog ids. Do not guess an item that is not in the catalog.',
     '- If the item is not clear, the number is not clear, or one number could belong to several items, return an empty edits list and put a short question in "ask" in the owner\'s language.',
