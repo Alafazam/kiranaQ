@@ -40,7 +40,8 @@ export async function localAssist({ text, lang, screen, context, t }) {
       : lines(t, 'assist_dist_list')
     return { say, actions: [{ type: 'navigate', to: 'distributors' }], expect: 'done' }
   }
-  if (has(low, ['sample', 'नमूना', 'namuna', 'सैंपल'])) {
+  // "Choose a photo" (the photo grid). Older words kept so they still work if spoken.
+  if (has(low, ['photo chun', 'फ़ोटो चुन', 'फोटो चुन', 'choose', 'chuno', 'चुनो', 'sample', 'नमूना', 'सैंपल'])) {
     const index = Math.max(0, ORDINALS.findIndex((words) => has(low, words.map((w) => ` ${w} `))))
     return { say: lines(t, 'assist_counting'), actions: [{ type: 'use_sample', index }, { type: 'count_photo' }], expect: 'done' }
   }

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api.js'
 import { useLang, useT } from '../i18n.js'
 import { playBlob } from '../voice.js'
-import { ACTION_SCREEN, MAX_HISTORY_TURNS, MAX_TEXT_CHARS, NAV_TARGETS, WRITE_TYPES, cleanActions, screenName } from './actions.js'
+import { ACTION_SCREEN, MAX_HISTORY_TURNS, MAX_TEXT_CHARS, NAV_TARGETS, WRITE_TYPES, cleanActions, screenName, SERVER_ASK_AGAIN } from './actions.js'
 import { isNo, isYes, localAssist } from './local.js'
 
 const HANDLER_WAIT_MS = 3000
@@ -161,6 +161,14 @@ export function AssistantProvider({ children }) {
     } catch (e) {
       console.info('assistant: /api/assist not available, using local rules', e?.code || e?.message)
       res = await localAssist({ ...body, t })
+    }
+    // The model could not act: try the local rules before asking the owner to repeat.
+    if (SERVER_ASK_AGAIN.has(res.say) && !res.actions?.length) {
+      const local = await localAssist({ ...body, t })
+      if (local.actions.length) {
+        console.info('assistant: server asked again, local rules matched')
+        res = local
+      }
     }
     setBusy(false)
     const actions = cleanActions(res.actions)

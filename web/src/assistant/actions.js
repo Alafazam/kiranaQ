@@ -24,6 +24,9 @@ export function screenName(path) {
   return '/'
 }
 
+// What /api/assist says when the model failed or gave no usable action (server ai/assist.js ASSIST_ASK_AGAIN).
+export const SERVER_ASK_AGAIN = new Set(['Phir se bolenge?', 'Please say it again'])
+
 export const MAX_TEXT_CHARS = 500
 export const MAX_HISTORY_TURNS = 6
 
