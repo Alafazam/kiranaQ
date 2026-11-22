@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ChevronRight, Truck, Package } from 'lucide-react'
+import { ChevronRight, Package } from 'lucide-react'
 import { api } from '../api.js'
 import { useT, useLang } from '../i18n.js'
 import { useStore } from '../state.jsx'
@@ -132,7 +132,7 @@ export function EditDistributor() {
           <input className={field} value={f.note} onChange={(e) => setForm({ ...f, note: e.target.value })} /></label>
         <Button variant="primary" className="w-full" busy={busy} disabled={!valid} onClick={save}>{t('save')}</Button>
         <section>
-          <h2 className="text-lg mb-2 flex items-center gap-2"><Truck size={20} aria-hidden />{t('items')}</h2>
+          <h2 className="text-lg mb-2 flex items-center gap-2"><Package size={20} aria-hidden />{t('items')}</h2>
           <Card><ul className="divide-y divide-rule">{own.map((it) => <li key={it.id} className="px-4 py-3"><ItemLabel item={it} size="sm" /></li>)}</ul></Card>
         </section>
       </main>

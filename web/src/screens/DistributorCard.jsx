@@ -1,7 +1,7 @@
 // The signature card: one per distributor. Runs out first, order, enough, first log.
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Volume2, Copy, ChevronDown } from 'lucide-react'
+import { Volume2, Copy, ChevronDown, Truck } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { Button, Stamp, StatusLabel, Stepper } from '../ui/kit.jsx'
@@ -21,18 +21,17 @@ function packText(t, qty, pack) {
 
 function daysLeftText(t, l) {
   if (l.days_of_cover == null) return t('no_runout')
-  const n = Math.round(l.days_of_cover * 10) / 10
-  return n <= 1 ? t('day_left') : t('days_left', { n })
+  const n = Math.floor(l.days_of_cover)
+  if (n < 1) return t('runs_out_today')
+  return n === 1 ? t('day_left') : t('days_left', { n })
 }
 
 function OrderLine({ line, qty, onQty, locked }) {
   const t = useT()
   return (
     <li className="border-t border-rule px-1 py-3">
-      <div className="flex items-center justify-between gap-2">
-        <ItemLabel item={line} />
-        <p className={`shrink-0 whitespace-nowrap text-sm font-medium tabular-nums ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
-      </div>
+      <ItemLabel item={line} />
+      <p className={`mt-1 text-sm font-medium ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
       <p className="mt-1 text-sm text-ink-2">{t.reason(line.reason_key, line.reason_args)}</p>
       <div className="mt-2 flex items-center justify-between gap-2">
         {locked ? (
@@ -117,13 +116,13 @@ export default function DistributorCard({ card, logId, onChange }) {
         </div>
         {d ? (
           <>
-            <p className="mt-1">{t('next_visit', { date: '' })}<span className="num">{t.date(d.next_visit_date, true)}</span></p>
+            <p className="mt-1">{t('next_visit', { date: '' })}{t.day(d.next_visit_date)}, <span className="num">{t.date(d.next_visit_date)}</span></p>
             <p className="text-sm text-ink-2">{t('in_n_every', { when: t.when(d.days_to_next_visit), n: d.cycle_days })}</p>
           </>
         ) : (
           <Link to="/settings/items" className="text-sm underline">{t('set_distributor')}</Link>
         )}
-        {card.visit_recorded && <p className="mt-2"><Stamp done>{t('delivered_on', { date: t.date(new Date().toISOString().slice(0, 10)) })}</Stamp></p>}
+        {card.visit_recorded && <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-2"><Truck size={20} aria-hidden />{t('delivered_on', { date: t.date(new Date().toISOString().slice(0, 10)) })}</p>}
       </header>
 
       {card.runs_out.length > 0 && (

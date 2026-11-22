@@ -16,7 +16,7 @@ export default function Result() {
   return (
     <>
       <TopBar onBack={() => navigate('/')}><Steps current={2} /></TopBar>
-      <main className="mx-auto max-w-app px-4 pb-12 pt-2">
+      <main className="mx-auto max-w-app px-4 pb-44 pt-2">
         {res.status === 'loading' && <Loading rows={3} />}
         {res.status === 'error' && <ErrorState onRetry={res.reload} />}
         {res.status === 'ok' && (res.data.cards.length === 0

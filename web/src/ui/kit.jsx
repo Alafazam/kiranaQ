@@ -1,6 +1,6 @@
 // Small UI kit per DESIGN.md: moulded 52px controls, tokens only, lucide icons.
 import { useEffect } from 'react'
-import { AlertTriangle, ShoppingCart, CheckCircle2, Clock, Loader2, Minus, Plus, RotateCcw } from 'lucide-react'
+import { AlertTriangle, ShoppingCart, CheckCircle2, Clock, Loader2, Minus, Plus, RotateCcw, X } from 'lucide-react'
 import { useT } from '../i18n.js'
 
 export function Button({ variant = 'secondary', busy = false, disabled, className = '', children, icon: Icon, ...rest }) {
@@ -20,7 +20,7 @@ export function Button({ variant = 'secondary', busy = false, disabled, classNam
 
 export function IconButton({ label, icon: Icon, className = '', variant = 'text', ...rest }) {
   return (
-    <button type="button" aria-label={label} title={label} className={`mould mould-${variant} w-control px-0 ${className}`} {...rest}>
+    <button type="button" aria-label={label} title={label} className={`mould mould-${variant} px-0 ${/(^|\s)w-/.test(className) ? '' : 'w-control'} ${className}`} {...rest}>
       <Icon size={22} strokeWidth={2} aria-hidden />
     </button>
   )
@@ -52,7 +52,12 @@ export function Sheet({ open, onClose, title, children }) {
     <div className="fixed inset-0 z-40 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
       <div className="absolute inset-0 bg-ink opacity-40 fade-enter" onClick={onClose} />
       <div className="relative w-full max-w-app bg-surface rounded-t-[14px] p-4 pb-6 shadow-lift sheet-enter">
-        {title && <h2 className="text-xl mb-3">{title}</h2>}
+        {title && (
+          <div className="flex items-start gap-2 mb-3">
+            <h2 className="text-xl flex-1">{title}</h2>
+            {onClose && <IconButton icon={X} label="Close" className="min-h-[44px] w-11 -mr-2 -mt-1" onClick={onClose} />}
+          </div>
+        )}
         {children}
       </div>
     </div>
@@ -69,7 +74,7 @@ export function Dialog({ open, title, body, confirmLabel, cancelLabel, onConfirm
         <p className="mt-2 text-ink-2">{body}</p>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Button onClick={onCancel} autoFocus>{cancelLabel}</Button>
-          <Button variant="secondary" className="text-danger" onClick={onConfirm}>{confirmLabel}</Button>
+          <Button variant="secondary" onClick={onConfirm}>{confirmLabel}</Button>
         </div>
       </Card>
     </div>
@@ -101,8 +106,7 @@ export function StatusLabel({ status, text, className = '' }) {
 export function Stamp({ done, children }) {
   return (
     <span
-      className={`num inline-block shrink-0 whitespace-nowrap text-sm px-3 py-1 rounded-control ${done ? 'text-accent stamp-land' : 'text-muted'}`}
-      style={{ border: '2px solid currentColor', outline: '1px solid currentColor', outlineOffset: '2px', transform: 'rotate(-2deg)' }}
+      className={`stamp inline-block shrink-0 whitespace-nowrap text-sm font-medium px-3 py-1 rounded-control ${done ? 'text-accent stamp-land' : 'text-muted'}`}
     >
       {children}
     </span>

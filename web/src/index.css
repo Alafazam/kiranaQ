@@ -1,3 +1,4 @@
+/* Hallmark · scope: app · theme: Dose (adapted, DESIGN.md) · redesign: none */
 @import './tokens.css';
 @tailwind base;
 @tailwind components;
@@ -5,8 +6,11 @@
 
 html, body { overflow-x: clip; }
 body { @apply bg-paper text-ink font-body text-base; -webkit-font-smoothing: antialiased; }
-h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.02em; }
+h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
+::selection { background: var(--color-accent-soft); color: var(--color-ink); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+/* Component classes live in the components layer, so utilities on the same element win. */
+@layer components {
 .num { font-family: var(--font-label); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 /* Flat control: 52px, solid fill or a 1.5px border, no bevel or gradient. Press = darker fill. */
@@ -29,6 +33,10 @@ h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.
 .stripe-3 { border-left: 6px solid var(--t-3); } .stripe-4 { border-left: 6px solid var(--t-4); }
 .stripe-5 { border-left: 6px solid var(--t-5); }
 
+.skeleton { background: var(--color-rule); opacity: 0.45; border-radius: var(--radius-control); }
+.stamp { border: 2px solid currentColor; outline: 1px solid currentColor; outline-offset: 2px; transform: rotate(-2deg); }
+}
+
 /* Phone frame: on a wide screen the app sits inside a phone outline (demo view).
    The transform makes the frame the containing block, so fixed bars stay inside it. */
 @media (min-width: 640px) {
@@ -46,8 +54,6 @@ h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.
   .app-scroll { height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
   .app-scroll::-webkit-scrollbar { display: none; }
 }
-
-.skeleton { background: var(--color-paper-3); border-radius: var(--radius-control); }
 
 .sheet-enter { animation: sheet-in var(--dur-short) var(--ease-out); }
 .fade-enter { animation: fade-in var(--dur-short) var(--ease-out); }

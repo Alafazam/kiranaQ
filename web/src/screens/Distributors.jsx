@@ -43,13 +43,13 @@ export default function Distributors() {
                 <Link to={`/settings/distributors/${d.id}`} className="flex items-start gap-2 px-1">
                   <div className="flex-1">
                     <h2 className="text-xl">{d.name}</h2>
-                    <p className="num text-lg mt-1">{t.date(d.next_visit_date, true)}</p>
+                    <p className="text-lg font-medium mt-1">{t.day(d.next_visit_date)}, <span className="num">{t.date(d.next_visit_date)}</span></p>
                     <p className="text-ink-2">{t('in_n_every', { when: t.when(d.days_to_next_visit), n: d.cycle_days })}</p>
                     {d.last_visit_date && <p className="text-sm text-ink-2">{t('last_visit_on', { date: t.date(d.last_visit_date) })}</p>}
                   </div>
                   <ChevronRight size={20} className="mt-1 text-ink-2" aria-hidden />
                 </Link>
-                <div className="mt-3 bg-surface rounded-control px-3 py-2">
+                <div className="mt-3 border-t border-rule pt-2 px-1">
                   {d.runs_out.length > 0 ? (
                     <>
                       <p className="flex items-center gap-1.5 font-medium text-danger">

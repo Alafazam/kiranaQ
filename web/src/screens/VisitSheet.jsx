@@ -44,12 +44,12 @@ export default function VisitSheet({ logId, candidates, onDone }) {
   }
 
   return (
-    <Sheet open title={t('visit_q', { name: c.name })} onClose={() => !busy && answer(false)}>
+    <Sheet open title={t('visit_q', { name: c.name })} onClose={() => !busy && onDone()}>
       <ul className="divide-y divide-rule mb-4">
         {c.items.map((it) => (
           <li key={it.item_id} className="flex items-center justify-between py-2">
             <ItemLabel item={it} size="sm" />
-            <span className="num">+{it.rise}</span>
+            <span className="num">+{it.rise} {it.unit ?? ''}</span>
           </li>
         ))}
       </ul>

@@ -181,7 +181,7 @@ export default function Check() {
                       <div className="flex items-center gap-2">
                         <ItemLabel item={it} className="flex-1" />
                         {unsure && <Badge>{t('not_sure')}</Badge>}
-                        <IconButton icon={Trash2} label={t('remove_item')} className="!min-h-[44px] !w-[44px] text-muted" onClick={() => removeRow(c.item_id)} />
+                        <IconButton icon={Trash2} label={t('remove_item')} className="min-h-[44px] w-11 text-muted" onClick={() => removeRow(c.item_id)} />
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <Stepper value={c.count} unit={it.unit} label={t.itemName(it)} onChange={(v) => setCount(c.item_id, v)} />

@@ -8,7 +8,7 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 export function BoxOverlay({ box }) {
   return (
     <div className="absolute pointer-events-none border-2 border-accent rounded-[4px]"
-      style={{ left: `${box.x0 * 100}%`, top: `${box.y0 * 100}%`, width: `${(box.x1 - box.x0) * 100}%`, height: `${(box.y1 - box.y0) * 100}%`, boxShadow: '0 0 0 9999px oklch(0% 0 0 / 0.45)' }} />
+      style={{ left: `${box.x0 * 100}%`, top: `${box.y0 * 100}%`, width: `${(box.x1 - box.x0) * 100}%`, height: `${(box.y1 - box.y0) * 100}%`, boxShadow: '0 0 0 9999px var(--color-scrim)' }} />
   )
 }
 

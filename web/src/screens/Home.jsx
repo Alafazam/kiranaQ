@@ -25,12 +25,12 @@ function DistributorStrip() {
     )
   }
   return (
-    <ul className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2 snap-x">
+    <ul className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2 snap-x scroll-px-4">
       {list.map((d) => (
         <li key={d.id} className="snap-start shrink-0">
           <Link to="/distributors" className="block w-40 h-full rounded-card p-3 shadow-lift bg-surface">
-            <p className="font-medium truncate">{d.name}</p>
-            <p className="num text-lg mt-1">{t.day(d.next_visit_date)}</p>
+            <p className="font-display text-lg truncate">{d.name}</p>
+            <p className="text-lg font-medium mt-1">{t.day(d.next_visit_date)}</p>
             <p className="num">{t.date(d.next_visit_date)}</p>
             <p className="text-sm text-ink-2">{t.when(d.days_to_next_visit)}</p>
             {d.runs_out_count > 0 && (

@@ -13,7 +13,8 @@ export function BoloButton() {
   const t = useT()
   const a = useAssistantState()
   const { pathname } = useLocation()
-  if (a.open) return null
+  // Check has its own "Hold to speak" control; one mic per screen.
+  if (a.open || pathname.startsWith('/log/new/check')) return null
   const aboveTabs = TAB_ROUTES.includes(pathname) || pathname.startsWith('/settings') || /^\/log\/\d+$/.test(pathname)
   const lift = pathname === '/' ? 'bottom-[140px]' : aboveTabs ? 'bottom-[80px]' : 'bottom-[150px]'
   return (
@@ -72,9 +73,8 @@ export function AssistantPanel() {
     <section className="fixed inset-x-0 bottom-0 z-40 max-h-[62%] flex flex-col justify-end sheet-enter" aria-label={t('assist_title')}>
       <div className="mx-auto max-w-app bg-surface rounded-t-[14px] border-t border-rule shadow-lift flex flex-col min-h-0 max-h-full">
         <header className="flex items-center gap-2 px-4 pt-3">
-          <span className="flex items-center justify-center w-8 h-8 rounded-pill bg-accent text-accent-ink"><Mic size={18} aria-hidden /></span>
-          <h2 className="text-lg flex-1">{t('assist_title')}</h2>
-          <button type="button" onClick={a.close} aria-label={t('close')} className="mould mould-text w-11 !min-h-[44px] px-0"><X size={22} aria-hidden /></button>
+                    <h2 className="text-lg flex-1">{t('assist_title')}</h2>
+          <button type="button" onClick={a.close} aria-label={t('close')} className="mould mould-text w-11 min-h-[44px] px-0"><X size={22} aria-hidden /></button>
         </header>
         <ol ref={listRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-2 space-y-2" aria-live="polite">
           {a.messages.map((m, i) => (
@@ -93,18 +93,18 @@ export function AssistantPanel() {
           ) : last?.options?.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {last.options.map((o) => (
-                <button key={o} type="button" className="mould mould-secondary !min-h-[44px] text-sm" onClick={() => a.send(o)}>{o}</button>
+                <button key={o} type="button" className="mould mould-secondary min-h-[44px] text-sm" onClick={() => a.send(o)}>{o}</button>
               ))}
             </div>
           )}
           <button type="button" onClick={toggleMic} disabled={rec === 'working' || rec === 'blocked' || a.busy || !canRecord()}
-            className={`mould w-full text-lg ${rec === 'recording' ? 'mould-selected' : 'mould-primary'}`}>
+            className={`mould w-full text-lg ${rec === 'recording' ? 'mould-selected' : a.pending ? 'mould-secondary' : 'mould-primary'}`}>
             {rec === 'recording' ? <Square size={22} aria-hidden /> : <Mic size={22} aria-hidden />}{micLabel}
           </button>
           <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); const v = typed; setTyped(''); a.send(v) }}>
             <input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={t('assist_type')} aria-label={t('assist_type')}
               className="flex-1 min-h-[44px] rounded-control border border-rule bg-surface px-3 text-ink placeholder:text-muted" />
-            <button type="submit" aria-label={t('apply_text')} disabled={!typed.trim() || a.busy} className="mould mould-secondary w-11 !min-h-[44px] px-0"><Send size={20} aria-hidden /></button>
+            <button type="submit" aria-label={t('apply_text')} disabled={!typed.trim() || a.busy} className="mould mould-secondary w-11 min-h-[44px] px-0"><Send size={20} aria-hidden /></button>
           </form>
         </div>
       </div>

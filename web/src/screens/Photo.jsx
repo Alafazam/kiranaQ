@@ -146,7 +146,7 @@ export default function Photo() {
                       className={`relative block w-full overflow-hidden rounded-control border-2 ${i === selected ? 'border-accent' : 'border-rule'}`}>
                       <img src={p.src} alt="" className="block w-full aspect-square object-cover" />
                     </button>
-                    <IconButton icon={X} label={t('remove_photo')} variant="secondary" className="absolute -top-2 -right-2 !min-h-[44px] !w-[44px]" onClick={() => remove(i)} />
+                    <IconButton icon={X} label={t('remove_photo')} variant="secondary" className="absolute -top-2 -right-2 min-h-[44px] w-11 !rounded-pill" onClick={() => remove(i)} />
                   </li>
                 ))}
               </ul>

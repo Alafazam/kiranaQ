@@ -14,7 +14,7 @@ export default function Orders() {
   return (
     <>
       <TopBar title={t('orders')} />
-      <main className="mx-auto max-w-app px-4 pb-28">
+      <main className="mx-auto max-w-app px-4 pb-44">
         {res.status === 'loading' && <Loading rows={3} />}
         {res.status === 'error' && <ErrorState onRetry={res.reload} />}
         {res.status === 'ok' && (res.data.cards.length === 0 ? (
@@ -23,7 +23,7 @@ export default function Orders() {
           </EmptyState>
         ) : (
           <>
-            {res.data.log_date && <p className="mb-3 text-ink-2">{t('past_log')} <span className="num">{t.date(res.data.log_date, true)}</span></p>}
+            {res.data.log_date && <p className="mb-3 text-ink-2">{t('past_log')} {t.day(res.data.log_date)}, <span className="num">{t.date(res.data.log_date)}</span></p>}
             <CardList result={res.data} onChange={res.setData} />
           </>
         ))}
