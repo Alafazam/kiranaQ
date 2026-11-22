@@ -95,7 +95,7 @@ export default function Home() {
         <h2 className="text-lg mt-6 mb-3">{t('stock_logs')}</h2>
         <LogList />
       </main>
-      <div className="fixed inset-x-0 bottom-[61px] z-20 bg-paper pt-2 pb-3">
+      <div className="fixed inset-x-0 bottom-[65px] z-20 bg-paper pt-2 pb-3">
         <div className="mx-auto max-w-app px-4">
           <Button variant="primary" icon={Camera} className="w-full text-lg" onClick={() => navigate('/log/new')}>{t('take_log')}</Button>
         </div>

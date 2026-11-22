@@ -18,7 +18,8 @@ export default {
     },
     fontFamily: { display: v('font-display'), body: v('font-body'), label: v('font-label') },
     fontSize: {
-      sm: ['14px', '1.45'], base: ['17px', '1.5'], lg: ['20px', '1.35'], xl: ['24px', '1.25'], '2xl': ['29px', '1.2'],
+      // Owner asked for a smaller scale: 13 / 15 / 18 / 21 / 25 px (ratio about 1.17).
+      sm: ['13px', '1.45'], base: ['15px', '1.5'], lg: ['18px', '1.35'], xl: ['21px', '1.25'], '2xl': ['25px', '1.2'],
     },
     borderRadius: { none: '0', control: v('radius-control'), card: v('radius-card'), pill: v('radius-pill') },
     extend: {

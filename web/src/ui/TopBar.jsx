@@ -19,7 +19,7 @@ export function LangChip() {
 export function TopBar({ title, onBack, right, children }) {
   const t = useT()
   return (
-    <header className="sticky top-0 z-30 bg-paper">
+    <header className="bg-paper">
       <div className="mx-auto max-w-app px-4 min-h-[60px] flex items-center gap-2">
         {onBack && <IconButton icon={ArrowLeft} label={t('back')} onClick={onBack} className="-ml-3" />}
         {title && <h1 className="text-xl flex-1 truncate">{title}</h1>}
