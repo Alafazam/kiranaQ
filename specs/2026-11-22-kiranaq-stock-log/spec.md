@@ -14,8 +14,8 @@ A kirana owner has no POS and no bills. He buys from several distributors (for e
 
 1. **Home.** The owner opens the app. He sees his past stock logs: date, number of items, and items that are low. A strip shows each distributor and its next visit: "Sharma Traders (HUL): Tue 24 Nov, in 2 days", "Gupta Agency (biscuits): Sat 28 Nov, in 6 days".
 2. **Take a stock log.** He taps "Take stock log". The camera opens. He takes one or more photos of the shelf.
-3. **The vision model counts.** The server sends each photo to Claude vision with the store's item list. It returns items it can see and a count for each, with a confidence.
-4. **Voice check.** The app reads the counts back in Hindi (text to speech): "Maggi 12, Parle-G 30, chini 4 kilo. Sahi hai?" The owner answers by voice: "Maggi 8 hai, aur Surf bhi 5 hai". Sarvam turns speech into text. Claude turns text into edits `{item, count}`. The app shows "I heard: Maggi 8, Surf 5. Correct?" and applies the edits on yes. Items not in the photo can be added by voice or by tap. Plus and minus buttons always work too.
+3. **The vision model counts.** The server sends each photo to a vision model (Sarvam `gemma4` by default, Claude as an option) with the store's item list. It returns items it can see and a count for each, with a confidence.
+4. **Voice check.** The app reads the counts back in Hindi (text to speech): "Maggi 12, Parle-G 30, chini 4 kilo. Sahi hai?" The owner answers by voice: "Maggi 8 hai, aur Surf bhi 5 hai". Sarvam turns speech into text. A chat model (Sarvam by default, Claude as an option) turns text into edits `{item, count}`. The app shows "I heard: Maggi 8, Surf 5. Correct?" and applies the edits on yes. Items not in the photo can be added by voice or by tap. Plus and minus buttons always work too.
 5. **Save the log.** The log is saved with today's date.
 6. **Compute.** For each item, the server compares this log with the last log that counted it: stock then minus stock now gives what sold (a log where stock went up by a delivery keeps the old rate). Sold divided by days gives a daily rate. Stock now divided by rate gives **days of cover**. Each item belongs to one distributor, so the server also knows when that item can next be restocked.
 7. **Result screen, one card per distributor**, sorted by next visit:
@@ -29,8 +29,8 @@ A kirana owner has no POS and no bills. He buys from several distributors (for e
 ```mermaid
 flowchart TD
   H[Home: past logs, next visit] --> P[Camera: shelf photos]
-  P --> V[Claude vision: items + counts]
-  V --> C[Voice check: Sarvam STT/TTS + Claude parse]
+  P --> V[Vision model: items + counts]
+  V --> C[Voice check: Sarvam STT/TTS + parse]
   C --> S[Save stock log]
   S --> D{Items went up?}
   D -- yes --> Q[Ask: did distributor X deliver today?]
@@ -77,10 +77,10 @@ Out of scope: bills, prices, cash budget, distributor integration, login, multi-
 
 | Job | Model | Where |
 |---|---|---|
-| Count items in a photo | Claude vision (`claude-sonnet-5-5`), JSON output. Option behind `VISION_PROVIDER=sarvam`: Sarvam chat `gemma4` with a base64 image (compare in E1 if time) | `ai/vision.js` |
+| Count items in a photo | **Default `VISION_PROVIDER=sarvam`:** Sarvam chat `POST /v2/chat/completions`, model `gemma4`, image as a base64 data URI, JSON only. **Option `VISION_PROVIDER=claude`** (needs `ANTHROPIC_API_KEY`): `claude-sonnet-5-5`. E1 runs on whichever keys are set; the better one becomes the default | `ai/vision.js` |
 | Speech to text (hi-IN, en-IN, Hinglish) | Sarvam `POST /speech-to-text`, model `saaras:v4`, `mode=codemix`, `language_code` left out (auto-detect), `keyterms` = up to 50 item names and aliases from the catalog | `ai/sarvam.js` |
 | Text to speech | Sarvam `POST /text-to-speech`, model `bulbul:v3` (the round trip passed with it), default speaker; reply is base64 WAV in `audios[0]`. `bulbul:v4-flash` with speaker `shubh_enhi_ads` is an option (open question 1) | `ai/sarvam.js` |
-| Spoken text → edits JSON | Claude (`claude-haiku-5-5`), JSON output | `ai/parse.js` |
+| Spoken text → edits JSON | **Default `PARSE_PROVIDER=sarvam`:** Sarvam chat `sarvam-105b` (best for Indian languages), JSON only. **Option `PARSE_PROVIDER=claude`:** `claude-haiku-5-5` | `ai/parse.js` |
 
 Sarvam auth header: `api-subscription-key`. Node SDK `sarvamai` is installed. `server/src/ai/sarvam.js` exists and works (TTS → STT round trip passed): `speak(text, {languageCode, speaker})` returns a WAV `Buffer`; `transcribe(audio, {filename, mimeType, languageCode})` returns `{transcript, languageCode}`. Keep these names. `ai/real.js` adapts them to the `ai` interface: `stt(audio, opts)` → `{text: transcript}`, `tts(text, opts)` → `Buffer`. Lane C adds `keyterms` to `transcribe` and moves its model names and limits into `core/config.js`. Limits that shape the UI: STT takes at most 30 s of audio per request (the mic stops at `MAX_RECORD_SECONDS = 25`); TTS takes at most 2,500 characters (we cap at `MAX_TTS_CHARS = 500`). Keys come from env vars only. Model names live in `config.js`.
 
@@ -252,10 +252,10 @@ A **line**: `{item_id, name_en, name_hi, count, pack_size, unit, rate_per_day, d
 
 | Method and path | Body | Response | When the model fails |
 |---|---|---|---|
-| `POST /vision/count` | multipart `images[]` (1–3, jpeg/png/webp, each ≤ 5 MB) | `{items:[{item_id, count, confidence}], dropped: n}` | 200 with `{items: [], error_code}`; UI says "count by voice or tap" |
-| `POST /voice/stt` | multipart `audio` (webm/mp4/wav, ≤ 30 s, ≤ 2 MB), `lang` | `{text}` | 502 `stt_failed`; UI opens the text box |
-| `POST /voice/parse` | `{text, lang, draft:[{item_id, count}]}` | `{edits:[{item_id, count}], unclear: bool, ask?: string}`. The model returns a `confidence` per edit; the server sets `unclear: true` when any edit is below `MIN_CONFIDENCE` or names an unknown item, and strips `confidence` | 200 with `{edits: [], unclear: true, ask: "Please say it again"}` |
-| `POST /voice/tts` | `{text, lang}` (≤ 500 chars) | `audio/wav` bytes | 502 `tts_failed`; UI shows the text only |
+| `POST /vision` | multipart `images[]` (1–3, jpeg/png/webp, each ≤ 5 MB) | `{items:[{item_id, count, confidence}], dropped: n}` | 200 with `{items: [], error_code}`; UI says "count by voice or tap" |
+| `POST /stt` | multipart `audio` (webm/mp4/wav, ≤ 30 s, ≤ 2 MB), `lang` | `{text}` | 502 `stt_failed`; UI opens the text box |
+| `POST /parse` | `{text, lang, draft:[{item_id, count}]}` | `{edits:[{item_id, count}], unclear: bool, ask?: string}`. The model returns a `confidence` per edit; the server sets `unclear: true` when any edit is below `MIN_CONFIDENCE` or names an unknown item, and strips `confidence` | 200 with `{edits: [], unclear: true, ask: "Please say it again"}` |
+| `POST /tts` | `{text, lang}` (≤ 500 chars) | `audio/wav` bytes | 502 `tts_failed`; UI shows the text only |
 
 Every model call writes one `ai_call` row (kind, model, ok, latency, error code). Request limits: `MAX_IMAGES`, `MAX_IMAGE_BYTES`, `MAX_AUDIO_BYTES`, `MAX_TTS_CHARS`, `MODEL_TIMEOUT_MS` in `config.js`.
 
@@ -373,7 +373,7 @@ Icons below are named in brackets (`[camera]` = lucide `Camera`). The app never 
 ```
 Empty state (no logs): one card "Take your first stock log. Two logs are needed to learn how fast items sell." with the primary button.
 
-**Step 1 Photo**: big dashed area "Take a photo of your shelf" (opens camera), thumbnails of up to 3 photos with a remove button (undo toast), a text button "Count without photo", primary "Count items" (disabled until one photo). While waiting: skeleton rows and "Counting items…" (vision call, target under 15 s).
+**Step 1 Photo**: two equal choices: **Take a photo** (big dashed area, opens the camera) and **Use a sample photo** (opens a grid of 3–5 Indian kirana shelf photos from `web/public/samples/`; tap one to add it). The demo uses the sample grid. Then thumbnails of up to 3 photos with a remove button (undo toast), a text button "Count without photo", primary "Count items" (disabled until one photo). While waiting: skeleton rows and "Counting items…" (vision call, target under 15 s).
 
 **Step 2 Check**
 ```
@@ -484,7 +484,7 @@ Evals measure the parts we cannot prove with a unit test: how well the models do
 
 | Eval | Input set | Script | Metric | Bar for the demo | Cost |
 |---|---|---|---|---|---|
-| **E1. Vision count** | 3 shelf photos in `evals/vision/` (2 is enough if time is short), taken from the internet with an open licence (Wikimedia Commons, Unsplash, Pexels: search "kirana shop shelf", "Indian grocery shelf"). Each photo's URL, author and licence go in `evals/vision/SOURCES.md`. Pick photos where catalog brands are readable, add any missing brands to `data/catalog.json`, and hand-count each photo into `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 3 vision calls |
+| **E1. Vision count** | 3–5 **Indian** kirana or grocery shelf photos from the internet with an open licence (Wikimedia Commons first, then Unsplash, Pexels). Each photo's URL, author and licence go in `evals/vision/SOURCES.md`. The same files are the in-app sample photos (`web/public/samples/`). Pick photos where catalog brands are readable and add those brands to the catalog. The truth counts (`shelf-0N.truth.json`) are made by the lead session reading each photo, then spot-checked by Alaf | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 3 vision calls |
 | **E2. Voice parse** | 20 typed phrases in `evals/voice/phrases.json`: 8 Hindi, 6 Hinglish, 6 English; includes 4 that must re-ask ("thoda kam karo", unknown brand, two items with one number, a number with no item) | `pnpm eval:parse` | exact match of `{item_id, count}` edits; re-ask rate on the 4 unclear ones | ≥ 90% exact on the 16 clear ones; 4/4 unclear ones re-ask (no guess) | 20 small text calls |
 | **E3. Voice end to end** | 5 short clips we record (`evals/voice/hi-0N.wav`, 3 Hindi, 2 English) with expected edits | `pnpm eval:voice` | item and count right after STT + parse | ≥ 4 of 5 | 5 STT + 5 parse calls |
 | **E4. Learning (simulation)** | synthetic store: 25 items, 3 distributors (4, 7, 15 days), hidden true daily demand with noise, 12 cycles, fixed seed | `pnpm eval:sim` | stock-out days and leftover units per cycle, learning rule vs fixed starter quantities; writes `sim-chart.svg` (hand-built SVG string, no chart library) and a Markdown table | learning beats fixed on stock-out days by cycle 6 and keeps it to cycle 12 | free |
@@ -494,15 +494,20 @@ The pitch shows E4's chart (it learns), E1 and E2 numbers (the models are good e
 
 In scope: E2, E4, E1. Stretch only (after the live flow works on Replit): E5, E3.
 
-## 6. Open questions (proposed answers)
+## 6. Decisions and open questions
 
-1. **Sarvam TTS model.** The key is set and a TTS → STT round trip passed with `bulbul:v3` + `saaras:v4`. The docs suggest `bulbul:v4-flash` with speaker `shubh_enhi_ads` for a Hindi-English voice. Proposal: build on `bulbul:v3` (tested); switch only if `smoke:live` passes with v4-flash before 4:00 PM. Vision stays on Claude; `gemma4` on Sarvam is not built.
-2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. A visit is recorded from the restock photo (R13); the owner can also set the last visit by tap in Settings.
-3. **Received quantity (decided: from the restock photo).** Proposal for the threshold: `RESTOCK_MIN_PACKS = 1` (a rise of at least one pack). Should actual visit dates also correct the cycle (for example Sharma came after 9 days, not 7)? Proposal: keep the visits; show "last 3 visits: every 8 days" in Settings as a stretch; do not change the cycle on its own.
-4. **Deploy target (decided: web first, Replit at the end).** Proposal: do a first Replit deploy of the Phase 0 skeleton at about 3:30 PM (proves the `better-sqlite3` build and HTTPS mic early), and the real deploy at about 4:20 PM. Android shell later.
-5. **Simulation chart.** E4 is in scope as a cheap script (SVG + table). Proposal: if Lane A is late, show the table only.
-6. **Public URL and paid models.** The Replit URL has no auth and calls paid models; judges may open it after the demo. Proposal: the server checks a `DEMO_KEY` env var on the 4 model routes (`x-demo-key` header, the web app reads it from `?key=` once and keeps it in `localStorage`); when `DEMO_KEY` is not set the check is off (localhost). Plus a cap of `MAX_MODEL_CALLS_PER_HOUR` from the `ai_call` table. About 15 lines in Lane C. Alaf decides; without a yes, stop the deployment right after judging.
-7. **Not-counted items on the Result screen.** An item left out of a log has no line in that log's cards, so a runs-out alert from the last log disappears if the owner skips that item. Proposal: accept for the POC; the Result screen says "N items not counted in this log".
+Decided (22 Nov, Alaf):
+1. **Providers.** Sarvam is the default for STT (`saaras:v4`), TTS (`bulbul:v3`, tested), vision (`gemma4`) and parse (`sarvam-105b`). Claude is a config option for vision and parse (`VISION_PROVIDER`, `PARSE_PROVIDER`) when `ANTHROPIC_API_KEY` is set. Switch TTS to `bulbul:v4-flash` only if `smoke:live` passes with it before 4:00 PM.
+2. **Routes.** Keep the tested routes from commit `dd93764`: `POST /api/tts`, `POST /api/stt`; add `POST /api/vision` and `POST /api/parse` next to them in `routes/speech.js`.
+3. **Sample photos.** The Photo step has "Use a sample photo" with 3–5 openly licensed Indian shelf photos; the demo uses it. They are also the E1 eval set.
+4. **Public URL.** No demo key. A cap of `MAX_MODEL_CALLS_PER_HOUR` (counted from `ai_call`) returns 429 `rate_limited` on the model routes. Stop the Replit deployment right after judging.
+5. **Not-counted items.** Accepted for the POC. The Result screen says "N items not counted in this log".
+6. **Distributor cycles.** Each distributor has its own cycle; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. A visit is recorded from the restock photo (R13) or by tap in Settings.
+7. **Received quantity.** From the restock photo; `RESTOCK_MIN_PACKS = 1`. Actual visit dates do not change the cycle on their own (stretch: show "last 3 visits: every 8 days").
+8. **Deploy.** Web first. A skeleton Replit deploy at about 3:30 PM, the real one at about 4:20 PM. Android shell later.
+9. **Simulation chart.** E4 is a cheap script (SVG + table); table only if Lane A is late.
+
+Still open: none.
 
 Assumptions: starter catalog and seed are synthetic; photo counts are rough and the voice check is the fix; one store only.
 
@@ -510,7 +515,7 @@ Assumptions: starter catalog and seed are synthetic; photo counts are rough and 
 
 The `spec-security-review` skill is not installed, so this is a short manual check.
 
-- **Secrets:** `ANTHROPIC_API_KEY`, `SARVAM_API_KEY` in `.env` only; `.env` in `.gitignore`; never logged.
+- **Secrets:** `SARVAM_API_KEY` (required) and `ANTHROPIC_API_KEY` (optional) in `.env` and Replit Secrets only; `.env` in `.gitignore`; never logged.
 - **Personal data:** none stored. Synthetic store. No login.
 - **Photos and audio:** sent to Anthropic and Sarvam for processing, not stored on disk after the request (multer memory storage). Use our own test shelf photos and voices only.
 - **Model output:** treated as data. JSON is schema-validated (known ids, number ranges) before use; never executed.
