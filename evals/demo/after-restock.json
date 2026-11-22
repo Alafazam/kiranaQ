@@ -1,0 +1,111 @@
+{
+  "note": "Same-day restock log: Sharma delivered Surf (+2 packs), Vim and Lifebuoy (+1 pack each).",
+  "source": "photo",
+  "photo_count": 1,
+  "counts": [
+    {
+      "sku_key": "maggi_70g",
+      "count": 0
+    },
+    {
+      "sku_key": "parle_g_80g",
+      "count": 5
+    },
+    {
+      "sku_key": "parle_g_gold_100g",
+      "count": 35
+    },
+    {
+      "sku_key": "parle_marie_150g",
+      "count": 21
+    },
+    {
+      "sku_key": "parle_milano_cookies",
+      "count": 19
+    },
+    {
+      "sku_key": "britannia_good_day_100g",
+      "count": 51
+    },
+    {
+      "sku_key": "kurkure_masala_munch",
+      "count": 8
+    },
+    {
+      "sku_key": "lays_classic_52g",
+      "count": 39
+    },
+    {
+      "sku_key": "haldirams_bhujia_200g",
+      "count": 45
+    },
+    {
+      "sku_key": "aashirvaad_atta_5kg",
+      "count": 13
+    },
+    {
+      "sku_key": "tata_salt_1kg",
+      "count": 29
+    },
+    {
+      "sku_key": "fortune_oil_1l",
+      "count": 34
+    },
+    {
+      "sku_key": "daawat_basmati_1kg",
+      "count": 4
+    },
+    {
+      "sku_key": "india_gate_basmati_1kg",
+      "count": 20
+    },
+    {
+      "sku_key": "sugar_1kg",
+      "count": 80
+    },
+    {
+      "sku_key": "toor_dal_1kg",
+      "count": 5
+    },
+    {
+      "sku_key": "tata_tea_gold_250g",
+      "count": 15
+    },
+    {
+      "sku_key": "surf_excel_1kg",
+      "count": 36
+    },
+    {
+      "sku_key": "vim_bar_200g",
+      "count": 51
+    },
+    {
+      "sku_key": "rin_bar_250g",
+      "count": 63
+    },
+    {
+      "sku_key": "lux_soap_100g",
+      "count": 74
+    },
+    {
+      "sku_key": "lifebuoy_soap_100g",
+      "count": 41
+    },
+    {
+      "sku_key": "colgate_strong_200g",
+      "count": 36
+    },
+    {
+      "sku_key": "dettol_liquid_250ml",
+      "count": 45
+    },
+    {
+      "sku_key": "amul_butter_100g",
+      "count": 7
+    },
+    {
+      "sku_key": "coca_cola_600ml",
+      "count": 27
+    }
+  ]
+}

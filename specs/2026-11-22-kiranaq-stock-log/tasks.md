@@ -56,12 +56,12 @@ Done: `pnpm --dir server test` passes for Lane A files; `pnpm eval:sim` prints r
 Owns: `server/src/routes/store.js`, `server/src/routes/logs.js`, `server/src/repo/*.js` (all SQL, except `repo/items.js` `listItems` and `repo/aiCalls.js` from Phase 0; Lane B may add functions to `repo/items.js`), `server/test/{api-store,api-logs,api-visits,tenant}.test.js`, `server/scripts/demo-check.js`, `evals/demo/`.
 Reads, never edits: `app.js`, `core/*`, `migrations.js`. Calls core functions by their Phase 0 signatures (they throw until Lane A lands; tests for the full flow go green once A merges).
 
-- [ ] B1. `repo/` query modules, every query takes `storeId`. (security)
-- [ ] B2. `routes/store.js`: store, distributors, items + `api-store.test.js`. (R9)
-- [ ] B3. `routes/logs.js`: `GET /logs`, `GET /logs/:id`, `POST /logs` (one transaction: log, counts, results, state; `p`, `d` from each item's `item_state.last_log_id`; risen items keep the old rate), `GET /logs/:id/result`, `GET /orders/latest`, `PUT /logs/:id/order` + `api-logs.test.js`. (R1, R5–R8)
-- [ ] B4. `POST /logs/:id/visits` (idempotent; re-plans with the stored rate, never touches `item_state`) + `api-visits.test.js`. (R13)
-- [ ] B5. `tenant.test.js` (second store never read or changed).
-- [ ] B6. `scripts/demo-check.js` and `evals/demo/{today-counts,after-restock}.json`. (R11, R13)
+- [x] B1. `repo/` query modules, every query takes `storeId`. (security)
+- [x] B2. `routes/store.js`: store, distributors, items + `api-store.test.js`. (R9)
+- [x] B3. `routes/logs.js`: `GET /logs`, `GET /logs/:id`, `POST /logs` (one transaction: log, counts, results, state; `p`, `d` from each item's `item_state.last_log_id`; risen items keep the old rate), `GET /logs/:id/result`, `GET /orders/latest`, `PUT /logs/:id/order` + `api-logs.test.js`. (R1, R5–R8)
+- [x] B4. `POST /logs/:id/visits` (idempotent; re-plans with the stored rate, never touches `item_state`) + `api-visits.test.js`. (R13)
+- [x] B5. `tenant.test.js` (second store never read or changed).
+- [x] B6. `scripts/demo-check.js` and `evals/demo/{today-counts,after-restock}.json`. (R11, R13)
 
 Done: Lane B tests pass (full-flow ones once Lane A is merged); `pnpm demo:check` exits 0 after A merges.
 
