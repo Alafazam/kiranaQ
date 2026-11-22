@@ -4,7 +4,8 @@ import multer from 'multer';
 import { MAX_AUDIO_BYTES, MAX_COUNT, MAX_IMAGE_BYTES, MAX_IMAGES, MAX_MODEL_CALLS_PER_HOUR, MAX_STT_KEYTERMS, MAX_TTS_CHARS } from '../core/config.js';
 import { logAiCall, countCallsSince } from '../repo/aiCalls.js';
 import { listItems } from '../repo/items.js';
-import { validateParse, validateVision } from '../ai/validate.js';
+import { validateAssist, validateParse, validateVision } from '../ai/validate.js';
+import { ASSIST_ASK_AGAIN } from '../ai/assist.js';
 
 const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MS_PER_HOUR = 3600 * 1000;
@@ -12,6 +13,10 @@ const KEYTERM_MAX_CHARS = 64;
 const ASK_AGAIN = 'Please say it again';
 const MAX_TEXT_CHARS = 500;
 const MAX_DRAFT_ROWS = 100;
+const ASSIST_HISTORY_TURNS = 6;
+const ASSIST_CONTEXT_MAX_CHARS = 8000;
+const ASSIST_SCREENS = new Set(['/', '/log/new', '/log/new/check', '/log/:id/result', '/orders', '/distributors', '/settings']);
+const ASSIST_LANGS = new Set(['hi', 'en']);
 
 const imageUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_IMAGE_BYTES, files: MAX_IMAGES } });
 const audioUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_AUDIO_BYTES } });
@@ -42,9 +47,10 @@ export function keytermsFromCatalog(catalog) {
 }
 
 // `speech` ({speakFn, transcribeFn}) lets a test replace the speech calls only.
-export function speechRouter({ db, ai, clock, speakFn, transcribeFn }) {
+export function speechRouter({ db, ai, clock, speakFn, transcribeFn, assistFn }) {
   const router = express.Router();
   const tts = speakFn ?? ((text, opts) => ai.tts(text, opts));
+  const assist = assistFn ?? (typeof ai.assist === 'function' ? (input) => ai.assist(input) : null);
   const stt = transcribeFn ?? ((audio, opts) => ai.stt(audio, opts));
 
   function guardRate(req, _res, next) {
@@ -56,8 +62,9 @@ export function speechRouter({ db, ai, clock, speakFn, transcribeFn }) {
   }
 
   // Runs one model call, writes one ai_call row (no content), and rethrows model errors.
-  async function tracked(req, kind, fn) {
-    const info = ai.describe?.(kind) ?? { provider: 'injected', model: kind };
+  // `describeKey` picks provider and model; the row's kind must be one of the table's kinds.
+  async function tracked(req, kind, fn, describeKey = kind) {
+    const info = ai.describe?.(describeKey) ?? { provider: 'injected', model: describeKey };
     const started = Date.now();
     try {
       const out = await fn();
@@ -141,6 +148,37 @@ export function speechRouter({ db, ai, clock, speakFn, transcribeFn }) {
       } catch {
         res.json({ edits: [], unclear: true, ask: ASK_AGAIN });
       }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post('/assist', guardRate, async (req, res, next) => {
+    try {
+      const { text, lang, screen, context = {}, history = [] } = req.body ?? {};
+      if (typeof text !== 'string' || !text.trim() || text.length > MAX_TEXT_CHARS) throw httpError(400, 'bad_request', 'text is required');
+      if (!ASSIST_LANGS.has(lang)) throw httpError(400, 'bad_request', 'lang must be hi or en');
+      if (!ASSIST_SCREENS.has(screen)) throw httpError(400, 'bad_request', 'unknown screen');
+      if (typeof context !== 'object' || context === null || Array.isArray(context) || JSON.stringify(context).length > ASSIST_CONTEXT_MAX_CHARS) {
+        throw httpError(400, 'bad_request', 'context is invalid or too large');
+      }
+      if (!Array.isArray(history)) throw httpError(400, 'bad_request', 'history must be a list');
+      const turns = history
+        .filter((h) => (h?.role === 'user' || h?.role === 'assistant') && typeof h.text === 'string')
+        .slice(-ASSIST_HISTORY_TURNS)
+        .map((h) => ({ role: h.role, text: h.text.slice(0, MAX_TEXT_CHARS) }));
+      const catalog = listItems(db, req.storeId).filter((it) => it.active);
+      const askAgain = ASSIST_ASK_AGAIN[lang];
+      let out = null;
+      try {
+        if (!assist) throw Object.assign(new Error('no assist'), { code: 'not_implemented' });
+        // Logged as kind "parse": the ai_call table has no "assist" kind.
+        const raw = await tracked(req, 'parse', () => assist({ text, lang, screen, context, history: turns, catalog }), 'assist');
+        out = validateAssist(raw, { catalog, context, askAgain });
+      } catch {
+        out = null;
+      }
+      res.json(out ?? { say: askAgain, actions: [], expect: 'answer' });
     } catch (err) {
       next(err);
     }

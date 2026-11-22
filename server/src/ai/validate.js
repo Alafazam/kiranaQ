@@ -75,3 +75,69 @@ export function validateParse(raw, catalog, { ask } = {}) {
   }
   return { edits: rows.map((r) => ({ item_id: r.item_id, count: r.count })), unclear: false };
 }
+
+// ---- Voice assistant (POST /api/assist) ----
+const ASSIST_SAY_MAX = 200;
+const ASSIST_OPTIONS_MAX = 4;
+const ASSIST_OPTION_MAX_CHARS = 30;
+const MAX_SAMPLE_INDEX = 9;
+const MAX_QTY = 9999;
+const NAV_TARGETS = new Set(['home', 'orders', 'distributors', 'settings']);
+const LANGS = new Set(['hi', 'en']);
+const EXPECTS = new Set(['answer', 'confirm', 'done']);
+export const WRITE_ACTIONS = new Set(['save_log', 'confirm_order', 'visit']);
+
+const isInt = (v, min, max) => Number.isInteger(v) && v >= min && v <= max;
+
+/** Returns a clean action object, or null when the action is unknown or its params are bad. */
+function cleanAction(a, { itemIds, distributorIds }) {
+  if (!a || typeof a.type !== 'string') return null;
+  const dist = (id) => distributorIds.has(id);
+  switch (a.type) {
+    case 'navigate': return NAV_TARGETS.has(a.to) ? { type: a.type, to: a.to } : null;
+    case 'start_log':
+    case 'count_photo':
+    case 'count_manual':
+    case 'save_log': return { type: a.type };
+    case 'use_sample': return isInt(a.index, 0, MAX_SAMPLE_INDEX) ? { type: a.type, index: a.index } : null;
+    case 'set_counts': {
+      const rows = Array.isArray(a.edits) ? a.edits : [];
+      const ok = rows.length > 0 && rows.every((r) => itemIds.has(r?.item_id) && isInt(r.count, 0, MAX_COUNT) && (r.confidence === undefined || (typeof r.confidence === 'number' && r.confidence >= MIN_CONFIDENCE)));
+      return ok ? { type: a.type, edits: rows.map((r) => ({ item_id: r.item_id, count: r.count })) } : null;
+    }
+    case 'visit': return dist(a.distributor_id) && typeof a.delivered === 'boolean' ? { type: a.type, distributor_id: a.distributor_id, delivered: a.delivered } : null;
+    case 'confirm_order':
+    case 'read_out': return dist(a.distributor_id) ? { type: a.type, distributor_id: a.distributor_id } : null;
+    case 'set_qty': return dist(a.distributor_id) && itemIds.has(a.item_id) && isInt(a.qty, 0, MAX_QTY) ? { type: a.type, distributor_id: a.distributor_id, item_id: a.item_id, qty: a.qty } : null;
+    case 'set_language': return LANGS.has(a.lang) ? { type: a.type, lang: a.lang } : null;
+    default: return null;
+  }
+}
+
+/** Distributor ids the model may name: those the app put in the context. */
+export function contextDistributorIds(context) {
+  const ids = new Set();
+  for (const d of context?.distributors ?? []) ids.add(d?.id);
+  for (const c of context?.cards ?? []) ids.add(c?.distributor_id);
+  if (context?.visit?.distributor_id !== undefined) ids.add(context.visit.distributor_id);
+  return ids;
+}
+
+/**
+ * Raw assist answer -> {say, actions, expect, options?}. Unknown or bad actions are dropped; a write
+ * action forces expect "confirm". When actions were dropped and none are left, `say` is replaced by askAgain.
+ * Returns null when there is no usable `say` (the caller then answers with askAgain).
+ */
+export function validateAssist(raw, { catalog, context, askAgain }) {
+  if (typeof raw?.say !== 'string' || !raw.say.trim()) return null;
+  const ctx = { itemIds: new Set(catalog.map((c) => c.id)), distributorIds: contextDistributorIds(context) };
+  const proposed = Array.isArray(raw.actions) ? raw.actions : [];
+  const actions = proposed.map((a) => cleanAction(a, ctx)).filter(Boolean);
+  const droppedAll = proposed.length > 0 && actions.length === 0;
+  let expect = EXPECTS.has(raw.expect) ? raw.expect : 'answer';
+  if (actions.some((a) => WRITE_ACTIONS.has(a.type))) expect = 'confirm';
+  const out = { say: droppedAll ? askAgain : raw.say.trim().slice(0, ASSIST_SAY_MAX), actions, expect: droppedAll ? 'answer' : expect };
+  const options = Array.isArray(raw.options) ? raw.options.filter((o) => typeof o === 'string' && o.trim() && o.length <= ASSIST_OPTION_MAX_CHARS) : [];
+  if (options.length) out.options = options.slice(0, ASSIST_OPTIONS_MAX);
+  return out;
+}

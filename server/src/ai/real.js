@@ -4,10 +4,12 @@ import { PARSE_PROVIDER, SARVAM_STT_MODEL, SARVAM_TTS_MODEL, VISION_PROVIDER } f
 import { speak, transcribe } from './sarvam.js';
 import { countItems, visionModel } from './vision.js';
 import { parseEdits, parseModel } from './parse.js';
+import { assist } from './assist.js';
 
 const DESCRIBE = {
   vision: () => ({ provider: VISION_PROVIDER, model: visionModel() }),
   parse: () => ({ provider: PARSE_PROVIDER, model: parseModel() }),
+  assist: () => ({ provider: PARSE_PROVIDER, model: parseModel() }),
   stt: () => ({ provider: 'sarvam', model: SARVAM_STT_MODEL }),
   tts: () => ({ provider: 'sarvam', model: SARVAM_TTS_MODEL }),
 };
@@ -18,6 +20,7 @@ export function createRealAi() {
     stt: (audio, opts = {}) => transcribe(audio, opts),
     tts: (text, opts = {}) => speak(text, opts),
     parseEdits: (text, ctx) => parseEdits(text, ctx),
+    assist: (input) => assist(input),
     describe: (kind) => DESCRIBE[kind](),
   };
 }
