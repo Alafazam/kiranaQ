@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Mic, MicOff, Plus, Trash2, Send } from 'lucide-react'
 import { api } from '../api.js'
@@ -11,6 +11,7 @@ import { canRecord, startRecording } from '../voice.js'
 import VisitSheet from './VisitSheet.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { BoxOverlay } from '../ui/BoxEditor.jsx'
+import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 // Below this vision confidence a row shows "Not sure".
 const LOW_CONFIDENCE = 0.7
@@ -100,9 +101,9 @@ export default function Check() {
     }
   }
 
-  function applyEdits() {
-    let next = [...counts]
-    for (const ed of heard.edits) {
+  function applyEdits(edits = heard.edits) {
+    let next = [...(readDraft()?.counts || counts)]
+    for (const ed of edits) {
       const i = next.findIndex((c) => c.item_id === ed.item_id)
       if (i >= 0) next[i] = { ...next[i], count: ed.count, source: 'voice' }
       else next.push({ item_id: ed.item_id, count: ed.count, source: 'voice' })
@@ -110,6 +111,18 @@ export default function Check() {
     update(next)
     setHeard(null)
   }
+
+  const assistant = useAssistant({
+    context: { draft: counts.map(({ item_id, count }) => ({ item_id, count })) },
+    handlers: { set_counts: (a) => applyEdits(a.edits || []), save_log: () => save() },
+  })
+  const countedOnce = useRef(false)
+  useEffect(() => {
+    if (countedOnce.current || items.status !== 'ok') return
+    countedOnce.current = true
+    assistant?.notify(t('assist_counted', { n: counts.length }), { options: [t('save_log')] })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.status])
 
   async function save() {
     setSaving(true)
@@ -121,7 +134,7 @@ export default function Check() {
       }
       const res = await api.createLog(body)
       clearDraft()
-      const goResult = () => navigate(`/log/${res.log_id}/result`, { replace: true, state: { not_counted: res.not_counted } })
+      const goResult = () => navigate(`/log/${res.log_id}/result`, { replace: true, state: { not_counted: res.not_counted, fromSave: true } })
       if (res.delivery_candidates?.length) setVisit({ logId: res.log_id, candidates: res.delivery_candidates, done: goResult })
       else goResult()
     } catch (e) {
@@ -241,7 +254,7 @@ export default function Check() {
             )}
             <div className="grid grid-cols-2 gap-3">
               <Button onClick={() => setHeard(null)}>{t('no_retry')}</Button>
-              <Button variant="primary" disabled={heard.edits.length === 0} onClick={applyEdits}>{t('yes_apply')}</Button>
+              <Button variant="primary" disabled={heard.edits.length === 0} onClick={() => applyEdits()}>{t('yes_apply')}</Button>
             </div>
           </>
         )}

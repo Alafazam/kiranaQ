@@ -21,7 +21,7 @@ export default function Result() {
         {res.status === 'error' && <ErrorState onRetry={res.reload} />}
         {res.status === 'ok' && (res.data.cards.length === 0
           ? <EmptyState title={t('orders_empty_title')} body={t('orders_empty_body')} />
-          : <CardList result={{ ...res.data, log_id: res.data.log_id ?? Number(id), not_counted: res.data.not_counted ?? notCounted }} onChange={res.setData} />)}
+          : <CardList result={{ ...res.data, log_id: res.data.log_id ?? Number(id), not_counted: res.data.not_counted ?? notCounted }} onChange={res.setData} announce={Boolean(location.state?.fromSave)} />)}
       </main>
     </>
   )

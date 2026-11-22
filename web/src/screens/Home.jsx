@@ -5,11 +5,13 @@ import { useT } from '../i18n.js'
 import { useLoad, useStore } from '../state.jsx'
 import { Button, Card, EmptyState, ErrorState, Skeleton } from '../ui/kit.jsx'
 import { TopBar, LangChip } from '../ui/TopBar.jsx'
+import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 function DistributorStrip() {
   const t = useT()
   const navigate = useNavigate()
   const { distributors } = useStore()
+  useAssistant({ context: { distributors: (distributors.data || []).map(({ id, name, next_visit_date, days_to_next_visit }) => ({ id, name, next_visit_date, days_to_next_visit })) } })
   if (distributors.status === 'loading') {
     return <div className="flex gap-3" aria-hidden>{[0, 1, 2].map((i) => <Skeleton key={i} className="h-32 w-40 shrink-0" />)}</div>
   }

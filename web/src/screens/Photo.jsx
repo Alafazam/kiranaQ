@@ -10,6 +10,7 @@ import { TopBar, Steps } from '../ui/TopBar.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import { FULL_BOX, MAX_PHOTOS, cropToBlob, fileToObjectUrl, resizeToDataUrl } from '../image.js'
 import { useLoad } from '../state.jsx'
+import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 // Draft photos are {src, box}; older drafts stored plain data URLs.
 const normalize = (list) => (list || []).map((p) => (typeof p === 'string' ? { src: p, box: FULL_BOX } : p))
@@ -36,7 +37,8 @@ export default function Photo() {
   async function addFromSrc(src, box = FULL_BOX) {
     try {
       const dataUrl = await resizeToDataUrl(src)
-      const next = [...photos, { src: dataUrl, box }].slice(0, MAX_PHOTOS)
+      // Read the draft, not state: the assistant may call this right after another change.
+      const next = [...normalize(readDraft()?.photos), { src: dataUrl, box }].slice(0, MAX_PHOTOS)
       save(next)
       setSelected(next.length - 1)
     } catch (e) {
@@ -70,6 +72,8 @@ export default function Photo() {
   }
 
   async function count() {
+    const photos = normalize(readDraft()?.photos)
+    if (photos.length === 0) return
     setCounting(true)
     let counts = []
     try {
@@ -90,6 +94,21 @@ export default function Photo() {
     writeDraft({ photos: [], counts: [], source: 'manual', photo_count: 0 })
     navigate('/log/new/check')
   }
+
+  async function useSample(index) {
+    const list = samples.data || (await loadSamples())
+    const sample = list[Math.min(Math.max(0, index || 0), list.length - 1)]
+    if (sample) await addFromSrc(`/samples/${sample.file}`, sample.box || FULL_BOX)
+  }
+
+  useAssistant({
+    context: { photo_count: photos.length },
+    handlers: {
+      use_sample: (a) => useSample(a.index),
+      count_photo: async () => { if (normalize(readDraft()?.photos).length === 0) await useSample(0); await count() },
+      count_manual: () => withoutPhoto(),
+    },
+  })
 
   function back() {
     if (photos.length) setConfirmBack(true)

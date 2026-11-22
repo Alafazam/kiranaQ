@@ -5,6 +5,8 @@ import './index.css'
 import { AppProvider } from './state.jsx'
 import { ToastProvider } from './ui/Toast.jsx'
 import { TabBar } from './ui/TabBar.jsx'
+import { AssistantProvider } from './assistant/AssistantProvider.jsx'
+import { AssistantPanel, BoloButton } from './assistant/AssistantPanel.jsx'
 import Home from './screens/Home.jsx'
 import Orders from './screens/Orders.jsx'
 import Distributors from './screens/Distributors.jsx'
@@ -29,6 +31,7 @@ createRoot(document.getElementById('root')).render(
       <ToastProvider>
         <div className="app-scroll">
         <BrowserRouter>
+          <AssistantProvider>
           <Routes>
             <Route element={<Tabs />}>
               <Route path="/" element={<Home />} />
@@ -43,6 +46,9 @@ createRoot(document.getElementById('root')).render(
             <Route path="/log/new/check" element={<Check />} />
             <Route path="/log/:id/result" element={<Result />} />
           </Routes>
+          <BoloButton />
+          <AssistantPanel />
+          </AssistantProvider>
         </BrowserRouter>
         </div>
       </ToastProvider>

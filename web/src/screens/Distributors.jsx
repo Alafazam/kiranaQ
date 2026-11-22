@@ -8,6 +8,7 @@ import { useLoad } from '../state.jsx'
 import { Button, EmptyState, ErrorState, Skeleton, stripeClass } from '../ui/kit.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { TopBar } from '../ui/TopBar.jsx'
+import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 async function loadVisits() {
   const [distributors, latest] = await Promise.all([api.distributors(), api.latestOrders()])
@@ -23,6 +24,7 @@ export default function Distributors() {
   const t = useT()
   const navigate = useNavigate()
   const res = useLoad(loadVisits, [])
+  useAssistant({ context: { distributors: (res.data || []).map(({ id, name, next_visit_date, days_to_next_visit }) => ({ id, name, next_visit_date, days_to_next_visit })) } })
   return (
     <>
       <TopBar title={t('distributor_visits')} />

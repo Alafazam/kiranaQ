@@ -98,6 +98,7 @@ const real = {
   },
   parse: (body) => request('/parse', { method: 'POST', json: body }),
   tts: (text, lang) => request('/tts', { method: 'POST', json: { text, lang }, raw: true }),
+  assist: (body) => request('/assist', { method: 'POST', json: body }),
 }
 
 const fake = {
@@ -170,6 +171,8 @@ const fake = {
   stt: () => wait({ text: 'Maggi 8, Surf 5', transcript: 'Maggi 8, Surf 5', languageCode: 'en-IN' }),
   parse: ({ text, lang, draft }) => wait(mockParse(text, lang, draft)),
   tts: () => Promise.reject(new ApiError(502, 'tts_failed', 'mock has no audio')),
+  // No model in mock mode: the assistant uses its local matcher (assistant/local.js).
+  assist: () => Promise.reject(new ApiError(404, 'not_found', 'mock has no assistant')),
 }
 
 export const api = USE_MOCK ? fake : real

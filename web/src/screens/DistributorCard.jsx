@@ -1,5 +1,5 @@
 // The signature card: one per distributor. Runs out first, order, enough, first log.
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Volume2, Copy, ChevronDown } from 'lucide-react'
 import { api } from '../api.js'
@@ -8,6 +8,7 @@ import { Button, Stamp, StatusLabel, Stepper } from '../ui/kit.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import ItemLabel from '../ui/ItemLabel.jsx'
 import { playBlob } from '../voice.js'
+import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 const firstLog = (card) => card.first_log || card.no_history || []
 const qtyOf = (l) => (l.final_qty ?? l.suggested_qty)
@@ -73,6 +74,16 @@ export default function DistributorCard({ card, logId, onChange }) {
     setBusy(null)
   }
 
+  const articleRef = useRef(null)
+  const show = () => articleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const assistant = useAssistant({
+    handlers: d ? {
+      [`confirm_order:${d.id}`]: async () => { show(); if (!card.confirmed) await confirm(); assistant?.notify(t('assist_order_done', { name: d.name })) },
+      [`set_qty:${d.id}`]: (a) => show() || setQty((q) => ({ ...q, [a.item_id]: Math.max(0, Number(a.qty) || 0) })),
+      [`read_out:${d.id}`]: () => { show(); return readOut() },
+    } : {},
+  })
+
   async function readOut() {
     setBusy('read')
     try {
@@ -96,7 +107,7 @@ export default function DistributorCard({ card, logId, onChange }) {
   }
 
   return (
-    <article className="pt-4 border-t-[2px] border-rule first:border-t-0 first:pt-0">
+    <article ref={articleRef} className="scroll-mt-4 pt-4 border-t-[2px] border-rule first:border-t-0 first:pt-0">
       <header className="px-1 pb-3">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-xl">{d ? d.name : t('no_distributor')}</h2>
