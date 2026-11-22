@@ -14,7 +14,7 @@ export default function Orders() {
   return (
     <>
       <TopBar title={t('orders')} />
-      <main className="mx-auto max-w-app px-4 pb-44">
+      <main className="mx-auto max-w-app px-4 pb-28">
         {res.status === 'loading' && <Loading rows={3} />}
         {res.status === 'error' && <ErrorState onRetry={res.reload} />}
         {res.status === 'ok' && (res.data.cards.length === 0 ? (

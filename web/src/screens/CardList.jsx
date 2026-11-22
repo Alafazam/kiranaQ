@@ -12,6 +12,12 @@ function runsOutSummary(t, cards) {
 export default function CardList({ result, onChange, announce = false }) {
   const t = useT()
   const withDist = result.cards.filter((c) => c.distributor)
+  // Distributors with a runs-out item first, then by next visit; "No distributor" stays last.
+  const sorted = [
+    ...withDist.slice().sort((a, b) => (b.runs_out.length > 0) - (a.runs_out.length > 0) || a.distributor.days_to_next_visit - b.distributor.days_to_next_visit),
+    ...result.cards.filter((c) => !c.distributor),
+  ]
+  const firstUrgent = sorted.find((c) => c.distributor && c.runs_out.length > 0)
   const assistant = useAssistant({
     context: {
       log_id: result.log_id,
@@ -34,9 +40,12 @@ export default function CardList({ result, onChange, announce = false }) {
   }, [announce])
   return (
     <div className="space-y-4">
+      <p className="font-medium">
+        {runsOutSummary(t, result.cards)}{firstUrgent ? ` ${t('first_needs', { name: firstUrgent.distributor.name })}` : ''}
+      </p>
       {result.not_counted > 0 && <p className="text-ink-2">{result.not_counted === 1 ? t('not_counted_1') : t('not_counted', { n: result.not_counted })}</p>}
       <div className="space-y-4">
-        {result.cards.map((card) => (
+        {sorted.map((card) => (
           <DistributorCard key={card.distributor?.id ?? 'none'} card={card} logId={result.log_id} onChange={onChange} />
         ))}
       </div>

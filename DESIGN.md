@@ -6,7 +6,8 @@ Based on the Hallmark design rules (app-screen scope) and its **Dose** theme (wa
 ## System
 - Scope: app screens (a tool the owner works in, not a marketing page). No hero, no stock photos, no reveal on load.
 - Theme: Dose, adapted. Vibe: "warm shop notebook, calm, exact, big numbers".
-- Signature: the distributor card. A white card with a thick colour stripe on its left edge, one colour per distributor: who comes next, what runs out before that visit, what to order.
+- Signature: the distributor section: who comes next, what runs out before that visit, what to order. Distributor colour shows only as a stripe or dot (Distributors tab, Settings list).
+- **Voice first.** The owner talks to the app ("Bolo"); it asks the next question and acts on the screen. Taps stay available for every action.
 - **Light cream is the only default.** The users are not tech-savvy and work in bright shops: the app always opens light (cream paper, white cards, dark text), whatever the phone's system setting. Few colours, high contrast, nothing decorative.
 - Users: a kirana owner, often one-handed, in a bright shop, Hindi first.
 
@@ -34,13 +35,13 @@ Based on the Hallmark design rules (app-screen scope) and its **Dose** theme (wa
   --dur-micro: 120ms;  --dur-short: 200ms;  --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 ```
-Dark (optional, only when the owner picks it in Settings): same names, redefined under `:root[data-theme="dark"]` only. No `prefers-color-scheme` switch: the app never turns dark on its own. Settings theme choices: Light (default) and Dark. Paper `oklch(13% 0.01 170)`, ink `oklch(96% 0.01 160)`, tints at 40% lightness, mint with dark ink, danger lightened for contrast.
+Dark (optional, only when the owner picks it in Settings): same names, redefined under `:root[data-theme="dark"]` only. No `prefers-color-scheme` switch: the app never turns dark on its own. Settings theme choices: Light (default) and Dark. Paper `oklch(13% 0.01 170)`, ink `oklch(96% 0.01 160)`, stripe colours at 55% lightness, mint with dark ink, danger lightened for contrast.
 Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono:400;500`, `Noto Sans Devanagari:400;500;700`.
 
 ## Type
-- Fixed scale, ratio 1.2: 14 / 17 / 20 / 24 / 29 px. No fluid heads. Body 17px, Instrument Sans 400/500, line-height 1.5.
+- Fixed scale (owner's choice, smaller than Dose): 14 / 15 / 18 / 21 / 25 px. No fluid heads. Body 15px, Instrument Sans 400/500, line-height 1.5. Small text stays 14px so Hindi matras read well.
 - Headings: Schibsted Grotesk 700, tracking -0.02em, one color (ink), sentence case.
-- Counts, quantities, dates, days left: DM Mono 500, `tabular-nums`, set like a stock label (`12 pcs`, `2 cases`, `24 Nov`, `5 days`). 20–29px where the number is the point.
+- Counts, quantities and dates: DM Mono 500, `tabular-nums`, set like a stock label (`12 pcs`, `2 cases`, `24 Nov`). 18–25px where the number is the point. Words (weekdays, stamp text, "days left") use the body face.
 - Hindi text falls back to Noto Sans Devanagari at the same size; DM Mono is for digits and units only.
 - Labels: body face, one step smaller, sentence case. Never tracked capitals, never small caps. Three weights per screen: 400, 500, 700.
 
@@ -54,8 +55,11 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 
 ## Surfaces
 - Paper ground, white surfaces lifted on `--shadow-lift`. 14px cards, 10px controls, pills for tags.
-- Distributor card: a white card on cream with a 6px left stripe in its colour (`--t-n`), the distributor name and next visit on top, rows inside. Rows, never cards inside cards. The Home strip uses the same white cards with the stripe.
-- A confirmed order or a recorded visit shows a small green double-ringed stamp in DM Mono ("Ordered 24 Nov", "Delivered 22 Nov"), rotated 2 degrees. Not yet confirmed: the same stamp in grey.
+- Home strip: plain white cards (name, weekday, date, "in N days", runs-out count), no colour.
+- Orders and Result: one plain section per distributor on cream (no card, no stripe), a 2px rule line between distributors, rows split by 1px rules. Distributors with a runs-out item come first; a one-line summary on top says what runs out and whom to call first.
+- Distributors tab: white card per distributor with a 6px left stripe in its colour (`--t-n`). Settings list: a small colour bar.
+- Rows, never cards inside cards. Item rows: a 40–48px product thumbnail (or a neutral letter tile), English name, Hindi name smaller below.
+- A confirmed order shows a small green double-ringed stamp ("Ordered 24 Nov"), rotated 2 degrees; not yet confirmed: the same stamp in grey. One stamp per distributor. A recorded delivery is a plain line with a truck icon ("Delivered 22 Nov").
 
 ## Color use
 - Green does every positive signal: primary action, current tab, selected key, confirmed stamp.
@@ -71,9 +75,11 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 
 ## Layout
 - Content max width 480px, centered. 16px side gutters. `overflow-x: clip` on `html` and `body` (never `hidden`, never `100vw`).
-- Shell: top bar plus a bottom tab bar (Home, Orders, Settings). No sidebar, no hamburger.
+- Shell: top bar (scrolls away with the page) plus a fixed bottom tab bar: Home, Distributors, **Bolo mic (centre, raised, white circle with a green ring)**, Orders, Settings. Active tab: filled icon in green plus a 3px green bar on top; no pill. No sidebar, no hamburger.
+- Screens without the tab bar (Photo, Result) show the Bolo mic as a floating round button on the right. Check has no Bolo button: its own "Hold to speak" is the one mic there.
+- Demo view: at 640px and wider the app sits in a 390 x 844 phone frame, centred; fixed bars stay inside it.
 - Meta in separate elements or lines. Never strings joined with middle dots, never arrows glued to text, never decorative status dots.
-- Primary actions in the bottom third of the screen. "Take stock log" is fixed above the tab bar on Home only.
+- Primary actions in the bottom third of the screen. "Take stock log" is fixed above the tab bar on Home only. Read out and Copy list are small text buttons; Confirm order is the card's one primary.
 
 ## States
 Every region that loads data draws four states: loading (a skeleton in the shape of the content), empty (what belongs here and the one action that fills it), error (what broke and what to do), full. Discard log and reset demo ask first; removing a photo or an item shows an undo toast.
@@ -85,3 +91,12 @@ Every region that loads data draws four states: loading (a skeleton in the shape
 
 ## Voice
 A shopkeeper's plainness: item, count, day, who comes. "Surf runs out tomorrow. Sharma comes Tuesday." Hindi or English from `i18n.js`. Never an invented number: every figure comes from the owner's logs or the rule.
+- Day and month names are English in both languages ("Monday, 23 Nov"). Some Hindi-mode strings are Hinglish by the owner's choice: "Saman kab kab aya", "1 khatm hoga" / "N khatm honge". The Hindi pack word is "box".
+- Never "sample" or "नमूना": the photo grid is "Choose a photo" / "फ़ोटो चुनें".
+- Reason lines carry only the new fact (rate, "call early"), not what the row already shows. Days left are whole days ("3 days left", "Runs out today").
+
+## Assistant (Bolo)
+- A bottom panel (max 62% of the screen) over the live screen, so the owner sees each action happen. Bubbles: assistant on paper with a rule, owner on mint.
+- It speaks first (a greeting with answer chips), then asks the next question after each step. Replies are shown and spoken.
+- One big tap-to-talk mic (primary; secondary while a Yes/No question is open), a small text box, answer chips.
+- Writes (save log, confirm order, delivery) always ask Yes/No first. Spec: `specs/2026-11-22-voice-assistant/`.

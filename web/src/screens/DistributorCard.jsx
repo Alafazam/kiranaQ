@@ -170,9 +170,9 @@ export default function DistributorCard({ card, logId, onChange }) {
 
       {orderLines.length > 0 && (
         <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-2">
-            <Button icon={Volume2} busy={busy === 'read'} onClick={readOut}>{t('read_out')}</Button>
-            <Button icon={Copy} onClick={copy}>{t('copy_list')}</Button>
+          <div className="flex gap-2">
+            <Button variant="text" icon={Volume2} className="min-h-[44px] px-3 text-sm" busy={busy === 'read'} onClick={readOut}>{t('read_out')}</Button>
+            <Button variant="text" icon={Copy} className="min-h-[44px] px-3 text-sm" onClick={copy}>{t('copy_list')}</Button>
           </div>
           {d && !card.confirmed && (
             <Button variant="primary" className="w-full" busy={busy === 'confirm'} onClick={confirm}>{t('confirm_order', { name: d.name })}</Button>

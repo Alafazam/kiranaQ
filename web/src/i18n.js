@@ -39,7 +39,7 @@ export const dict = {
     runs_out_first: 'Runs out first', order_on: 'Order on {day}', order: 'Order', enough: 'Enough', first_log: 'First log',
     days_left: '{n} days left', day_left: '1 day left', runs_out_today: 'Runs out today', no_runout: 'Does not run out',
     confirm_order: 'Confirm {name} order', ordered_on: 'Ordered {date}', not_confirmed: 'Not confirmed', delivered_on: 'Delivered {date}',
-    not_counted: '{n} items not counted', not_counted_1: '1 item not counted', no_distributor: 'No distributor', set_distributor: 'Set a distributor in Settings',
+    not_counted: '{n} items not counted', not_counted_1: '1 item not counted', first_needs: 'Start with {name}.', no_distributor: 'No distributor', set_distributor: 'Set a distributor in Settings',
     orders_empty_title: 'No orders yet', orders_empty_body: 'Take a stock log to see what to order from each distributor.',
     past_log: 'Stock log', counts: 'Counts', see_result: 'See result',
     distributors: 'Distributors', items: 'Items', language: 'Language', theme: 'Theme',
@@ -94,7 +94,7 @@ export const dict = {
     runs_out_first: 'पहले खत्म होगा', order_on: '{day} को ऑर्डर', order: 'ऑर्डर', enough: 'काफ़ी है', first_log: 'पहला लॉग',
     days_left: '{n} दिन बचे', day_left: '1 दिन बचा', runs_out_today: 'आज खत्म होगा', no_runout: 'खत्म नहीं होगा',
     confirm_order: '{name} ऑर्डर पक्का करें', ordered_on: 'ऑर्डर {date}', not_confirmed: 'पक्का नहीं', delivered_on: 'मिला {date}',
-    not_counted: '{n} आइटम नहीं गिने', not_counted_1: '1 आइटम नहीं गिना', no_distributor: 'कोई वितरक नहीं', set_distributor: 'सेटिंग में वितरक चुनें',
+    not_counted: '{n} आइटम नहीं गिने', not_counted_1: '1 आइटम नहीं गिना', first_needs: 'पहले {name}।', no_distributor: 'कोई वितरक नहीं', set_distributor: 'सेटिंग में वितरक चुनें',
     orders_empty_title: 'अभी कोई ऑर्डर नहीं', orders_empty_body: 'हर वितरक का ऑर्डर देखने के लिए स्टॉक लॉग लें।',
     past_log: 'स्टॉक लॉग', counts: 'गिनती', see_result: 'नतीजा देखें',
     distributors: 'वितरक', items: 'आइटम', language: 'भाषा', theme: 'थीम',
@@ -122,17 +122,17 @@ export const dict = {
 export const reasons = {
   en: {
     no_history: 'First log. One more is needed.',
-    runs_out_before_visit: 'Runs out in {days_of_cover} days. {distributor} comes in {days_to_next_visit} days. Call early.',
-    ran_out_last_time: 'Ran out last time. {rate_per_day} a day. Order {suggested_qty} from {distributor} on {next_visit_date}.',
-    order_needed: '{rate_per_day} a day, {days_of_cover} days left. Order {suggested_qty} from {distributor} on {next_visit_date}.',
-    no_order_needed: '{days_of_cover} days left. Enough until {distributor} comes on {next_visit_date}.',
+    runs_out_before_visit: '{distributor} comes in {days_to_next_visit} days. Call early.',
+    ran_out_last_time: 'Ran out last time. Sells {rate_per_day} a day.',
+    order_needed: 'Sells {rate_per_day} a day.',
+    no_order_needed: 'Enough until {distributor} comes.',
   },
   hi: {
     no_history: 'पहला लॉग। एक और लॉग चाहिए।',
-    runs_out_before_visit: '{days_of_cover} दिन में खत्म होगा। {distributor} {days_to_next_visit} दिन में आएँगे। पहले फ़ोन करें।',
-    ran_out_last_time: 'पिछली बार खत्म हो गया था। रोज़ {rate_per_day}। {next_visit_date} को {distributor} से {suggested_qty} मँगाएँ।',
-    order_needed: 'रोज़ {rate_per_day}, {days_of_cover} दिन बचे। {next_visit_date} को {distributor} से {suggested_qty} मँगाएँ।',
-    no_order_needed: '{days_of_cover} दिन बचे। {next_visit_date} को {distributor} के आने तक काफ़ी है।',
+    runs_out_before_visit: '{distributor} {days_to_next_visit} दिन में आएँगे। पहले फ़ोन करें।',
+    ran_out_last_time: 'पिछली बार खत्म हो गया था। रोज़ {rate_per_day} बिकता है।',
+    order_needed: 'रोज़ {rate_per_day} बिकता है।',
+    no_order_needed: '{distributor} के आने तक काफ़ी है।',
   },
 }
 

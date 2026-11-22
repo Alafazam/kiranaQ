@@ -13,13 +13,13 @@ export function BoloButton() {
   const t = useT()
   const a = useAssistantState()
   const { pathname } = useLocation()
-  // Check has its own "Hold to speak" control; one mic per screen.
-  if (a.open || pathname.startsWith('/log/new/check')) return null
-  const aboveTabs = TAB_ROUTES.includes(pathname) || pathname.startsWith('/settings') || /^\/log\/\d+$/.test(pathname)
-  const lift = pathname === '/' ? 'bottom-[140px]' : aboveTabs ? 'bottom-[80px]' : 'bottom-[150px]'
+  // Screens with the tab bar have the mic in its centre; Check has its own "Hold to speak".
+  const hasTabBar = TAB_ROUTES.includes(pathname) || pathname.startsWith('/settings') || /^\/log\/\d+$/.test(pathname)
+  if (a.open || hasTabBar || pathname.startsWith('/log/new/check')) return null
+  const lift = 'bottom-[150px]'
   return (
     <button type="button" onClick={a.openPanel} aria-label={t('assist_open')}
-      className={`fixed right-4 ${lift} z-30 flex flex-col items-center justify-center w-16 h-16 rounded-pill bg-accent text-accent-ink shadow-lift active:bg-accent-deep`}>
+      className={`fixed right-4 ${lift} z-30 flex flex-col items-center justify-center w-16 h-16 rounded-pill bg-surface text-accent-deep border-2 border-accent shadow-lift active:bg-paper-2`}>
       <Mic size={26} strokeWidth={2.25} aria-hidden />
       <span className="text-sm font-medium leading-none mt-0.5">{t('assist_bolo')}</span>
     </button>
