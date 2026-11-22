@@ -42,12 +42,12 @@ All lanes work in the same checkout on `main` (files do not overlap), commit onl
 Owns: `server/src/core/rule.js`, `schedule.js`, `plan.js`, `restock.js`, `server/scripts/seed.js`, `server/test/{rule,schedule,plan,restock,config,reasons,seed}.test.js`, `evals/sim/`, `evals/restock/`.
 Reads, never edits: `core/config.js`, `core/reasons.js`, `migrations.js`.
 
-- [ ] A1. `rule.js` + `rule.test.js` (R6 example, stock-out, first log, smoothing, rate 0, `d = 0`, `rose`, pack rounding, 4-day vs 15-day). (R5, R6, R10) Do A1–A3 first and commit by 3:40.
-- [ ] A2. `schedule.js` + test; `plan.js` + test. (R7, R9)
-- [ ] A3. `restock.js` + test. (R13)
-- [ ] A4. `seed.js` (reads `server/seed/catalog.json`, written by the photos-and-catalog session; do not edit it) (idempotent, `--reset`, dates relative to today: 1 store, 3 distributors at 4/7/15 days, 3 past logs with results from `core/`, 1 visit; its own INSERTs) + `seed.test.js`. The server runs the seed on start when the store table is empty. (R11) Coordinate brand list with Lane C's web photos.
-- [ ] A5. `config.test.js` (no numeric literals in `rule.js`) and `reasons.test.js`. (R8, R10)
-- [ ] A6. `evals/sim/simulate.js` (E4: 12 cycles, SVG chart + Markdown table, no chart library). Stretch: `evals/restock/` (E5).
+- [x] A1. `rule.js` + `rule.test.js` (R6 example, stock-out, first log, smoothing, rate 0, `d = 0`, `rose`, pack rounding, 4-day vs 15-day). (R5, R6, R10) Do A1–A3 first and commit by 3:40.
+- [x] A2. `schedule.js` + test; `plan.js` + test. (R7, R9)
+- [x] A3. `restock.js` + test. (R13)
+- [x] A4. `seed.js` (reads `server/seed/catalog.json`, written by the photos-and-catalog session; do not edit it) (idempotent, `--reset`, dates relative to today: 1 store, 3 distributors at 4/7/15 days, 3 past logs with results from `core/`, 1 visit; its own INSERTs) + `seed.test.js`. The server runs the seed on start when the store table is empty. (R11) Coordinate brand list with Lane C's web photos.
+- [x] A5. `config.test.js` (no numeric literals in `rule.js`) and `reasons.test.js`. (R8, R10)
+- [x] A6. `evals/sim/simulate.js` (E4: 12 cycles, SVG chart + Markdown table, no chart library). Stretch: `evals/restock/` (E5).
 
 Done: `pnpm --dir server test` passes for Lane A files; `pnpm eval:sim` prints results.
 

@@ -1,0 +1,12 @@
+[
+  { "name": "maggi delivery", "delivery": true, "row": { "item_id": 1, "distributor_id": 1, "p": 4, "c": 16, "d": 2, "o": 0.5, "pack_size": 6 } },
+  { "name": "parle delivery after stock-out", "delivery": true, "row": { "item_id": 2, "distributor_id": 2, "p": 3, "c": 30, "d": 4, "o": 1.2, "pack_size": 24 } },
+  { "name": "rice delivery, no old rate", "delivery": true, "row": { "item_id": 3, "distributor_id": 3, "p": 5, "c": 30, "d": 7, "o": null, "pack_size": 10 } },
+  { "name": "oil delivery on empty shelf", "delivery": true, "row": { "item_id": 4, "distributor_id": 3, "p": 0, "c": 12, "d": 5, "o": 1, "pack_size": 12 } },
+  { "name": "soap delivery, big rate", "delivery": true, "row": { "item_id": 5, "distributor_id": 1, "p": 10, "c": 40, "d": 3, "o": 3, "pack_size": 12 } },
+  { "name": "biscuit delivery, small pack", "delivery": true, "row": { "item_id": 6, "distributor_id": 2, "p": 2, "c": 9, "d": 2, "o": 0.5, "pack_size": 6 } },
+  { "name": "noise: one extra unit", "delivery": false, "row": { "item_id": 7, "distributor_id": 1, "p": 10, "c": 9, "d": 2, "o": 0.5, "pack_size": 6 } },
+  { "name": "noise: miscount by 3", "delivery": false, "row": { "item_id": 8, "distributor_id": 2, "p": 8, "c": 10, "d": 1, "o": 1, "pack_size": 12 } },
+  { "name": "noise: normal sales", "delivery": false, "row": { "item_id": 9, "distributor_id": 3, "p": 20, "c": 14, "d": 3, "o": 2, "pack_size": 10 } },
+  { "name": "noise: miscount by half a pack", "delivery": false, "row": { "item_id": 10, "distributor_id": 1, "p": 6, "c": 8, "d": 1, "o": 0, "pack_size": 6 } }
+]
