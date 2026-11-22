@@ -8,6 +8,9 @@ import mockResult from './mock/result.json'
 
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK === '1'
 const MOCK_DELAY_MS = 350
+// A request that never answers must end in the error state, not an endless skeleton.
+// Longer than the server's model timeout so vision and parse can finish.
+const REQUEST_TIMEOUT_MS = 45000
 
 export class ApiError extends Error {
   constructor(status, code, message) {
@@ -18,14 +21,20 @@ export class ApiError extends Error {
 }
 
 async function request(path, { method = 'GET', json, form, raw } = {}) {
-  const opts = { method }
+  const opts = { method, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) }
   if (json !== undefined) {
     opts.headers = { 'Content-Type': 'application/json' }
     opts.body = JSON.stringify(json)
   } else if (form) {
     opts.body = form
   }
-  const res = await fetch(`/api${path}`, opts)
+  let res
+  try {
+    res = await fetch(`/api${path}`, opts)
+  } catch (e) {
+    console.error(`API ${method} ${path} failed`, e)
+    throw new ApiError(0, e.name === 'TimeoutError' ? 'timeout' : 'network', e.message)
+  }
   if (!res.ok) {
     let code, message
     try { const b = await res.json(); code = b?.error?.code; message = b?.error?.message } catch { /* not JSON */ }

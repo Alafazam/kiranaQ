@@ -43,7 +43,7 @@ export function SettingsHome() {
                 {distributors.data.map((d) => (
                   <li key={d.id}>
                     <Link to={`/settings/distributors/${d.id}`} className="flex items-center gap-3 px-4 min-h-[60px]">
-                      <span className={`w-3 self-stretch my-3 rounded-pill ${tintClass(d.id)}`} aria-hidden />
+                      <span className={`w-3 self-stretch my-3 rounded-pill ${tintClass(d.tint_index ?? d.id)}`} aria-hidden />
                       <span className="flex-1">
                         <span className="block font-medium">{d.name}</span>
                         <span className="block text-sm text-ink-2">{t('every_n', { n: d.cycle_days })}</span>

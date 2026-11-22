@@ -26,13 +26,14 @@ function DistributorStrip() {
     <ul className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2 snap-x">
       {list.map((d) => (
         <li key={d.id} className="snap-start shrink-0">
-          <Link to={`/settings/distributors/${d.id}`} className={`block w-40 rounded-card p-3 ${tintClass(d.id)}`}>
+          <Link to="/distributors" className={`block w-40 rounded-card p-3 ${tintClass(d.tint_index ?? d.id)}`}>
             <p className="font-medium truncate">{d.name}</p>
-            <p className="num text-lg mt-1">{t.day(d.next_visit_date)} {t.date(d.next_visit_date)}</p>
+            <p className="num text-lg mt-1">{t.day(d.next_visit_date)}</p>
+            <p className="num">{t.date(d.next_visit_date)}</p>
             <p className="text-sm text-ink-2">{t.when(d.days_to_next_visit)}</p>
             {d.runs_out_count > 0 && (
               <p className="mt-2 flex items-center gap-1 text-sm font-medium text-danger">
-                <AlertTriangle size={20} aria-hidden />{t('runs_out_n', { n: d.runs_out_count })}
+                <AlertTriangle size={20} aria-hidden />{t.runsOut(d.runs_out_count)}
               </p>
             )}
           </Link>
@@ -63,7 +64,7 @@ function LogList() {
                 <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-2">
                   <span>{t('items_n', { n: log.item_count })}</span>
                   {log.runs_out_count > 0 && (
-                    <span className="flex items-center gap-1 text-danger font-medium"><AlertTriangle size={20} aria-hidden />{t('runs_out_n', { n: log.runs_out_count })}</span>
+                    <span className="flex items-center gap-1 text-danger font-medium"><AlertTriangle size={20} aria-hidden />{t.runsOut(log.runs_out_count)}</span>
                   )}
                   {log.visits.map((v) => (
                     <span key={v.distributor_id} className="flex items-center gap-1"><Truck size={20} aria-hidden />{v.name}</span>
@@ -87,7 +88,10 @@ export default function Home() {
     <>
       <TopBar title={store.data?.name ?? t('app')} right={<LangChip />} />
       <main className="mx-auto max-w-app px-4 pb-48">
-        <h2 className="text-lg mt-2 mb-3">{t('next_visits')}</h2>
+        <div className="mt-2 mb-3 flex items-center justify-between">
+          <h2 className="text-lg">{t('next_visits')}</h2>
+          <Link to="/distributors" className="text-sm underline min-h-[44px] flex items-center">{t('see_all')}</Link>
+        </div>
         <DistributorStrip />
         <h2 className="text-lg mt-6 mb-3">{t('stock_logs')}</h2>
         <LogList />

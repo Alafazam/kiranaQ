@@ -2,19 +2,19 @@
 // The `reasons` block has one template per key in server/src/core/reasons.js.
 import { createContext, useContext } from 'react'
 
-const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const MONTHS_HI = ['जन', 'फ़र', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुल', 'अग', 'सित', 'अक्टू', 'नव', 'दिस']
-const DAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const DAYS_HI = ['रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि']
+// Day and month names are English in every language (Hinglish style, Alaf's choice).
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 export const dict = {
   en: {
     app: 'KiranaQ',
     home: 'Home', orders: 'Orders', settings: 'Settings',
     take_log: 'Take stock log',
-    next_visits: 'Next visits', stock_logs: 'Stock logs',
+    next_visits: 'Next visits', stock_logs: 'Stock logs', distributor_visits: 'Distributor visits', see_all: 'See all',
+    last_visit_on: 'Last visit {date}', runs_out_before: 'Runs out before this visit', no_runs_out: 'Nothing runs out before this visit',
     today: 'Today', in_days: 'in {n} days', in_one_day: 'tomorrow', on_day: 'today',
-    items_n: '{n} items', runs_out_n: '{n} runs out',
+    items_n: '{n} items', runs_out_n: '{n} run out', runs_out_1: '1 runs out',
     no_dist_title: 'No distributors yet', no_dist_body: 'Add the distributors who visit your shop.', add_distributor: 'Add distributor',
     empty_logs_title: 'No stock logs yet',
     empty_logs_body: 'Take your first stock log. Two logs are needed to learn how fast items sell.',
@@ -53,9 +53,10 @@ export const dict = {
     app: 'किरानाQ',
     home: 'होम', orders: 'ऑर्डर', settings: 'सेटिंग',
     take_log: 'स्टॉक गिनें',
-    next_visits: 'अगली विज़िट', stock_logs: 'स्टॉक लॉग',
+    next_visits: 'Distributor kab aayenge', stock_logs: 'Saman kab kab aya', distributor_visits: 'Distributor kab aayenge', see_all: 'सब देखें',
+    last_visit_on: 'पिछली विज़िट {date}', runs_out_before: 'इस विज़िट से पहले खत्म होगा', no_runs_out: 'इस विज़िट से पहले कुछ खत्म नहीं होगा',
     today: 'आज', in_days: '{n} दिन में', in_one_day: 'कल', on_day: 'आज',
-    items_n: '{n} आइटम', runs_out_n: '{n} खत्म होंगे',
+    items_n: '{n} आइटम', runs_out_n: '{n} khatm honge', runs_out_1: '1 khatm hoga',
     no_dist_title: 'अभी कोई वितरक नहीं', no_dist_body: 'जो वितरक आपकी दुकान आते हैं, उन्हें जोड़ें।', add_distributor: 'वितरक जोड़ें',
     empty_logs_title: 'अभी कोई स्टॉक लॉग नहीं',
     empty_logs_body: 'पहला स्टॉक लॉग लें। बिक्री की रफ़्तार जानने के लिए दो लॉग चाहिए।',
@@ -118,18 +119,16 @@ export function parseDate(iso) {
   return new Date(y, m - 1, d)
 }
 
-export function formatDate(iso, lang, withDay = false) {
+export function formatDate(iso, withDay = false) {
   if (!iso) return ''
   const dt = parseDate(iso)
-  const months = lang === 'hi' ? MONTHS_HI : MONTHS_EN
-  const days = lang === 'hi' ? DAYS_HI : DAYS_EN
-  const base = `${dt.getDate()} ${months[dt.getMonth()]}`
-  return withDay ? `${days[dt.getDay()]}, ${base}` : base
+  const base = `${dt.getDate()} ${MONTHS[dt.getMonth()]}`
+  return withDay ? `${DAYS[dt.getDay()]}, ${base}` : base
 }
 
-export function dayName(iso, lang) {
+export function dayName(iso) {
   if (!iso) return ''
-  return (lang === 'hi' ? DAYS_HI : DAYS_EN)[parseDate(iso).getDay()]
+  return DAYS[parseDate(iso).getDay()]
 }
 
 function roundNum(v) {
@@ -145,13 +144,14 @@ export function makeT(lang) {
     if (!tpl) return ''
     const shown = {}
     for (const [k, v] of Object.entries(args)) {
-      shown[k] = k === 'next_visit_date' ? formatDate(v, lang, true) : roundNum(v)
+      shown[k] = k === 'next_visit_date' ? formatDate(v, true) : roundNum(v)
     }
     return fill(tpl, shown)
   }
+  t.runsOut = (n) => (n === 1 ? table.runs_out_1 ?? dict.en.runs_out_1 : fill(table.runs_out_n, { n }))
   t.when = (days) => (days <= 0 ? table.on_day : days === 1 ? table.in_one_day : fill(table.in_days, { n: days }))
-  t.date = (iso, withDay) => formatDate(iso, lang, withDay)
-  t.day = (iso) => dayName(iso, lang)
+  t.date = (iso, withDay) => formatDate(iso, withDay)
+  t.day = (iso) => dayName(iso)
   t.itemName = (it) => (lang === 'hi' ? it.name_hi || it.name_en : it.name_en)
   return t
 }

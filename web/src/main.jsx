@@ -7,6 +7,7 @@ import { ToastProvider } from './ui/Toast.jsx'
 import { TabBar } from './ui/TabBar.jsx'
 import Home from './screens/Home.jsx'
 import Orders from './screens/Orders.jsx'
+import Distributors from './screens/Distributors.jsx'
 import Photo from './screens/Photo.jsx'
 import Check from './screens/Check.jsx'
 import Result from './screens/Result.jsx'
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
           <Routes>
             <Route element={<Tabs />}>
               <Route path="/" element={<Home />} />
+              <Route path="/distributors" element={<Distributors />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/settings" element={<SettingsHome />} />
               <Route path="/settings/distributors/:id" element={<EditDistributor />} />
