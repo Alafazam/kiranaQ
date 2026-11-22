@@ -1,7 +1,7 @@
 // One distributor (spec R2–R4): visit, phone, past orders, items they give.
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Plus, Pencil, X } from 'lucide-react'
+import { Plus, Pencil, X, ChevronRight } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad, useStore } from '../state.jsx'
@@ -90,7 +90,11 @@ export default function DistributorDetail() {
               {orders.data.map((o) => (
                 <li key={o.log_id}>
                   <Card className="px-4 py-3">
-                    <p className="font-medium">{t.day(o.log_date)}, <span className="num">{t.date(o.log_date)}</span></p>
+                    <button type="button" onClick={() => navigate(`/log/${o.log_id}/result?d=${did}`)}
+                      className="flex w-full min-h-control items-center justify-between gap-2 text-left font-medium rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus">
+                      <span>{t.day(o.log_date)}, <span className="num">{t.date(o.log_date)}</span></span>
+                      <ChevronRight size={20} aria-hidden="true" className="shrink-0 text-muted" />
+                    </button>
                     <ul className="mt-2 divide-y divide-rule">
                       {o.lines.map((l) => (
                         <li key={l.item_id} className="flex items-center justify-between gap-2 py-2">
