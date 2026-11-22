@@ -4,6 +4,7 @@
 /**
  * @typedef {Object} Line
  * @property {number} item_id
+ * @property {string} sku_key        also the product thumbnail path /products/<sku_key>.jpg
  * @property {string} name_en
  * @property {string} name_hi
  * @property {number} count
