@@ -4,8 +4,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import path from 'node:path';
 import { PUBLIC_DIR } from './config.js';
+import { speechRouter } from './routes/speech.js';
 
-export function createApp(db, { publicDir = PUBLIC_DIR } = {}) {
+export function createApp(db, { publicDir = PUBLIC_DIR, speech = {} } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.use(cors());
@@ -16,6 +17,8 @@ export function createApp(db, { publicDir = PUBLIC_DIR } = {}) {
     const row = db.prepare('SELECT 1 AS ok').get();
     res.json({ status: 'ok', db: row.ok === 1 });
   });
+
+  app.use('/api', speechRouter(speech));
 
   // Built web UI, with SPA fallback for non-/api GET requests.
   app.use(express.static(publicDir));
