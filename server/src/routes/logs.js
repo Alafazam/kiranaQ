@@ -100,7 +100,7 @@ export function logsRouter({ db, clock }) {
       name: schedules.get(cand.distributor_id)?.name ?? null,
       items: cand.items.map(({ item_id, rise }) => {
         const item = items.get(item_id);
-        return { item_id, name_en: item.name_en, name_hi: item.name_hi, rise };
+        return { item_id, sku_key: item.sku_key, name_en: item.name_en, name_hi: item.name_hi, rise };
       }),
     }));
   }

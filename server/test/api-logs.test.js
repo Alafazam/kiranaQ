@@ -46,6 +46,7 @@ test('third log: Surf runs out, Maggi order of 12, Rin enough, cards sorted by n
     assert.equal(maggi.line.rate_per_day, 1.5);
     assert.equal(maggi.line.suggested_qty, 12, 'R6 example: 1.5 x 9 x 1.15 - 5 -> 12');
     assert.equal(maggi.line.reason_key, 'order_needed');
+    assert.equal(maggi.line.sku_key, 'maggi_70g', 'lines carry sku_key for the thumbnail');
     assert.equal(maggi.line.reason_args.distributor, 'Sharma Traders');
 
     assert.equal(findLine(body.cards, ITEM.rin).bucket, 'enough');
@@ -102,6 +103,7 @@ test('GET /logs newest first; GET /logs/:id and /result; GET /orders/latest', as
     const one = (await call(base, 'GET', `/logs/${logs[0].id}`)).body;
     assert.equal(one.log.id, logs[0].id);
     assert.equal(one.counts.length, 4);
+    assert.ok(one.counts.every((c) => typeof c.sku_key === 'string'));
     assert.ok(Array.isArray(one.cards));
 
     const result = (await call(base, 'GET', `/logs/${logs[0].id}/result`)).body;

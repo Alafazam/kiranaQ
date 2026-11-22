@@ -34,7 +34,7 @@ export function updateItem(db, storeId, id, fields) {
 /** Map item_id -> item row (raw fields the rule needs) for the given ids of this store. */
 export function itemsById(db, storeId) {
   const rows = db
-    .prepare('SELECT id, name_en, name_hi, unit, pack_size, active, distributor_id FROM item WHERE store_id = ?')
+    .prepare('SELECT id, sku_key, name_en, name_hi, unit, pack_size, active, distributor_id FROM item WHERE store_id = ?')
     .all(storeId);
   return new Map(rows.map((r) => [r.id, r]));
 }

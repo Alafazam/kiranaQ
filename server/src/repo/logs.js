@@ -57,8 +57,9 @@ export function insertCount(db, storeId, logId, { item_id, count, source, vision
 export function logCounts(db, storeId, logId) {
   return db
     .prepare(
-      `SELECT item_id, count, source, vision_count, vision_confidence
-         FROM stock_count WHERE store_id = ? AND log_id = ? ORDER BY item_id`,
+      `SELECT c.item_id, i.sku_key, c.count, c.source, c.vision_count, c.vision_confidence
+         FROM stock_count c JOIN item i ON i.id = c.item_id AND i.store_id = c.store_id
+        WHERE c.store_id = ? AND c.log_id = ? ORDER BY c.item_id`,
     )
     .all(storeId, logId);
 }
@@ -115,7 +116,7 @@ export function upsertResult(db, storeId, logId, r) {
 export function resultLines(db, storeId, logId) {
   return db
     .prepare(
-      `SELECT r.item_id, i.name_en, i.name_hi, c.count, i.pack_size, i.unit, r.rate_per_day, r.days_of_cover,
+      `SELECT r.item_id, i.sku_key, i.name_en, i.name_hi, c.count, i.pack_size, i.unit, r.rate_per_day, r.days_of_cover,
               r.status, r.suggested_qty, r.final_qty, r.reason_key, r.reason_args, r.distributor_id, r.next_visit_date
          FROM item_result r
          JOIN item i ON i.id = r.item_id AND i.store_id = r.store_id

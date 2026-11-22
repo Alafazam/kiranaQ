@@ -36,7 +36,7 @@ test('same-day restock log gives a Sharma candidate and keeps the old rate', asy
     assert.equal(cand.distributor_id, DIST.sharma);
     assert.equal(cand.name, 'Sharma Traders');
     assert.deepEqual(cand.items.map((i) => [i.item_id, i.rise]).sort(), [[ITEM.maggi, 12], [ITEM.surf, 12]]);
-    assert.equal(cand.items[0].name_en.length > 0, true);
+    assert.ok(cand.items.every((i) => i.name_en.length > 0 && typeof i.sku_key === 'string'));
     assert.equal(findLine(body.cards, ITEM.maggi).line.rate_per_day, 1.5);
     assert.equal(db.prepare('SELECT has_restock FROM stock_log WHERE id = ?').get(body.log_id).has_restock, 1);
   }, opts);
