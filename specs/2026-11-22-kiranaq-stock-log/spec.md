@@ -88,15 +88,129 @@ Vision prompt gets the store catalog (id, names in en/hi, pack) and must answer 
 
 ### Data model (SQLite)
 
-- `store`: id, name (synthetic), language
-- `distributor`: id, store_id, name, cycle_days, last_visit_date
-- `item`: id, store_id, distributor_id (nullable), name_en, name_hi, group, pack_size, unit, active
-- `stock_log`: id, store_id, taken_at, source (`photo` | `manual`), has_restock (bool)
-- `stock_count`: log_id, item_id, count, source (`vision` | `voice` | `tap`), vision_confidence
-- `order_line`: log_id, item_id, distributor_id, suggested_qty, final_qty
-- `visit`: id, distributor_id, log_id, visited_on (the log date)
-- `receipt`: visit_id, item_id, received_qty
-- `item_state`: item_id, rate_per_day, updated_at
+One SQLite file (`DB_PATH`, default `server/data/kiranaq.db`). Schema lives in `server/src/migrations.js` as migration 1. Business dates are `TEXT` `YYYY-MM-DD` in store local time (IST). Timestamps are `TEXT` ISO 8601 UTC. Every table that holds store data has `store_id`, and every query filters by it (tenant rule, even with one store).
+
+**What is stored:** the store, its distributors, its item list, each stock log and its counts, the suggested and final order lines, visits and what arrived, the learned rate per item, and a log of model calls (no content).
+**What is never stored:** photos, audio, transcripts of speech, API keys, any real person's name or phone number. Photos and audio stay in memory for the length of one request.
+
+```sql
+CREATE TABLE store (
+  id            INTEGER PRIMARY KEY,
+  name          TEXT NOT NULL,               -- synthetic, e.g. "Demo Kirana"
+  language      TEXT NOT NULL DEFAULT 'hi' CHECK (language IN ('hi','en')),
+  created_at    TEXT NOT NULL
+);
+
+CREATE TABLE distributor (
+  id              INTEGER PRIMARY KEY,
+  store_id        INTEGER NOT NULL REFERENCES store(id),
+  name            TEXT NOT NULL,             -- "Sharma Traders"
+  note            TEXT,                      -- "HUL items"
+  cycle_days      INTEGER NOT NULL CHECK (cycle_days BETWEEN 1 AND 60),
+  last_visit_date TEXT,                      -- YYYY-MM-DD, null = unknown
+  created_at      TEXT NOT NULL,
+  UNIQUE (store_id, name)
+);
+
+CREATE TABLE item (
+  id             INTEGER PRIMARY KEY,
+  store_id       INTEGER NOT NULL REFERENCES store(id),
+  distributor_id INTEGER REFERENCES distributor(id),   -- null = "no distributor set"
+  sku_key        TEXT NOT NULL,              -- stable key from data/catalog.json, e.g. "maggi_70g"
+  name_en        TEXT NOT NULL,
+  name_hi        TEXT NOT NULL,
+  aliases        TEXT NOT NULL DEFAULT '[]', -- JSON array of spoken names: ["maggi","noodles","मैगी"]
+  item_group     TEXT NOT NULL,              -- staples | snacks | biscuits | drinks | personal_care | home_care
+  unit           TEXT NOT NULL,              -- pcs | kg | packet | bottle
+  pack_size      INTEGER NOT NULL CHECK (pack_size >= 1),  -- units per distributor pack/case
+  active         INTEGER NOT NULL DEFAULT 1,
+  UNIQUE (store_id, sku_key)
+);
+
+CREATE TABLE stock_log (
+  id           INTEGER PRIMARY KEY,
+  store_id     INTEGER NOT NULL REFERENCES store(id),
+  log_date     TEXT NOT NULL,               -- YYYY-MM-DD (business date)
+  created_at   TEXT NOT NULL,
+  source       TEXT NOT NULL CHECK (source IN ('photo','manual')),
+  photo_count  INTEGER NOT NULL DEFAULT 0,  -- how many photos were sent (photos are not kept)
+  has_restock  INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX idx_stock_log_store_date ON stock_log(store_id, log_date DESC);
+
+CREATE TABLE stock_count (
+  log_id            INTEGER NOT NULL REFERENCES stock_log(id) ON DELETE CASCADE,
+  item_id           INTEGER NOT NULL REFERENCES item(id),
+  store_id          INTEGER NOT NULL REFERENCES store(id),
+  count             INTEGER NOT NULL CHECK (count BETWEEN 0 AND 9999),  -- in units, not packs
+  source            TEXT NOT NULL CHECK (source IN ('vision','voice','tap')),  -- who set the final value
+  vision_count      INTEGER,                -- what the model said, for later accuracy checks
+  vision_confidence REAL,
+  PRIMARY KEY (log_id, item_id)
+);
+
+CREATE TABLE item_result (                  -- rule output per item per log (what the Result screen shows)
+  log_id           INTEGER NOT NULL REFERENCES stock_log(id) ON DELETE CASCADE,
+  item_id          INTEGER NOT NULL REFERENCES item(id),
+  store_id         INTEGER NOT NULL REFERENCES store(id),
+  distributor_id   INTEGER REFERENCES distributor(id),
+  rate_per_day     REAL,                    -- null on first log
+  days_of_cover    REAL,                    -- null when rate is 0 or unknown
+  next_visit_date  TEXT,
+  status           TEXT NOT NULL CHECK (status IN ('runs_out','order','ok','no_history')),
+  suggested_qty    INTEGER NOT NULL DEFAULT 0,   -- in units, a multiple of pack_size
+  final_qty        INTEGER,                 -- what the owner confirmed; null = not confirmed
+  reason_key       TEXT NOT NULL,           -- template id, e.g. "runs_out_before_visit"
+  reason_args      TEXT NOT NULL,           -- JSON args for the template; text is built in the UI language
+  PRIMARY KEY (log_id, item_id)
+);
+
+CREATE TABLE visit (
+  id             INTEGER PRIMARY KEY,
+  store_id       INTEGER NOT NULL REFERENCES store(id),
+  distributor_id INTEGER NOT NULL REFERENCES distributor(id),
+  log_id         INTEGER NOT NULL REFERENCES stock_log(id) ON DELETE CASCADE,
+  visited_on     TEXT NOT NULL,             -- = the log date
+  created_at     TEXT NOT NULL,
+  UNIQUE (distributor_id, log_id)           -- confirming twice is safe (idempotent)
+);
+
+CREATE TABLE receipt (
+  visit_id     INTEGER NOT NULL REFERENCES visit(id) ON DELETE CASCADE,
+  item_id      INTEGER NOT NULL REFERENCES item(id),
+  store_id     INTEGER NOT NULL REFERENCES store(id),
+  received_qty INTEGER NOT NULL CHECK (received_qty >= 0),
+  PRIMARY KEY (visit_id, item_id)
+);
+
+CREATE TABLE item_state (                   -- the learned rate, updated after each log
+  store_id     INTEGER NOT NULL REFERENCES store(id),
+  item_id      INTEGER NOT NULL REFERENCES item(id),
+  rate_per_day REAL,
+  last_log_id  INTEGER REFERENCES stock_log(id),
+  updated_at   TEXT NOT NULL,
+  PRIMARY KEY (store_id, item_id)
+);
+
+CREATE TABLE ai_call (                      -- one row per model call, no content
+  id          INTEGER PRIMARY KEY,
+  store_id    INTEGER NOT NULL REFERENCES store(id),
+  kind        TEXT NOT NULL CHECK (kind IN ('vision','stt','tts','parse')),
+  provider    TEXT NOT NULL,                -- anthropic | sarvam
+  model       TEXT NOT NULL,
+  ok          INTEGER NOT NULL,
+  latency_ms  INTEGER NOT NULL,
+  error_code  TEXT,                         -- short code only, no response body
+  created_at  TEXT NOT NULL
+);
+```
+
+Notes:
+- Counts and order quantities are stored in **units**. The UI shows them as packs plus loose units ("2 cases + 4") using `pack_size`.
+- Reason lines are stored as a template key plus JSON args, not as text. The UI builds the sentence in the chosen language, so a language switch changes old results too.
+- The draft of a log (photo counts before the owner says yes) lives only in the browser. Nothing is written until `POST /api/logs`.
+- `data/catalog.json` is the starter list (about 25 items for the demo). `scripts/seed.js` copies it into `item` for the demo store, adds 3 distributors, 3 past logs, their results and one visit.
+- Saving a log is one transaction: `stock_log`, `stock_count`, `item_result`, `item_state`. Confirming a visit is one transaction: `visit`, `receipts`, `distributor.last_visit_date`, and recomputed `item_result` rows for that log.
 
 ### API
 
@@ -132,9 +246,143 @@ First log of an item (no history): no rate, no order suggestion, reason "first l
 
 On a log with a confirmed delivery, `received` is estimated from the old rate, so the rate for those items does not change on that log (it would only repeat the old rate). The rate learns from logs without a delivery in between. Best practice we tell the owner: take a log when the salesperson comes (that log makes the order), and one after the stock arrives (that log records the visit). Then `received` is exact: count after minus count before.
 
-### Screens
+### UI tech
 
-Home (logs + distributor strip with next visits and runs-out counts) → Camera/photo → Count review (list, plus/minus, mic button, read-back dialog) → Result (one card per distributor: runs-out, order lines, reasons, confirm) → Settings (distributors: name, cycle, last visit; item → distributor; language).
+| Part | Choice | Why |
+|---|---|---|
+| Framework | React 18 + Vite 5 (already in `web/`) | Copied from KidQueue; fast build. |
+| Styling | Tailwind CSS 3, colors from CSS variables | Theme in one place (see Theming). |
+| Routing | `react-router-dom` v6, browser routes, server SPA fallback | Back button works on the phone. |
+| Icons | `lucide-react` | Small, tree-shaken, consistent stroke. |
+| Components | Our own, in `web/src/ui/`: `Button`, `IconButton`, `Card`, `Stepper` (− qty +), `Sheet` (bottom sheet), `Dialog`, `Toast`, `Badge`, `TopBar`, `TabBar` | No component library: less weight, full control. About 20–60 lines each. |
+| State | React state + one `useStore` context for store, distributors and items; draft log in `sessionStorage` so a refresh does not lose counts | No Redux or Zustand needed. |
+| Data | `web/src/api.js` (fetch, JSON, error to toast) | Exists. |
+| Audio | `MediaRecorder` (webm/opus or mp4 on Safari) → upload; `<audio>` plays TTS | Browser built-in. |
+| Camera | `<input type="file" accept="image/*" capture="environment" multiple>`; images resized to max 1600 px on a canvas before upload | Works on every phone browser, no camera library. Smaller upload, cheaper vision call. |
+| Text | `web/src/i18n.js`: one dictionary `{en:{…}, hi:{…}}` and a `t(key, args)` helper; reason templates live here too | Hindi and English from day one. |
+| Fonts | Noto Sans + Noto Sans Devanagari (Google Fonts), `font-variant-numeric: tabular-nums` for counts | Same look for Hindi and English; numbers line up. |
+
+### Theming
+
+Colors are tokens in `web/src/index.css` on `:root`, with a dark set under `prefers-color-scheme: dark` and under `[data-theme="dark"]`. Tailwind maps names to the tokens (`bg-surface`, `text-ink`, `bg-primary`, …), so no component uses a raw hex value.
+
+| Token | Light | Use |
+|---|---|---|
+| `--bg` | warm off-white | page |
+| `--surface` | white | cards, sheets |
+| `--ink` / `--ink-muted` | near-black / grey | text |
+| `--primary` | deep green | main actions, "enough stock" |
+| `--accent` | turmeric amber | "order needed" |
+| `--danger` | brick red | "runs out before visit" |
+| `--line` | light grey | borders |
+
+Status is never shown by color alone: each status has an icon and a word (red + `AlertTriangle` + "Runs out", amber + `ShoppingCart` + "Order", green + `CheckCircle2` + "Enough", grey + `Clock` + "First log").
+
+Size rules: base font 17 px, numbers 20–28 px, tap targets at least 48 px, primary actions in the bottom third of the screen (one-hand use), max content width 480 px (centered on a laptop). Theme choice (system, light, dark) is in Settings and kept in `localStorage`.
+
+### Navigation and menu
+
+- **Bottom tab bar** with 3 tabs: **Home** (`House`), **Orders** (`ClipboardList`), **Settings** (`Settings`). No hamburger menu.
+- **Big round "Take stock log" button** (`Camera`) floats above the tab bar, center, on Home and Orders.
+- The log flow is full screen, no tab bar: a top bar with back arrow and a 3-step indicator **Photo → Check → Result**. Back from Check asks "Discard this log?"
+- Language chip **हिं / EN** in the top bar of Home. It switches all text at once.
+
+Routes:
+
+| Route | Screen |
+|---|---|
+| `/` | Home |
+| `/orders` | Orders (latest result, one card per distributor) |
+| `/log/new` | Step 1 Photo |
+| `/log/new/check` | Step 2 Check counts (voice + tap) |
+| `/log/:id/result` | Step 3 Result (also opened from Home) |
+| `/log/:id` | Past log (read-only counts) |
+| `/settings` | Settings home |
+| `/settings/distributors/:id` | Edit distributor (name, cycle, last visit, its items) |
+| `/settings/items` | Items: active on/off, distributor per item |
+
+```mermaid
+flowchart LR
+  Home -->|Take stock log| Photo --> Check --> Result
+  Check -->|items went up| Visit[Did X deliver? sheet] --> Result
+  Home -->|tap a log| Past[Past log] --> Result
+  Home --- Orders --- Settings
+  Settings --> Dist[Edit distributor]
+  Settings --> Items
+```
+
+### Screens (layout)
+
+**Home**
+```
+┌──────────────────────────────┐
+│ Demo Kirana        [हिं|EN]  │
+│ Next visits                  │
+│ ┌──────┐┌──────┐┌──────┐     │  ← horizontal chips, scroll
+│ │Sharma││Gupta ││Mehta │     │
+│ │in 2d ││in 6d ││in 11d│     │
+│ │⚠ 2   ││      ││⚠ 1   │     │  ← items that run out first
+│ └──────┘└──────┘└──────┘     │
+│ Stock logs                   │
+│ Today 22 Nov · 24 items · ⚠3 │
+│ Fri 20 Nov · 23 items  ·🚚 S │  ← 🚚 = visit recorded
+│ Tue 17 Nov · 22 items        │
+│            ( 📷 )            │  ← Take stock log
+│ [Home]   [Orders]  [Settings]│
+└──────────────────────────────┘
+```
+Empty state (no logs): one card "Take your first stock log. Two logs are needed to learn how fast items sell."
+
+**Step 1 Photo**: big dashed area "Take a photo of your shelf" (opens camera), thumbnails of up to 3 photos with remove ×, a secondary link "Count without photo", primary button "Count items" (disabled until one photo). While waiting: skeleton list and "Counting items…" (vision call, target under 15 s).
+
+**Step 2 Check**
+```
+┌──────────────────────────────┐
+│ ←  Photo · CHECK · Result    │
+│ 🔊 Read out   18 items found │
+│ Maggi 70g       ⓘ 92%        │
+│ [−]  12 pcs  (1 case+0) [+]  │
+│ Parle-G         ⓘ 61% low    │  ← low confidence: amber outline
+│ [−]  30 pcs             [+]  │
+│ + Add item                   │
+│ ┌──────────────────────────┐ │
+│ │ 🎤 Hold to speak         │ │  ← sticky bottom
+│ └──────────────────────────┘ │
+│ [ Save log ]                 │
+└──────────────────────────────┘
+```
+After speech, a bottom sheet: "I heard: Maggi 8, Surf 5" with the changed rows, buttons **Yes, apply** and **No, try again**. An unclear phrase shows the question from the parser ("Which Surf: 500 g or 1 kg?"). A text box under the mic is the fallback.
+
+**Visit sheet** (after Save, only when items went up): "Did Sharma Traders deliver today? Maggi +12, Surf +6, Rin +4" with **Yes, delivered** / **No**. One sheet per distributor.
+
+**Step 3 Result / Orders**
+```
+┌──────────────────────────────┐
+│ Sharma Traders · Tue 24 Nov  │
+│ in 2 days · every 7 days     │
+│ ⚠ RUNS OUT FIRST             │
+│ Surf 1kg   1 day left        │
+│  "Runs out tomorrow, Sharma  │
+│   comes in 2 days. Call      │
+│   early."        [📞 note]   │
+│ 🛒 ORDER ON TUE              │
+│ Maggi     [−] 2 cases [+]    │
+│  "1.5/day, 5 days left…"     │
+│ ✓ Enough: Rin, Vim (tap)     │
+│ [ Confirm Sharma order ]     │
+└──────────────────────────────┘
+  (next card: Gupta Agency …)
+```
+"Read out" button speaks the order list for one distributor (TTS), so the owner can read it to the salesperson. "Copy list" copies it as plain text (to paste in WhatsApp; the app does not send it).
+
+**Settings**: list rows: Distributors (count), Items (count), Language, Theme (System / Light / Dark), Demo data (Reset to demo, asks first), About (version, "Synthetic data only").
+
+### Loading, errors, empty states
+
+- Every network call shows a busy state on the button that started it, and the button is disabled while busy (no double submit).
+- Model call fails → toast "Could not count from photo. Count by voice or tap." and the Check screen opens with an empty list.
+- Mic not allowed → the mic button shows "Mic blocked: type instead" and the text box opens.
+- No distributor set for an item → it goes in a last card "No distributor" with a link to Settings.
 
 ## 5. Verification
 
