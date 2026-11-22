@@ -51,7 +51,7 @@ export default function CardList({ result, onChange, announce = false }) {
   }, [announce])
   return (
     <div className="space-y-4">
-      {withDist.length > 1 && (
+      {withDist.length >= 1 && (
         <label className="block">
           <span className="sr-only">{t('choose_distributor')}</span>
           <select value={filterId ?? ''} onChange={(e) => setFilter(e.target.value)}
