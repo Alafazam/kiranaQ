@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { Button, Sheet } from '../ui/kit.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { useToast } from '../ui/Toast.jsx'
 
 export default function VisitSheet({ logId, candidates, onDone }) {
@@ -32,8 +33,8 @@ export default function VisitSheet({ logId, candidates, onDone }) {
     <Sheet open title={t('visit_q', { name: c.name })} onClose={() => !busy && answer(false)}>
       <ul className="divide-y divide-rule mb-4">
         {c.items.map((it) => (
-          <li key={it.item_id} className="flex justify-between py-2">
-            <span>{t.itemName(it)}</span>
+          <li key={it.item_id} className="flex items-center justify-between py-2">
+            <ItemLabel item={it} size="sm" />
             <span className="num">+{it.rise}</span>
           </li>
         ))}

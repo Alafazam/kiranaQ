@@ -9,6 +9,7 @@ import { TopBar, Steps } from '../ui/TopBar.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import { canRecord, startRecording } from '../voice.js'
 import VisitSheet from './VisitSheet.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { BoxOverlay } from '../ui/BoxEditor.jsx'
 
 // Below this vision confidence a row shows "Not sure".
@@ -165,7 +166,7 @@ export default function Check() {
                   return (
                     <li key={c.item_id} className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium flex-1">{t.itemName(it)}</p>
+                        <ItemLabel item={it} className="flex-1" />
                         {unsure && <Badge>{t('not_sure')}</Badge>}
                         <IconButton icon={Trash2} label={t('remove_item')} className="!min-h-[44px] !w-[44px] text-muted" onClick={() => removeRow(c.item_id)} />
                       </div>
@@ -213,7 +214,7 @@ export default function Check() {
       <Sheet open={addOpen} onClose={() => setAddOpen(false)} title={t('pick_item')}>
         <ul className="divide-y divide-rule max-h-[60vh] overflow-y-auto">
           {notAdded.map((it) => (
-            <li key={it.id}><button type="button" className="w-full text-left py-3 min-h-control" onClick={() => addRow(it.id)}>{t.itemName(it)}</button></li>
+            <li key={it.id}><button type="button" className="w-full text-left py-3 min-h-control" onClick={() => addRow(it.id)}><ItemLabel item={it} size="sm" /></button></li>
           ))}
         </ul>
       </Sheet>
@@ -231,7 +232,7 @@ export default function Check() {
                   const before = counts.find((c) => c.item_id === ed.item_id)?.count
                   return (
                     <li key={ed.item_id} className="flex justify-between py-2">
-                      <span>{it ? t.itemName(it) : ed.item_id}</span>
+                      {it ? <ItemLabel item={it} size="sm" /> : <span>{ed.item_id}</span>}
                       <span className="num">{before != null && <span className="text-muted line-through mr-2">{before}</span>}{ed.count}</span>
                     </li>
                   )

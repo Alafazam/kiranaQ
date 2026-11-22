@@ -6,6 +6,7 @@ import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad } from '../state.jsx'
 import { Button, EmptyState, ErrorState, Skeleton, tintClass } from '../ui/kit.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { TopBar } from '../ui/TopBar.jsx'
 
 async function loadVisits() {
@@ -53,7 +54,7 @@ export default function Distributors() {
                         <AlertTriangle size={20} aria-hidden />{t.runsOut(d.runs_out.length)}
                       </p>
                       <ul className="mt-1">
-                        {d.runs_out.map((l) => <li key={l.item_id} className="py-0.5">{t.itemName(l)}</li>)}
+                        {d.runs_out.map((l) => <li key={l.item_id} className="py-1"><ItemLabel item={l} size="sm" /></li>)}
                       </ul>
                     </>
                   ) : (

@@ -6,6 +6,7 @@ import { useT, useLang } from '../i18n.js'
 import { useStore } from '../state.jsx'
 import { Button, Card, EmptyState, ErrorState, Loading, tintClass } from '../ui/kit.jsx'
 import { TopBar } from '../ui/TopBar.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { useToast } from '../ui/Toast.jsx'
 
 const APP_VERSION = '0.1.0'
@@ -132,7 +133,7 @@ export function EditDistributor() {
         <Button variant="primary" className="w-full" busy={busy} disabled={!valid} onClick={save}>{t('save')}</Button>
         <section>
           <h2 className="text-lg mb-2 flex items-center gap-2"><Truck size={20} aria-hidden />{t('items')}</h2>
-          <Card><ul className="divide-y divide-rule">{own.map((it) => <li key={it.id} className="px-4 py-3">{t.itemName(it)}</li>)}</ul></Card>
+          <Card><ul className="divide-y divide-rule">{own.map((it) => <li key={it.id} className="px-4 py-3"><ItemLabel item={it} size="sm" /></li>)}</ul></Card>
         </section>
       </main>
     </>
@@ -170,7 +171,7 @@ export function ItemsList() {
               {items.data.map((it) => (
                 <li key={it.id} className="px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`font-medium ${it.active ? '' : 'text-muted'}`}>{t.itemName(it)}</span>
+                    <ItemLabel item={it} className={it.active ? '' : 'opacity-60'} />
                     <label className="flex items-center gap-2 min-h-[44px]">
                       <span className="text-sm text-ink-2">{t('active')}</span>
                       <input type="checkbox" className="w-6 h-6 accent-[var(--color-accent)]" checked={it.active} disabled={busyId === it.id}

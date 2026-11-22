@@ -3,6 +3,7 @@ import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { useLoad, useStore } from '../state.jsx'
 import { Button, Card, ErrorState, Loading } from '../ui/kit.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { TopBar } from '../ui/TopBar.jsx'
 
 export default function PastLog() {
@@ -26,8 +27,8 @@ export default function PastLog() {
                 {res.data.counts.map((c) => {
                   const it = byId.get(c.item_id)
                   return (
-                    <li key={c.item_id} className="flex justify-between px-4 py-3">
-                      <span>{it ? t.itemName(it) : c.item_id}</span>
+                    <li key={c.item_id} className="flex items-center justify-between gap-2 px-4 py-3">
+                      {it ? <ItemLabel item={{ ...it, ...c }} /> : <span>{c.item_id}</span>}
                       <span className="num">{c.count} {it?.unit}</span>
                     </li>
                   )

@@ -6,6 +6,7 @@ import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { Button, Stamp, StatusLabel, Stepper, tintClass } from '../ui/kit.jsx'
 import { useToast } from '../ui/Toast.jsx'
+import ItemLabel from '../ui/ItemLabel.jsx'
 import { playBlob } from '../voice.js'
 
 const firstLog = (card) => card.first_log || card.no_history || []
@@ -27,9 +28,9 @@ function OrderLine({ line, qty, onQty, locked }) {
   const t = useT()
   return (
     <li className="bg-surface rounded-control px-3 py-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="font-medium">{t.itemName(line)}</p>
-        <p className={`num text-sm ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
+      <div className="flex items-center justify-between gap-2">
+        <ItemLabel item={line} />
+        <p className={`shrink-0 whitespace-nowrap text-sm font-medium tabular-nums ${line.status === 'runs_out' ? 'text-danger' : 'text-ink-2'}`}>{daysLeftText(t, line)}</p>
       </div>
       <p className="mt-1 text-sm text-ink-2">{t.reason(line.reason_key, line.reason_args)}</p>
       <div className="mt-2 flex items-center justify-between gap-2">
@@ -141,7 +142,7 @@ export default function DistributorCard({ card, logId, onChange }) {
             <ul className="divide-y divide-rule px-3 pb-2">
               {card.enough.map((l) => (
                 <li key={l.item_id} className="py-2">
-                  <div className="flex justify-between gap-2"><span>{t.itemName(l)}</span><span className="num text-sm text-ink-2">{daysLeftText(t, l)}</span></div>
+                  <div className="flex items-center justify-between gap-2"><ItemLabel item={l} size="sm" /><span className="num text-sm text-ink-2">{daysLeftText(t, l)}</span></div>
                   <p className="text-sm text-muted">{t.reason(l.reason_key, l.reason_args)}</p>
                 </li>
               ))}
@@ -152,7 +153,7 @@ export default function DistributorCard({ card, logId, onChange }) {
       {firstLog(card).length > 0 && (
         <section className="mb-3 bg-surface rounded-control px-3 py-2">
           <StatusLabel status="no_history" />
-          <p className="text-sm text-ink-2 mt-1">{firstLog(card).map((l) => t.itemName(l)).join(', ')}</p>
+          <ul className="mt-2 space-y-2">{firstLog(card).map((l) => <li key={l.item_id}><ItemLabel item={l} size="sm" /></li>)}</ul>
           <p className="text-sm text-muted">{t.reason('no_history')}</p>
         </section>
       )}
