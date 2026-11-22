@@ -45,3 +45,13 @@ Verdict: **PASS**.
 | Built app walk through | `node server.js` on port 3001, browser pane at 390×844, real Sarvam calls | Home → sample photo (biscuit aisle) → preset count box → vision found 3 items (Parle-G 12, Parle-G Gold 10, Marie 18) with thumbnails and both names → Save (201) → Result card for Gupta Wholesale with 2 runs-out items and 1 order line, reasons in Hindi. Pass |
 
 Screenshots: `walk-1-home.jpg`, `walk-2-sample-photos.jpg`, `walk-3-count-box.jpg`, `walk-4-check.jpg`, `walk-5-result.jpg`.
+
+## Lead: end-to-end check (2026-11-22, 16:00)
+
+| Check | Result |
+|---|---|
+| `pnpm --dir server test` | 100/100 pass |
+| `pnpm --dir server demo:check` | pass (15 checks) |
+| `pnpm --dir web build` | pass |
+| Bolo, real Sarvam, built app on :3001 at 390×844 (typed into the assistant text box; the pane has no mic) | "stock ginna hai" → log opened and the assistant offered photo choices; "फ़ोटो चुनें" → photo picked, vision counted 3 items; "Parle-G 20 hai" → count set to 20 and the assistant offered "Save karun". Pass |
+| Landing `/landing/#demo` | 5-step tour works (Next, dots, hotspots); "Try the live demo" loads the live app in the phone frame. Open: steps 2–3 screenshots show the old UI |
