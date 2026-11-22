@@ -1,0 +1,34 @@
+{
+  "log_id": 4,
+  "log_date": "2026-11-22",
+  "not_counted": 1,
+  "delivery_candidates": [],
+  "cards": [
+    {
+      "distributor": { "id": 2, "name": "Gupta Agency", "tint_index": 2, "next_visit_date": "2026-11-23", "days_to_next_visit": 1, "cycle_days": 4, "visit_date_set": true },
+      "runs_out": [],
+      "order": [
+        { "item_id": 3, "name_en": "Parle-G 100g", "name_hi": "पारले-जी 100 ग्राम", "count": 20, "pack_size": 24, "unit": "pcs", "rate_per_day": 6, "days_of_cover": 3.3, "status": "order", "suggested_qty": 24, "final_qty": null, "reason_key": "order_needed", "reason_args": { "rate_per_day": 6, "days_of_cover": 3.3, "suggested_qty": 24, "distributor": "Gupta Agency", "next_visit_date": "2026-11-23" } }
+      ],
+      "enough": [],
+      "first_log": [],
+      "confirmed": false,
+      "visit_recorded": false
+    },
+    {
+      "distributor": { "id": 1, "name": "Sharma Traders", "tint_index": 1, "next_visit_date": "2026-11-24", "days_to_next_visit": 2, "cycle_days": 7, "visit_date_set": true },
+      "runs_out": [
+        { "item_id": 7, "name_en": "Surf Excel 1kg", "name_hi": "सर्फ एक्सेल 1 किलो", "count": 1, "pack_size": 6, "unit": "packet", "rate_per_day": 0.9, "days_of_cover": 1.1, "status": "runs_out", "suggested_qty": 12, "final_qty": null, "reason_key": "runs_out_before_visit", "reason_args": { "days_of_cover": 1.1, "distributor": "Sharma Traders", "days_to_next_visit": 2, "days_out": 0.9 } }
+      ],
+      "order": [
+        { "item_id": 1, "name_en": "Maggi Noodles 70g", "name_hi": "मैगी नूडल्स 70 ग्राम", "count": 5, "pack_size": 6, "unit": "pcs", "rate_per_day": 1.5, "days_of_cover": 3.3, "status": "order", "suggested_qty": 12, "final_qty": null, "reason_key": "order_needed", "reason_args": { "rate_per_day": 1.5, "days_of_cover": 3.3, "suggested_qty": 12, "distributor": "Sharma Traders", "next_visit_date": "2026-11-24" } }
+      ],
+      "enough": [
+        { "item_id": 9, "name_en": "Rin Bar", "name_hi": "रिन साबुन", "count": 30, "pack_size": 10, "unit": "pcs", "rate_per_day": 1.0, "days_of_cover": 30, "status": "ok", "suggested_qty": 0, "final_qty": null, "reason_key": "no_order_needed", "reason_args": { "days_of_cover": 30, "distributor": "Sharma Traders", "next_visit_date": "2026-11-24" } }
+      ],
+      "first_log": [],
+      "confirmed": false,
+      "visit_recorded": false
+    }
+  ]
+}

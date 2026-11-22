@@ -7,12 +7,21 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "seed": "node scripts/seed.js",
+    "demo:check": "node scripts/demo-check.js",
+    "smoke:live": "node scripts/smoke-live.js",
+    "eval:parse": "node ../evals/run-parse.js",
+    "eval:vision": "node ../evals/run-vision.js",
+    "eval:voice": "node ../evals/run-voice.js",
+    "eval:sim": "node ../evals/sim/simulate.js",
+    "eval:restock": "node ../evals/restock/run.js"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
     "better-sqlite3": "^13.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

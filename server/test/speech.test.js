@@ -1,18 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { initDb } from '../src/db.js';
-import { createApp } from '../src/app.js';
+import { withApp } from './helpers.js';
 
 async function withServer(speech, fn) {
-  process.env.NODE_ENV = 'test';
-  const db = initDb(':memory:');
-  const server = createApp(db, { speech }).listen(0);
-  try {
-    await fn(`http://127.0.0.1:${server.address().port}`);
-  } finally {
-    server.close();
-    db.close();
-  }
+  await withApp(({ base }) => fn(base), { speech });
 }
 
 test('POST /api/tts returns audio', async () => {

@@ -2,16 +2,21 @@
 import 'dotenv/config';
 import { initDb } from './src/db.js';
 import { createApp } from './src/app.js';
+import { createClock } from './src/clock.js';
+import { createRealAi } from './src/ai/real.js';
 import { DEFAULT_PORT, HOST } from './src/config.js';
+import { seedIfEmpty } from './scripts/seed.js';
 
 const PORT = Number.parseInt(process.env.PORT ?? String(DEFAULT_PORT), 10);
 const SHUTDOWN_TIMEOUT_MS = 5000;
 
 const db = initDb();
-const app = createApp(db);
+const clock = createClock();
+seedIfEmpty(db, clock);
+const app = createApp({ db, ai: createRealAi({ db }), clock });
 
 const server = app.listen(PORT, HOST, () => {
-  console.log(`[kiranaq] listening on http://${HOST}:${PORT}`);
+  console.log(`[kiranaq] listening on http://${HOST}:${PORT} (today ${clock.today()})`);
 });
 
 process.on('unhandledRejection', (err) => console.error('[kiranaq] unhandled rejection:', err));

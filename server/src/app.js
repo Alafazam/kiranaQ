@@ -1,24 +1,45 @@
 // Builds the Express app. No listen() here, so tests can use it.
+// createApp({db, ai, clock, publicDir?, speech?}): tests pass a fake ai and a fixed clock.
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import path from 'node:path';
 import { PUBLIC_DIR } from './config.js';
+import { DEMO_STORE_ID } from './core/config.js';
+import { assertAi } from './ai/index.js';
+import { storeRouter } from './routes/store.js';
+import { logsRouter } from './routes/logs.js';
 import { speechRouter } from './routes/speech.js';
 
-export function createApp(db, { publicDir = PUBLIC_DIR, speech = {} } = {}) {
+export function createApp({ db, ai, clock, publicDir = PUBLIC_DIR, speech = {} }) {
+  if (!db || !clock) throw new Error('createApp needs db and clock');
+  assertAi(ai);
   const app = express();
   app.disable('x-powered-by');
   app.use(cors());
   app.use(express.json({ limit: '1mb' }));
   if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
-  app.get('/api/health', (_req, res) => {
-    const row = db.prepare('SELECT 1 AS ok').get();
-    res.json({ status: 'ok', db: row.ok === 1 });
+  // One demo store. Every handler reads req.storeId and passes it to every query.
+  app.use('/api', (req, _res, next) => {
+    req.storeId = DEMO_STORE_ID;
+    next();
   });
 
-  app.use('/api', speechRouter(speech));
+  app.get('/api/health', (_req, res) => {
+    const row = db.prepare('SELECT 1 AS ok').get();
+    res.json({
+      ok: true,
+      db: row.ok === 1,
+      keys: { sarvam: Boolean(process.env.SARVAM_API_KEY), anthropic: Boolean(process.env.ANTHROPIC_API_KEY) },
+    });
+  });
+
+  app.use('/api', storeRouter({ db, clock }));
+  app.use('/api', logsRouter({ db, clock }));
+  app.use('/api', speechRouter({ ...speech, db, ai, clock }));
+
+  app.use('/api', (_req, res) => res.status(404).json({ error: { code: 'not_found', message: 'No such API route' } }));
 
   // Built web UI, with SPA fallback for non-/api GET requests.
   app.use(express.static(publicDir));
@@ -28,12 +49,19 @@ export function createApp(db, { publicDir = PUBLIC_DIR, speech = {} } = {}) {
     });
   });
 
-  // Errors return JSON and are logged.
+  // Errors: {error: {code, message}}. Throw with err.status and err.code for 4xx.
   app.use((err, req, res, next) => {
-    console.error(`[kiranaq] error handling ${req.method} ${req.path}:`, err);
-    if (res.headersSent) return next(err);
     const status = err.status ?? err.statusCode ?? 500;
-    res.status(status).json({ error: status === 500 ? 'internal_error' : err.message });
+    if (status >= 500) console.error(`[kiranaq] error handling ${req.method} ${req.path}:`, err);
+    if (res.headersSent) return next(err);
+    res.status(status).json({
+      error: { code: err.code ?? (status === 500 ? 'internal_error' : 'bad_request'), message: status === 500 ? 'Internal error' : err.message },
+    });
   });
   return app;
+}
+
+/** Helper for routes: throw httpError(400, 'bad_count', 'count out of range'). */
+export function httpError(status, code, message) {
+  return Object.assign(new Error(message), { status, code });
 }
