@@ -22,6 +22,7 @@ export function buildVisionPrompt(catalog, imageCount) {
     'Rules:',
     '- Report only catalog items you can really see. Never invent items. Use the catalog id exactly.',
     '- count = number of individual units (packets, bottles, boxes) visible, as a whole number. Be rough but honest.',
+    '- Count only packs whose front faces the camera; ignore packs seen from the side or far down an aisle.',
     '- Skip loose goods that are not in packs (for example grain in a bin).',
     '- confidence is 0 to 1: how sure you are the item and count are right.',
     'Answer with ONLY a JSON array, no other text: [{"item_id": 1, "count": 12, "confidence": 0.8}]',
