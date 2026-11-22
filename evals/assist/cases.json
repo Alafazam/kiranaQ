@@ -1,0 +1,1545 @@
+[
+ {
+  "id": "U1-1",
+  "use_case": "U1",
+  "lang": "hi",
+  "style": "hi",
+  "text": "स्टॉक गिनना है",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "start_log"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U1-2",
+  "use_case": "U1",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "naya log shuru karo",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "start_log"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U1-3",
+  "use_case": "U1",
+  "lang": "en",
+  "style": "en",
+  "text": "take stock",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "start_log"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U2-1",
+  "use_case": "U2",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "sample photo",
+  "screen": "/log/new",
+  "context": {},
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Photo lenge ya sample photo?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "use_sample",
+     "index": 0
+    },
+    {
+     "type": "count_photo"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U2-2",
+  "use_case": "U2",
+  "lang": "hi",
+  "style": "hi",
+  "text": "पहली फोटो",
+  "screen": "/log/new",
+  "context": {},
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Photo lenge ya sample photo?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "use_sample",
+     "index": 0
+    },
+    {
+     "type": "count_photo"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U2-3",
+  "use_case": "U2",
+  "lang": "en",
+  "style": "en",
+  "text": "use the second sample photo",
+  "screen": "/log/new",
+  "context": {},
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Take a photo or use a sample photo?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "use_sample",
+     "index": 1
+    },
+    {
+     "type": "count_photo"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U3-1",
+  "use_case": "U3",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "bina photo ke, khud ginunga",
+  "screen": "/log/new",
+  "context": {},
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Photo lenge ya sample photo?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "count_manual"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U3-2",
+  "use_case": "U3",
+  "lang": "hi",
+  "style": "hi",
+  "text": "फोटो नहीं, हाथ से गिनूंगा",
+  "screen": "/log/new",
+  "context": {},
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Photo lenge ya sample photo?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "count_manual"
+    }
+   ],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U4-1",
+  "use_case": "U4",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Maggi 8, Surf 5",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_counts",
+     "edits": [
+      {
+       "item_id": "sku:maggi_70g",
+       "count": 8
+      },
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "count": 5
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "U4-2",
+  "use_case": "U4",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Parle G do kam",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_counts",
+     "edits": [
+      {
+       "item_id": "sku:parle_g_80g",
+       "count": 8
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "U4-3",
+  "use_case": "U4",
+  "lang": "hi",
+  "style": "hi",
+  "text": "मैगी आठ है",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_counts",
+     "edits": [
+      {
+       "item_id": "sku:maggi_70g",
+       "count": 8
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "U4-4",
+  "use_case": "U4",
+  "lang": "en",
+  "style": "en",
+  "text": "Surf Excel is 3 now",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_counts",
+     "edits": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "count": 3
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "U5-1",
+  "use_case": "U5",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "save karo",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "save_log"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U5-2",
+  "use_case": "U5",
+  "lang": "hi",
+  "style": "hi",
+  "text": "हो गया",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "save_log"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U5-3",
+  "use_case": "U5",
+  "lang": "en",
+  "style": "en",
+  "text": "save the log",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "save_log"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U6-1",
+  "use_case": "U6",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "haan Sharma ne maal diya",
+  "screen": "/log/new/check",
+  "context": {
+   "visit": {
+    "distributor_id": "dist:sharma",
+    "name": "Sharma Traders"
+   },
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Sharma Traders ne aaj maal diya?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "visit",
+     "distributor_id": "dist:sharma",
+     "delivered": true
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U6-2",
+  "use_case": "U6",
+  "lang": "hi",
+  "style": "hi",
+  "text": "नहीं, आज नहीं आया",
+  "screen": "/log/new/check",
+  "context": {
+   "visit": {
+    "distributor_id": "dist:sharma",
+    "name": "Sharma Traders"
+   },
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Sharma Traders ne aaj maal diya?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "visit",
+     "distributor_id": "dist:sharma",
+     "delivered": false
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U6-3",
+  "use_case": "U6",
+  "lang": "en",
+  "style": "en",
+  "text": "yes Sharma delivered today",
+  "screen": "/log/new/check",
+  "context": {
+   "visit": {
+    "distributor_id": "dist:sharma",
+    "name": "Sharma Traders"
+   },
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [
+   {
+    "role": "assistant",
+    "text": "Did Sharma Traders deliver today?"
+   }
+  ],
+  "expect": {
+   "actions": [
+    {
+     "type": "visit",
+     "distributor_id": "dist:sharma",
+     "delivered": true
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U7-1",
+  "use_case": "U7",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "kya mangana hai",
+  "screen": "/",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "orders"
+    }
+   ],
+   "say_contains_any": [
+    "Surf",
+    "सर्फ",
+    "surf"
+   ]
+  }
+ },
+ {
+  "id": "U7-2",
+  "use_case": "U7",
+  "lang": "hi",
+  "style": "hi",
+  "text": "ऑर्डर दिखाओ",
+  "screen": "/",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "orders"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U7-3",
+  "use_case": "U7",
+  "lang": "en",
+  "style": "en",
+  "text": "what do I need to order",
+  "screen": "/",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "orders"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U8-1",
+  "use_case": "U8",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Sharma ka order pakka karo",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "confirm_order",
+     "distributor_id": "dist:sharma"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U8-2",
+  "use_case": "U8",
+  "lang": "hi",
+  "style": "hi",
+  "text": "गुप्ता का ऑर्डर पक्का करो",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "confirm_order",
+     "distributor_id": "dist:gupta"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U8-3",
+  "use_case": "U8",
+  "lang": "en",
+  "style": "en",
+  "text": "confirm the Sharma order",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "confirm_order",
+     "distributor_id": "dist:sharma"
+    }
+   ],
+   "expect": "confirm"
+  }
+ },
+ {
+  "id": "U9-1",
+  "use_case": "U9",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Maggi do box kar do",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_qty",
+     "distributor_id": "dist:gupta",
+     "item_id": "sku:maggi_70g",
+     "qty": 24
+    }
+   ]
+  }
+ },
+ {
+  "id": "U9-2",
+  "use_case": "U9",
+  "lang": "en",
+  "style": "en",
+  "text": "make Surf Excel 12",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_qty",
+     "distributor_id": "dist:sharma",
+     "item_id": "sku:surf_excel_1kg",
+     "qty": 12
+    }
+   ]
+  }
+ },
+ {
+  "id": "U10-1",
+  "use_case": "U10",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Sharma ka order suna do",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "read_out",
+     "distributor_id": "dist:sharma"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U10-2",
+  "use_case": "U10",
+  "lang": "hi",
+  "style": "hi",
+  "text": "गुप्ता का ऑर्डर पढ़कर सुनाओ",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "read_out",
+     "distributor_id": "dist:gupta"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U11-1",
+  "use_case": "U11",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Gupta kab aayega",
+  "screen": "/",
+  "context": {
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "distributors"
+    }
+   ],
+   "say_contains_any": [
+    "24",
+    "Tuesday",
+    "Mangal",
+    "mangal",
+    "2 din",
+    "do din",
+    "2 days"
+   ]
+  }
+ },
+ {
+  "id": "U11-2",
+  "use_case": "U11",
+  "lang": "hi",
+  "style": "hi",
+  "text": "डिस्ट्रीब्यूटर कब आएंगे",
+  "screen": "/",
+  "context": {
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "distributors"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U11-3",
+  "use_case": "U11",
+  "lang": "en",
+  "style": "en",
+  "text": "when does Mehta come",
+  "screen": "/",
+  "context": {
+   "distributors": [
+    {
+     "id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2
+    },
+    {
+     "id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1
+    },
+    {
+     "id": "dist:mehta",
+     "name": "Mehta Kirana Supply",
+     "next_visit_date": "2026-11-29",
+     "days_to_next_visit": 7
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "navigate",
+     "to": "distributors"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U12-1",
+  "use_case": "U12",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Surf kab khatm hoga",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": [],
+   "say_contains_any": [
+    "Surf",
+    "सर्फ",
+    "surf"
+   ]
+  }
+ },
+ {
+  "id": "U12-2",
+  "use_case": "U12",
+  "lang": "hi",
+  "style": "hi",
+  "text": "सर्फ कब खत्म होगा",
+  "screen": "/orders",
+  "context": {
+   "cards": [
+    {
+     "distributor_id": "dist:sharma",
+     "name": "Sharma Traders",
+     "next_visit_date": "2026-11-23",
+     "days_to_next_visit": 1,
+     "runs_out": [
+      "sku:surf_excel_1kg"
+     ],
+     "order": [
+      {
+       "item_id": "sku:surf_excel_1kg",
+       "qty": 24
+      },
+      {
+       "item_id": "sku:vim_bar_200g",
+       "qty": 36
+      }
+     ],
+     "confirmed": false
+    },
+    {
+     "distributor_id": "dist:gupta",
+     "name": "Gupta Wholesale",
+     "next_visit_date": "2026-11-24",
+     "days_to_next_visit": 2,
+     "runs_out": [],
+     "order": [
+      {
+       "item_id": "sku:maggi_70g",
+       "qty": 24
+      }
+     ],
+     "confirmed": false
+    }
+   ],
+   "log_id": 1
+  },
+  "history": [],
+  "expect": {
+   "actions": []
+  }
+ },
+ {
+  "id": "U13-1",
+  "use_case": "U13",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "English mein bolo",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_language",
+     "lang": "en"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U13-2",
+  "use_case": "U13",
+  "lang": "en",
+  "style": "hi",
+  "text": "हिंदी",
+  "screen": "/",
+  "context": {},
+  "history": [],
+  "expect": {
+   "actions": [
+    {
+     "type": "set_language",
+     "lang": "hi"
+    }
+   ]
+  }
+ },
+ {
+  "id": "U14-1",
+  "use_case": "U14",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "woh wala do",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U14-2",
+  "use_case": "U14",
+  "lang": "hi",
+  "style": "hi",
+  "text": "पांच",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U14-3",
+  "use_case": "U14",
+  "lang": "en",
+  "style": "en",
+  "text": "set Bournvita to 4",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [],
+   "expect": "answer"
+  }
+ },
+ {
+  "id": "U14-4",
+  "use_case": "U14",
+  "lang": "hi",
+  "style": "hinglish",
+  "text": "Maggi aur Parle-G paanch hai",
+  "screen": "/log/new/check",
+  "context": {
+   "draft": [
+    {
+     "item_id": "sku:maggi_70g",
+     "count": 5
+    },
+    {
+     "item_id": "sku:surf_excel_1kg",
+     "count": 6
+    },
+    {
+     "item_id": "sku:parle_g_80g",
+     "count": 10
+    }
+   ]
+  },
+  "history": [],
+  "expect": {
+   "actions": [],
+   "expect": "answer"
+  }
+ }
+]

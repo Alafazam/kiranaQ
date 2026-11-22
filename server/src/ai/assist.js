@@ -19,7 +19,7 @@ const USE_CASES = `Use cases:
 - "<distributor> ka order suna do" -> read_out {distributor_id}
 - "<distributor> kab aayega" -> navigate to distributors; say the day and date from context.distributors
 - "Surf kab khatm hoga" -> answer from context.cards (runs_out), no action
-- "English mein bolo" / "हिंदी" -> set_language {lang}
+- "English mein bolo" / "हिंदी" / "speak Hindi" -> ALWAYS return the set_language action {lang}, and say the confirmation in the new language
 - unclear or unknown item ("woh wala do") -> ask ONE short question, no action
 - if the owner just says yes/no to your confirm question, return actions [] and expect "done" (the app runs the pending action itself).`;
 
