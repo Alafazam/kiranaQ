@@ -6,7 +6,7 @@ import { useStore } from '../state.jsx'
 let productIndex = null // Promise<Set<string>>, loaded once per page
 function loadProductIndex() {
   if (!productIndex) {
-    productIndex = fetch('/products/index.json')
+    productIndex = fetch(`${import.meta.env.BASE_URL}products/index.json`)
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => new Set(Array.isArray(list) ? list : []))
       .catch((e) => {
@@ -32,7 +32,7 @@ export function ItemThumb({ item, size = 'md' }) {
   const [failed, setFailed] = useState(false)
   const box = size === 'sm' ? 'w-10 h-10' : 'w-12 h-12'
   if (has && !failed) {
-    return <img src={`/products/${item.sku_key}.jpg`} alt="" loading="lazy" onError={() => setFailed(true)}
+    return <img src={`${import.meta.env.BASE_URL}products/${item.sku_key}.jpg`} alt="" loading="lazy" onError={() => setFailed(true)}
       className={`${box} shrink-0 rounded-control object-cover bg-surface border border-rule`} />
   }
   return (

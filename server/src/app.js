@@ -41,13 +41,18 @@ export function createApp({ db, ai, clock, publicDir = PUBLIC_DIR, speech = {} }
 
   app.use('/api', (_req, res) => res.status(404).json({ error: { code: 'not_found', message: 'No such API route' } }));
 
-  // Built web UI, with SPA fallback for non-/api GET requests.
-  app.use(express.static(publicDir));
-  app.get(/^\/(?!api).*/, (_req, res, next) => {
+  // The landing page is the front door: / opens /landing/. The app lives at /app/.
+  app.get('/', (_req, res) => res.redirect(302, '/landing/'));
+  app.use('/app', express.static(publicDir, { index: false }));
+  app.use(express.static(publicDir)); // serves /landing/, /products/, /samples/
+  // SPA fallback for the app's own routes.
+  app.get(/^\/app(\/.*)?$/, (_req, res, next) => {
     res.sendFile(path.join(publicDir, 'index.html'), (err) => {
       if (err) next();
     });
   });
+  // Old app links (before the move to /app/) keep working.
+  app.get(/^\/(orders|distributors|settings|log)(\/.*)?$/, (req, res) => res.redirect(302, `/app${req.originalUrl}`));
 
   // Errors: {error: {code, message}}. Throw with err.status and err.code for 4xx.
   app.use((err, req, res, next) => {

@@ -14,7 +14,7 @@ import { useAssistant } from '../assistant/AssistantProvider.jsx'
 
 // Draft photos are {src, box}; older drafts stored plain data URLs.
 const normalize = (list) => (list || []).map((p) => (typeof p === 'string' ? { src: p, box: FULL_BOX } : p))
-const loadSamples = () => fetch('/samples/samples.json').then((r) => { if (!r.ok) throw new Error(`samples ${r.status}`); return r.json() })
+const loadSamples = () => fetch(`${import.meta.env.BASE_URL}samples/samples.json`).then((r) => { if (!r.ok) throw new Error(`samples ${r.status}`); return r.json() })
 
 export default function Photo() {
   const t = useT()
@@ -98,7 +98,7 @@ export default function Photo() {
   async function useSample(index) {
     const list = samples.data || (await loadSamples())
     const sample = list[Math.min(Math.max(0, index || 0), list.length - 1)]
-    if (sample) await addFromSrc(`/samples/${sample.file}`, sample.box || FULL_BOX)
+    if (sample) await addFromSrc(`${import.meta.env.BASE_URL}samples/${sample.file}`, sample.box || FULL_BOX)
   }
 
   useAssistant({
@@ -177,9 +177,9 @@ export default function Photo() {
             {samples.data.map((sample) => (
               <li key={sample.file}>
                 <button type="button" className="block w-full text-left rounded-control overflow-hidden border border-rule bg-surface"
-                  onClick={() => { setSampleOpen(false); addFromSrc(`/samples/${sample.file}`, sample.box || FULL_BOX) }}>
+                  onClick={() => { setSampleOpen(false); addFromSrc(`${import.meta.env.BASE_URL}samples/${sample.file}`, sample.box || FULL_BOX) }}>
                   <span className="relative block">
-                    <img src={`/samples/${sample.file}`} alt="" className="block aspect-[4/3] w-full object-cover" loading="lazy" />
+                    <img src={`${import.meta.env.BASE_URL}samples/${sample.file}`} alt="" className="block aspect-[4/3] w-full object-cover" loading="lazy" />
                   </span>
                   <span className="block px-2 py-1 text-sm">{sample.title}</span>
                 </button>

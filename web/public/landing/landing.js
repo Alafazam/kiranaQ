@@ -21,7 +21,7 @@
       alt: 'Distributors screen: three distributors with next visit dates and items that run out.' }
   ];
   var APP_WIDTH = 390;
-  var APP_URL = '/';
+  var APP_URL = '/app/';
 
   var tour = document.getElementById('tour');
   if (!tour) return;

@@ -30,7 +30,7 @@ createRoot(document.getElementById('root')).render(
     <AppProvider>
       <ToastProvider>
         <div className="app-scroll">
-        <BrowserRouter>
+        <BrowserRouter basename="/app">
           <AssistantProvider>
           <Routes>
             <Route element={<Tabs />}>
