@@ -317,7 +317,8 @@ KiranaQ variants of Dose: danger red only for "runs out before the visit"; no an
 
 ### Navigation and menu
 
-- **Bottom tab bar** with 3 tabs: **Home** (`House`), **Orders** (`ClipboardList`), **Settings** (`Settings`). No hamburger menu.
+- **Bottom tab bar** with 4 tabs: **Home** (`House`), **Distributor kab aayenge** / "Distributor visits" (`Truck`, route `/distributors`: one band per distributor in its tint, sorted by next visit, with cycle, last visit and the items that run out before that visit), **Orders** (`ClipboardList`), **Settings** (`Settings`). No hamburger menu.
+- **Copy style.** Hindi mode uses Hinglish in Latin script for key labels ("Saman kab kab aya" for stock logs, "Distributor kab aayenge" for next visits, "1 khatm hoga" / "2 khatm honge" for the runs-out badge). Day and month names are always English ("Monday, 23 Nov").
 - **"Take stock log" primary button** (`Camera` icon and the words) sits fixed above the tab bar on Home only, full width. Orders shows it only in its empty state (each distributor card there has its own confirm button).
 - The log flow is full screen, no tab bar: a top bar with back arrow and a 3-step indicator **Photo → Check → Result**. Back from Check asks "Discard this log?"
 - Language chip **हिं / EN** in the top bar of Home. It switches all text at once.
