@@ -77,12 +77,12 @@ Out of scope: bills, prices, cash budget, distributor integration, login, multi-
 
 | Job | Model | Where |
 |---|---|---|
-| Count items in a photo | Claude vision (`claude-sonnet-5-5`), JSON output | `ai/vision.js` |
-| Speech to text (hi-IN, en-IN) | Sarvam speech to text | `ai/sarvam.js` |
-| Text to speech | Sarvam text to speech | `ai/sarvam.js` |
+| Count items in a photo | Claude vision (`claude-sonnet-5-5`), JSON output. Option behind `VISION_PROVIDER=sarvam`: Sarvam chat `gemma4` with a base64 image (compare in E1 if time) | `ai/vision.js` |
+| Speech to text (hi-IN, en-IN, Hinglish) | Sarvam `POST /speech-to-text`, model `saaras:v4`, `mode=codemix`, `language_code` left out (auto-detect), `keyterms` = up to 50 item names and aliases from the catalog | `ai/sarvam.js` |
+| Text to speech | Sarvam `POST /text-to-speech`, model `bulbul:v4-flash`, speaker `shubh_enhi_ads` (Hindi-English persona); reply is base64 WAV in `audios[0]` | `ai/sarvam.js` |
 | Spoken text → edits JSON | Claude (`claude-haiku-5-5`), JSON output | `ai/parse.js` |
 
-Exact Sarvam model names and endpoints come from the credits docs (open question 1). Keys come from env vars only.
+Sarvam auth header: `api-subscription-key`. Node SDK `sarvamai` is installed; check its method names against the installed version before use. Limits that shape the UI: STT takes at most 30 s of audio per request (the mic stops at `MAX_RECORD_SECONDS = 25`); TTS takes at most 2,500 characters (we cap at `MAX_TTS_CHARS = 500`). Keys come from env vars only. Model names live in `config.js`.
 
 Vision prompt gets the store catalog (id, names in en/hi, pack) and must answer only with `[{item_id, count, confidence}]`. The server validates: known `item_id`, integer count 0–999, confidence 0–1. Counts from a crowded shelf are rough; the voice check is there to fix them.
 
@@ -468,11 +468,11 @@ Home with seed → Take stock log → photo → Check → one voice edit with ye
 
 ## 5b. Demo evals
 
-Evals measure the parts we cannot prove with a unit test: how well the models do, and whether the rule learns. Each eval has a fixed input set, a script, a number and a bar. Results go in `checks.md` and on one slide. Inputs are our own photos and voices, or synthetic; no real owner data.
+Evals measure the parts we cannot prove with a unit test: how well the models do, and whether the rule learns. Each eval has a fixed input set, a script, a number and a bar. Results go in `checks.md` and on one slide. Inputs are openly licensed web photos, our own voices, or synthetic data; no real owner data. The same web photos are used for the live demo photo step.
 
 | Eval | Input set | Script | Metric | Bar for the demo | Cost |
 |---|---|---|---|---|---|
-| **E1. Vision count** | 5 shelf photos in `evals/vision/` (our own photos of a home or shop shelf with catalog items), each with a hand count `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 5 vision calls |
+| **E1. Vision count** | 5 shelf photos in `evals/vision/`, taken from the internet with an open licence (Wikimedia Commons, Unsplash, Pexels: search "kirana shop shelf", "Indian grocery shelf"). Each photo's URL, author and licence go in `evals/vision/SOURCES.md`. Pick photos where catalog brands are readable, add any missing brands to `data/catalog.json`, and hand-count each photo into `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 5 vision calls |
 | **E2. Voice parse** | 20 typed phrases in `evals/voice/phrases.json`: 8 Hindi, 6 Hinglish, 6 English; includes 4 that must re-ask ("thoda kam karo", unknown brand, two items with one number, a number with no item) | `pnpm eval:parse` | exact match of `{item_id, count}` edits; re-ask rate on the 4 unclear ones | ≥ 90% exact on the 16 clear ones; 4/4 unclear ones re-ask (no guess) | 20 small text calls |
 | **E3. Voice end to end** | 5 short clips we record (`evals/voice/hi-0N.wav`, 3 Hindi, 2 English) with expected edits | `pnpm eval:voice` | item and count right after STT + parse | ≥ 4 of 5 | 5 STT + 5 parse calls |
 | **E4. Learning (simulation)** | synthetic store: 25 items, 3 distributors (4, 7, 15 days), hidden true daily demand with noise, 12 cycles, fixed seed | `pnpm eval:sim` | stock-out days and leftover units per cycle, learning rule vs fixed starter quantities; writes `sim-chart.png` and a table | learning beats fixed on stock-out days by cycle 6 and keeps it to cycle 12 | free |
@@ -484,7 +484,7 @@ Priority if time is short: E2 and E4 first (cheap, strongest story), then E1, th
 
 ## 6. Open questions (proposed answers)
 
-1. **Sarvam model names.** Proposal: Alaf reads them from the credits docs now; until then assume `saarika` (STT) and `bulbul` (TTS) on `api.sarvam.ai`.
+1. **Sarvam models (decided from the docs):** `saaras:v4` for STT, `bulbul:v4-flash` for TTS. Vision stays on Claude; `gemma4` on Sarvam is an option to compare. Still open: not one Sarvam call has run yet (the key is empty). Proposal: Alaf sets `SARVAM_API_KEY` in `server/.env` now.
 2. **Distributor cycles.** Each distributor has its own cycle (decided). Proposal: the owner sets the cycle and last visit per distributor in Settings; `DEFAULT_CYCLE_DAYS = 7` only for items with no distributor. A visit is recorded from the restock photo (R13); the owner can also set the last visit by tap in Settings.
 3. **Received quantity (decided: from the restock photo).** Proposal for the threshold: `RESTOCK_MIN_PACKS = 1` (a rise of at least one pack). Should actual visit dates also correct the cycle (for example Sharma came after 9 days, not 7)? Proposal: keep the visits; show "last 3 visits: every 8 days" in Settings as a stretch; do not change the cycle on its own.
 4. **Deploy target (decided: web first, Replit at the end).** Proposal: deploy to Replit after the live flow works on localhost (about 4:15 PM). Android shell later.
