@@ -15,3 +15,15 @@
 | Evals | `pnpm eval:assist` (Lane C) | not run here: paid model calls, ask Alaf |
 
 Screenshots: `bolo-home-greet.png`, `bolo-check-voice-edit.png`, `bolo-result-confirm.png` (390 px phone frame, mock data).
+
+## Real model (Sarvam via /api/assist on :3001, Hindi, typed)
+| Step | Said | Result |
+|---|---|---|
+| U1 | "स्टॉक गिनना है" | pass: `start_log`, opened `/log/new`, asked photo or by hand |
+| U2 | "फ़ोटो चुनो" | model asked again; local rules backed it up (ec595f6): photo chosen and counted, Check opened |
+| U14 | "पारले-जी 10 है" | pass: no action, asked "80g wala ya 100g Gold wala?" |
+| U4 | "80 ग्राम वाला 10 है" | pass: `set_counts [{item_id 2, count 10}]`, row changed to 10 |
+| U5 | "सेव कर दो" → Yes | pass: Yes/No first, then saved, result said what runs out first |
+| U8 | "गुप्ता का ऑर्डर पक्का करो" → Yes | pass: `confirm_order:2` with confirm, stamp "ऑर्डर 23 Nov" |
+| Gap | model asked "अब लॉग सेव कर दूँ?" without a `save_log` action | sent to Lane C as a prompt rule |
+| Wording | no "sample" / "नमूना" in UI (Alaf) | web done in ec595f6; prompt change asked from Lane C |
