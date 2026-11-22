@@ -1,5 +1,38 @@
+@import './tokens.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body { @apply bg-stone-50 text-stone-900; }
+html, body { overflow-x: clip; }
+body { @apply bg-paper text-ink font-body text-base; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { @apply font-display text-ink; font-weight: 700; letter-spacing: -0.02em; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.num { font-family: var(--font-label); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Moulded control (Dose): 1px rim, 3px rim below, sinks 3px on press. */
+.mould {
+  @apply inline-flex items-center justify-center gap-2 min-h-control px-4 rounded-control font-medium select-none;
+  border: 1px solid var(--color-rule); border-bottom-width: 3px;
+  transition: transform var(--dur-micro) var(--ease-out), opacity var(--dur-micro) var(--ease-out);
+}
+.mould:active:not(:disabled) { transform: translateY(3px); }
+.mould:disabled { opacity: 0.5; cursor: not-allowed; }
+.mould-primary { background: linear-gradient(var(--color-accent), var(--color-accent-deep)); color: var(--color-accent-ink); border-color: var(--color-accent-deep); }
+.mould-secondary { background: var(--color-surface); color: var(--color-ink); }
+.mould-secondary:hover:not(:disabled) { background: var(--color-paper-2); }
+.mould-selected { background: var(--color-accent-soft); color: var(--color-ink); border-color: var(--color-accent); }
+.mould-text { border-color: transparent; background: transparent; color: var(--color-ink); }
+.mould-text:hover:not(:disabled) { background: var(--color-paper-2); }
+
+.skeleton { background: var(--color-paper-3); border-radius: var(--radius-control); }
+
+.sheet-enter { animation: sheet-in var(--dur-short) var(--ease-out); }
+.fade-enter { animation: fade-in var(--dur-short) var(--ease-out); }
+.stamp-land { animation: stamp-in var(--dur-short) var(--ease-out); }
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes stamp-in { from { opacity: 0; transform: scale(1.3) rotate(-2deg); } to { opacity: 1; transform: scale(1) rotate(-2deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

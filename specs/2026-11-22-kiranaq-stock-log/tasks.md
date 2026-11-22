@@ -85,13 +85,13 @@ Done: Lane C tests pass; `smoke:live` all ok; E2 and E1 numbers in `checks.md`.
 Owns: everything under `web/` (including `web/package.json` for `react-router-dom` and `lucide-react`, and the mocks) except `web/src/contract.js` and `web/src/mock/result.json` (Phase 0).
 Reads: `DESIGN.md`, spec sections "UI tech", "Theming", "Navigation", "Screens", "API".
 
-- [ ] D1. Base: `tokens.css` per `DESIGN.md` + Tailwind mapping, fonts, `i18n.js` (en, hi, every reason key), router, `ui/` components, TopBar, TabBar, light and dark. (R12)
-- [ ] D2. `api.js` with a `VITE_USE_MOCK=1` switch to the mock JSON, so screens work before the API.
-- [ ] D3. Home (distributor strip, logs, four states). (R1, R7)
-- [ ] D4. Photo step (camera input or "Use a sample photo" grid from `web/public/samples/`, resize to 1600 px, up to 3) and Check step (stepper rows, add item, mic hold-to-speak with `MediaRecorder`, read-back sheet, text fallback). (R2, R3, R4)
+- [x] D1. Base: `tokens.css` per `DESIGN.md` + Tailwind mapping, fonts, `i18n.js` (en, hi, every reason key), router, `ui/` components, TopBar, TabBar, light and dark. (R12)
+- [x] D2. `api.js` with a `VITE_USE_MOCK=1` switch to the mock JSON, so screens work before the API.
+- [x] D3. Home (distributor strip, logs, four states). (R1, R7)
+- [x] D4. Photo step (camera input or "Use a sample photo" grid from `web/public/samples/`, resize to 1600 px, up to 3) and Check step (stepper rows, add item, mic hold-to-speak with `MediaRecorder`, read-back sheet, text fallback). (R2, R3, R4)
 - [ ] D4b. Count box (R2b): after a photo is chosen, show it with a draggable rectangle (corner handles, pointer events, min 20% size), default = whole photo, sample photos use the preset `box` from `web/public/samples/samples.json` (written by the lead: `[{file, title, box:{x0,y0,x1,y1}}]`, fractions of width/height). Crop on canvas to the box, then resize to 1600 px and upload. Check screen shows the photo thumbnail with the box drawn and "Counted inside the box only".
-- [ ] D5. Visit sheet, Result / Orders (cards per distributor, confirm, stamp, Read out, Copy list). (R6–R8, R13)
-- [ ] D6. Settings (distributors edit, items, language, theme; no reset button). (R9) Cut first if late: keep read-only lists.
+- [x] D5. Visit sheet, Result / Orders (cards per distributor, confirm, stamp, Read out, Copy list). (R6–R8, R13)
+- [x] D6. Settings (distributors edit, items, language, theme; no reset button). (R9) Cut first if late: keep read-only lists.
 
 Done: `pnpm --dir web build` passes; walk through on mock data works at 390 px wide in light and dark; screenshots in the spec folder.
 

@@ -1,0 +1,5 @@
+[
+  { "id": 2, "name": "Gupta Agency", "note": "Biscuits and snacks", "cycle_days": 4, "last_visit_date": "2026-11-19", "next_visit_date": "2026-11-23", "days_to_next_visit": 1, "item_count": 3, "runs_out_count": 0 },
+  { "id": 1, "name": "Sharma Traders", "note": "Soap, detergent, noodles", "cycle_days": 7, "last_visit_date": "2026-11-17", "next_visit_date": "2026-11-24", "days_to_next_visit": 2, "item_count": 5, "runs_out_count": 1 },
+  { "id": 3, "name": "Mehta Wholesale", "note": "Atta, oil, dal", "cycle_days": 15, "last_visit_date": "2026-11-18", "next_visit_date": "2026-12-03", "days_to_next_visit": 11, "item_count": 2, "runs_out_count": 0 }
+]

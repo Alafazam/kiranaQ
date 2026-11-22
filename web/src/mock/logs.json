@@ -1,0 +1,5 @@
+[
+  { "id": 4, "log_date": "2026-11-22", "item_count": 9, "runs_out_count": 1, "visits": [] },
+  { "id": 3, "log_date": "2026-11-20", "item_count": 9, "runs_out_count": 0, "visits": [{ "distributor_id": 1, "name": "Sharma Traders" }] },
+  { "id": 2, "log_date": "2026-11-17", "item_count": 8, "runs_out_count": 0, "visits": [] }
+]

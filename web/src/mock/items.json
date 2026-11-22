@@ -1,0 +1,12 @@
+[
+  { "id": 1, "sku_key": "maggi_70g", "name_en": "Maggi Noodles 70g", "name_hi": "मैगी नूडल्स 70 ग्राम", "aliases": ["maggi", "मैगी"], "item_group": "noodles", "unit": "pcs", "pack_size": 6, "active": true, "distributor_id": 1 },
+  { "id": 2, "sku_key": "surf_500g", "name_en": "Surf Excel 500g", "name_hi": "सर्फ एक्सेल 500 ग्राम", "aliases": ["surf"], "item_group": "detergent", "unit": "packet", "pack_size": 12, "active": true, "distributor_id": 1 },
+  { "id": 3, "sku_key": "parleg_100g", "name_en": "Parle-G 100g", "name_hi": "पारले-जी 100 ग्राम", "aliases": ["parle", "पारले"], "item_group": "biscuits", "unit": "pcs", "pack_size": 24, "active": true, "distributor_id": 2 },
+  { "id": 4, "sku_key": "goodday_75g", "name_en": "Good Day 75g", "name_hi": "गुड डे 75 ग्राम", "aliases": ["good day"], "item_group": "biscuits", "unit": "pcs", "pack_size": 24, "active": true, "distributor_id": 2 },
+  { "id": 5, "sku_key": "lays_52g", "name_en": "Lay's Classic 52g", "name_hi": "लेज़ 52 ग्राम", "aliases": ["lays"], "item_group": "snacks", "unit": "packet", "pack_size": 12, "active": true, "distributor_id": 2 },
+  { "id": 6, "sku_key": "aashirvaad_5kg", "name_en": "Aashirvaad Atta 5kg", "name_hi": "आशीर्वाद आटा 5 किलो", "aliases": ["atta"], "item_group": "atta", "unit": "packet", "pack_size": 4, "active": true, "distributor_id": 3 },
+  { "id": 7, "sku_key": "surf_1kg", "name_en": "Surf Excel 1kg", "name_hi": "सर्फ एक्सेल 1 किलो", "aliases": ["surf"], "item_group": "detergent", "unit": "packet", "pack_size": 6, "active": true, "distributor_id": 1 },
+  { "id": 8, "sku_key": "fortune_1l", "name_en": "Fortune Oil 1L", "name_hi": "फॉर्च्यून तेल 1 लीटर", "aliases": ["oil", "तेल"], "item_group": "oil", "unit": "bottle", "pack_size": 12, "active": true, "distributor_id": 3 },
+  { "id": 9, "sku_key": "rin_bar", "name_en": "Rin Bar", "name_hi": "रिन साबुन", "aliases": ["rin"], "item_group": "soap", "unit": "pcs", "pack_size": 10, "active": true, "distributor_id": 1 },
+  { "id": 10, "sku_key": "vim_bar", "name_en": "Vim Bar", "name_hi": "विम बार", "aliases": ["vim"], "item_group": "soap", "unit": "pcs", "pack_size": 10, "active": true, "distributor_id": 1 }
+]

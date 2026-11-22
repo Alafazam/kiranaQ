@@ -1,6 +1,47 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import Home from './Home.jsx'
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import './index.css'
+import { AppProvider } from './state.jsx'
+import { ToastProvider } from './ui/Toast.jsx'
+import { TabBar } from './ui/TabBar.jsx'
+import Home from './screens/Home.jsx'
+import Orders from './screens/Orders.jsx'
+import Photo from './screens/Photo.jsx'
+import Check from './screens/Check.jsx'
+import Result from './screens/Result.jsx'
+import PastLog from './screens/PastLog.jsx'
+import { SettingsHome, EditDistributor, ItemsList } from './screens/Settings.jsx'
 
-createRoot(document.getElementById('root')).render(<Home />)
+function Tabs() {
+  return (
+    <>
+      <Outlet />
+      <TabBar />
+    </>
+  )
+}
+
+createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <AppProvider>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Tabs />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/settings" element={<SettingsHome />} />
+              <Route path="/settings/distributors/:id" element={<EditDistributor />} />
+              <Route path="/settings/items" element={<ItemsList />} />
+              <Route path="/log/:id" element={<PastLog />} />
+            </Route>
+            <Route path="/log/new" element={<Photo />} />
+            <Route path="/log/new/check" element={<Check />} />
+            <Route path="/log/:id/result" element={<Result />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
+    </AppProvider>
+  </React.StrictMode>
+)
