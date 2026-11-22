@@ -9,6 +9,7 @@ import { TopBar, Steps } from '../ui/TopBar.jsx'
 import { useToast } from '../ui/Toast.jsx'
 import { canRecord, startRecording } from '../voice.js'
 import VisitSheet from './VisitSheet.jsx'
+import { BoxOverlay } from '../ui/BoxEditor.jsx'
 
 // Below this vision confidence a row shows "Not sure".
 const LOW_CONFIDENCE = 0.7
@@ -133,6 +134,19 @@ export default function Check() {
         {items.status === 'error' && <ErrorState onRetry={items.reload} />}
         {items.status === 'ok' && (
           <>
+            {draft.photos?.length > 0 && (
+              <div className="mt-2 mb-3">
+                <ul className="flex gap-2">
+                  {draft.photos.filter((p) => typeof p === 'object').map((p, i) => (
+                    <li key={i} className="relative w-24 overflow-hidden rounded-control border border-rule">
+                      <img src={p.src} alt="" className="block w-full" />
+                      <BoxOverlay box={p.box} />
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1 text-sm text-ink-2">{t('counted_in_box')}</p>
+              </div>
+            )}
             <h2 className="text-lg mt-2 mb-3">{t('items_found', { n: counts.length })}</h2>
             <Card>
               <ul className="divide-y divide-rule">

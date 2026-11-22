@@ -4,19 +4,26 @@ import { Camera, Images, X } from 'lucide-react'
 import { api } from '../api.js'
 import { useT } from '../i18n.js'
 import { clearDraft, readDraft, writeDraft } from '../state.jsx'
-import { Button, Dialog, IconButton, Sheet, Skeleton } from '../ui/kit.jsx'
+import { Button, Dialog, ErrorState, IconButton, Loading, Sheet, Skeleton } from '../ui/kit.jsx'
+import BoxEditor from '../ui/BoxEditor.jsx'
 import { TopBar, Steps } from '../ui/TopBar.jsx'
 import { useToast } from '../ui/Toast.jsx'
-import { MAX_PHOTOS, dataUrlToBlob, fileToObjectUrl, resizeToDataUrl } from '../image.js'
-import samples from '../samples.json'
+import { FULL_BOX, MAX_PHOTOS, cropToBlob, fileToObjectUrl, resizeToDataUrl } from '../image.js'
+import { useLoad } from '../state.jsx'
+
+// Draft photos are {src, box}; older drafts stored plain data URLs.
+const normalize = (list) => (list || []).map((p) => (typeof p === 'string' ? { src: p, box: FULL_BOX } : p))
+const loadSamples = () => fetch('/samples/samples.json').then((r) => { if (!r.ok) throw new Error(`samples ${r.status}`); return r.json() })
 
 export default function Photo() {
   const t = useT()
   const navigate = useNavigate()
   const toast = useToast()
   const fileRef = useRef(null)
-  const [photos, setPhotos] = useState(() => readDraft()?.photos || [])
+  const [photos, setPhotos] = useState(() => normalize(readDraft()?.photos))
+  const [selected, setSelected] = useState(() => Math.max(0, normalize(readDraft()?.photos).length - 1))
   const [sampleOpen, setSampleOpen] = useState(false)
+  const samples = useLoad(loadSamples, [])
   const [counting, setCounting] = useState(false)
   const [confirmBack, setConfirmBack] = useState(false)
   const full = photos.length >= MAX_PHOTOS
@@ -26,10 +33,12 @@ export default function Photo() {
     writeDraft({ ...(readDraft() || {}), photos: next })
   }
 
-  async function addFromSrc(src) {
+  async function addFromSrc(src, box = FULL_BOX) {
     try {
       const dataUrl = await resizeToDataUrl(src)
-      save([...photos, dataUrl].slice(0, MAX_PHOTOS))
+      const next = [...photos, { src: dataUrl, box }].slice(0, MAX_PHOTOS)
+      save(next)
+      setSelected(next.length - 1)
     } catch (e) {
       console.error('photo resize failed', e)
       toast(t('vision_failed'))
@@ -41,9 +50,10 @@ export default function Photo() {
     let next = [...photos]
     for (const f of files) {
       const url = fileToObjectUrl(f)
-      try { next.push(await resizeToDataUrl(url)) } catch (err) { console.error('photo resize failed', err) } finally { URL.revokeObjectURL(url) }
+      try { next.push({ src: await resizeToDataUrl(url), box: FULL_BOX }) } catch (err) { console.error('photo resize failed', err) } finally { URL.revokeObjectURL(url) }
     }
     save(next.slice(0, MAX_PHOTOS))
+    setSelected(Math.min(next.length, MAX_PHOTOS) - 1)
     e.target.value = ''
   }
 
@@ -51,14 +61,19 @@ export default function Photo() {
     const removed = photos[i]
     const next = photos.filter((_, j) => j !== i)
     save(next)
+    setSelected(Math.max(0, next.length - 1))
     toast(t('photo_removed'), { label: t('undo'), onClick: () => save([...next.slice(0, i), removed, ...next.slice(i)]) })
+  }
+
+  function setBox(i, box) {
+    save(photos.map((p, j) => (j === i ? { ...p, box } : p)))
   }
 
   async function count() {
     setCounting(true)
     let counts = []
     try {
-      const blobs = await Promise.all(photos.map(dataUrlToBlob))
+      const blobs = await Promise.all(photos.map((p) => cropToBlob(p.src, p.box)))
       const res = await api.vision(blobs)
       if (res.error_code || res.items.length === 0) toast(t('vision_failed'))
       counts = res.items.map((it) => ({ item_id: it.item_id, count: it.count, source: 'photo', vision_count: it.count, vision_confidence: it.confidence }))
@@ -106,13 +121,23 @@ export default function Photo() {
             <p className="mt-3 text-sm text-muted">{t('photos_max', { n: MAX_PHOTOS })}</p>
             {photos.length > 0 && (
               <ul className="mt-3 grid grid-cols-3 gap-3">
-                {photos.map((src, i) => (
+                {photos.map((p, i) => (
                   <li key={i} className="relative">
-                    <img src={src} alt="" className="aspect-square w-full object-cover rounded-control border border-rule" />
+                    <button type="button" aria-pressed={i === selected} aria-label={`${t('count_box')} ${i + 1}`} onClick={() => setSelected(i)}
+                      className={`relative block w-full overflow-hidden rounded-control border-2 ${i === selected ? 'border-accent' : 'border-rule'}`}>
+                      <img src={p.src} alt="" className="block w-full aspect-square object-cover" />
+                    </button>
                     <IconButton icon={X} label={t('remove_photo')} variant="secondary" className="absolute -top-2 -right-2 !min-h-[44px] !w-[44px]" onClick={() => remove(i)} />
                   </li>
                 ))}
               </ul>
+            )}
+            {photos[selected] && (
+              <section className="mt-4">
+                <h2 className="text-lg">{t('count_box')}</h2>
+                <p className="text-sm text-ink-2 mb-2">{t('box_hint')}</p>
+                <BoxEditor src={photos[selected].src} box={photos[selected].box} label={t('count_box')} onChange={(b) => setBox(selected, b)} />
+              </section>
             )}
           </>
         )}
@@ -126,16 +151,23 @@ export default function Photo() {
         </div>
       </div>
       <Sheet open={sampleOpen} onClose={() => setSampleOpen(false)} title={t('pick_sample')}>
-        <ul className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
-          {samples.map((name) => (
-            <li key={name}>
-              <button type="button" className="block w-full rounded-control overflow-hidden border border-rule"
-                onClick={() => { setSampleOpen(false); addFromSrc(`/samples/${name}`) }}>
-                <img src={`/samples/${name}`} alt={name} className="aspect-[4/3] w-full object-cover" loading="lazy" />
-              </button>
-            </li>
-          ))}
-        </ul>
+        {samples.status === 'loading' && <Loading rows={2} />}
+        {samples.status === 'error' && <ErrorState onRetry={samples.reload} />}
+        {samples.status === 'ok' && (
+          <ul className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
+            {samples.data.map((sample) => (
+              <li key={sample.file}>
+                <button type="button" className="block w-full text-left rounded-control overflow-hidden border border-rule bg-surface"
+                  onClick={() => { setSampleOpen(false); addFromSrc(`/samples/${sample.file}`, sample.box || FULL_BOX) }}>
+                  <span className="relative block">
+                    <img src={`/samples/${sample.file}`} alt="" className="block aspect-[4/3] w-full object-cover" loading="lazy" />
+                  </span>
+                  <span className="block px-2 py-1 text-sm">{sample.title}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </Sheet>
       <Dialog open={confirmBack} title={t('discard_title')} body={t('discard_body')} confirmLabel={t('discard')} cancelLabel={t('keep')}
         onCancel={() => setConfirmBack(false)} onConfirm={() => { clearDraft(); navigate('/') }} />
