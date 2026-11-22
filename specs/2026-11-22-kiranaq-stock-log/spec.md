@@ -214,16 +214,50 @@ Notes:
 
 ### API
 
-- `GET /api/store`, `PUT /api/store` (language)
-- `GET /api/distributors`, `POST /api/distributors`, `PUT /api/distributors/:id` (name, cycle_days, last_visit_date)
-- `GET /api/items`, `PUT /api/items/:id` (distributor_id, active)
-- `GET /api/logs`, `GET /api/logs/:id`
-- `POST /api/vision/count` (multipart images) → draft counts
-- `POST /api/voice/stt` (multipart audio) → text; `POST /api/voice/tts` (text, lang) → audio
-- `POST /api/voice/parse` (text, current draft) → `{edits:[{item_id, count}], unclear:bool, ask?:string}`
-- `POST /api/logs` (final counts) → saves log, runs rule, returns result grouped by distributor
-- `PUT /api/logs/:id/order` (final order qty)
-- `POST /api/logs/:id/visits` (`{distributor_id, confirmed}`) → on yes saves visit and receipts, moves next visit, returns the updated cards
+All routes are under `/api`, JSON in and out (except uploads and TTS audio). The demo store is `store_id = 1`; every handler reads `store_id` from one place (`req.storeId`, set by a middleware) and passes it to every query. Errors are `{ "error": { "code": "...", "message": "..." } }` with a 4xx or 5xx status; model failures never return 500 to the UI for vision and parse (see below).
+
+The app is built as `createApp({ db, ai, clock })` in `server/src/app.js`. `ai` is an object with `countItems`, `stt`, `tts`, `parseEdits`; `clock.today()` gives the business date. Tests pass fakes for both. `server.js` only wires the real ones and listens.
+
+**Store, distributors, items**
+
+| Method and path | Body | Response | Errors |
+|---|---|---|---|
+| `GET /store` | – | `{id, name, language}` | – |
+| `PUT /store` | `{language: "hi"\|"en"}` | store | 400 bad language |
+| `GET /distributors` | – | `[{id, name, note, cycle_days, last_visit_date, next_visit_date, days_to_next_visit, item_count, runs_out_count}]` sorted by next visit | – |
+| `POST /distributors` | `{name, note?, cycle_days, last_visit_date?}` | distributor | 400 validation, 409 name exists |
+| `PUT /distributors/:id` | any of `{name, note, cycle_days, last_visit_date}` | distributor | 400, 404 |
+| `GET /items` | – | `[{id, sku_key, name_en, name_hi, aliases, item_group, unit, pack_size, active, distributor_id}]` | – |
+| `PUT /items/:id` | any of `{distributor_id, active}` | item | 400, 404 |
+
+**Logs and results**
+
+| Method and path | Body | Response | Errors |
+|---|---|---|---|
+| `GET /logs` | – | `[{id, log_date, item_count, runs_out_count, visits:[{distributor_id, name}]}]` newest first | – |
+| `GET /logs/:id` | – | `{log, counts:[{item_id, count, source, vision_count, vision_confidence}], cards}` | 404 |
+| `POST /logs` | `{source, photo_count, counts:[{item_id, count, source, vision_count?, vision_confidence?}]}` | `{log_id, cards, delivery_candidates:[{distributor_id, name, items:[{item_id, rise}]}]}` | 400 unknown item, count out of range, duplicate item |
+| `GET /logs/:id/result` | – | `{log_id, cards}` | 404 |
+| `PUT /logs/:id/order` | `{distributor_id, lines:[{item_id, final_qty}]}` | `{log_id, cards}` | 400 qty not a multiple of pack, 404 |
+| `POST /logs/:id/visits` | `{distributor_id, confirmed: bool}` | `{log_id, cards, distributor}` | 400 not a candidate, 404. Safe to call twice (same result). |
+| `GET /orders/latest` | – | result of the newest log, or `{cards: []}` | – |
+
+A **card** (one per distributor, plus "No distributor" last):
+`{distributor:{id, name, tint_index, next_visit_date, days_to_next_visit, cycle_days}, runs_out:[line], order:[line], enough:[line], confirmed: bool, visit_recorded: bool}`.
+A **line**: `{item_id, name_en, name_hi, count, pack_size, unit, rate_per_day, days_of_cover, status, suggested_qty, final_qty, reason_key, reason_args}`.
+
+**Models**
+
+| Method and path | Body | Response | When the model fails |
+|---|---|---|---|
+| `POST /vision/count` | multipart `images[]` (1–3, jpeg/png/webp, each ≤ 5 MB) | `{items:[{item_id, count, confidence}], dropped: n}` | 200 with `{items: [], error_code}`; UI says "count by voice or tap" |
+| `POST /voice/stt` | multipart `audio` (webm/mp4/wav, ≤ 30 s, ≤ 2 MB), `lang` | `{text}` | 502 `stt_failed`; UI opens the text box |
+| `POST /voice/parse` | `{text, lang, draft:[{item_id, count}]}` | `{edits:[{item_id, count}], unclear: bool, ask?: string}` | 200 with `{edits: [], unclear: true, ask: "Please say it again"}` |
+| `POST /voice/tts` | `{text, lang}` (≤ 500 chars) | `audio/wav` bytes | 502 `tts_failed`; UI shows the text only |
+
+Every model call writes one `ai_call` row (kind, model, ok, latency, error code). Request limits: `MAX_IMAGES`, `MAX_IMAGE_BYTES`, `MAX_AUDIO_BYTES`, `MAX_TTS_CHARS`, `MODEL_TIMEOUT_MS` in `config.js`.
+
+**Health**: `GET /health` → `{ok: true, db: true, keys: {anthropic: bool, sarvam: bool}}` (says if a key is set, never its value).
 
 ### The rule (`core/rule.js`, pure)
 
@@ -381,19 +415,72 @@ After speech, a bottom sheet: "I heard: Maggi 8, Surf 5" with the changed rows, 
 
 ## 5. Verification
 
+### 5.1 Tests (`pnpm --dir server test`, no network, no keys)
+
+All tests use `node:test`. API tests start `createApp` on an in-memory SQLite DB, a fixed clock (`2026-11-22`) and a fake `ai` object, then call it with `fetch` on a random port (the KidQueue pattern).
+
+| File | What it proves | Req |
+|---|---|---|
+| `test/rule.test.js` | R6 worked example gives 12; stock-out raises the rate by the step-up; first log gives no suggestion and `no_history`; smoothing with an old rate; rate 0 gives no division error; qty is a multiple of pack size and never negative; same item under a 4-day vs 15-day distributor gives a smaller vs bigger order | R5, R6 |
+| `test/schedule.test.js` | next visit when the visit is today, in the future, missed by one cycle, missed by several cycles, unknown last visit | R9 |
+| `test/plan.test.js` | cards sorted by next visit; inside a card runs-out first, then order, then enough; items with no distributor go in the last card; `call_early` and `days_out` are right | R7 |
+| `test/restock.test.js` | R13 worked example gives a candidate; a rise below one pack is ignored; rises for two distributors give two candidates; no previous log gives no candidates | R13 |
+| `test/validate.test.js` | vision JSON: unknown `item_id` dropped, count < 0 or > 9999 dropped, bad confidence dropped, non-JSON gives `[]`; parse JSON: unknown item gives `unclear`, confidence < `MIN_CONFIDENCE` gives `unclear` | R2, R3 |
+| `test/reasons.test.js` | every `reason_key` the rule can emit has an `en` and a `hi` template (reads `web/src/i18n.js` reason block) | R8 |
+| `test/config.test.js` | `core/rule.js` has no numeric literal except 0 and 1 (reads the file) | R10 |
+| `test/api-store.test.js` | store, distributors, items: happy paths, 400 on bad input, 404, 409 on duplicate name | R9 |
+| `test/api-logs.test.js` | save first log (all `no_history`); save second log returns cards with the expected Surf runs-out and Maggi order; `PUT /order` stores final qty and rejects a non-pack qty; `GET /logs` newest first | R1, R5–R8 |
+| `test/api-visits.test.js` | rise gives a candidate; confirm saves visit and receipts and moves next visit; calling confirm twice gives the same rows; `confirmed: false` changes nothing; a non-candidate distributor gives 400 | R13 |
+| `test/api-ai.test.js` | with the fake `ai`: vision success, vision throws (200 with empty list), parse unclear, STT fails (502), TTS too long (400); an `ai_call` row is written each time and holds no text | R2, R3 |
+| `test/tenant.test.js` | with a second store seeded, every list and every write for store 1 never reads or changes store 2 rows | security |
+| `test/seed.test.js` | seed runs twice without error (idempotent) and gives 3 distributors, about 25 items, 3 logs, 1 visit | R11 |
+| `test/health.test.js` | exists; extend with key flags (never values) | – |
+
+Web: `pnpm --dir web build` must pass. No web unit tests in the 4-hour build; the screens are checked by the walk through below.
+
+### 5.2 Live smoke (`pnpm --dir server smoke:live`, needs keys, about 4 calls)
+
+`scripts/smoke-live.js` makes one real call each: vision on `evals/vision/shelf-01.jpg`, STT on `evals/voice/hi-01.wav`, parse on its text, TTS on one sentence. It prints ok or the error code and the latency. Run it once after T4 and T5 and once on Replit.
+
+### 5.3 Demo check (`pnpm --dir server demo:check`, no keys)
+
+`scripts/demo-check.js` runs the demo story against the real server with the fake `ai`: seed → save the "today" log from `evals/demo/today-counts.json` → expect a Sharma card with Surf in runs-out and Maggi in order → confirm the Sharma order → save `evals/demo/after-restock.json` → expect a Sharma delivery candidate → confirm → expect Sharma's next visit moved. Exit code 0 only when every step matches. Run it before the demo and after the Replit deploy.
+
+### 5.4 Manual walk through (phone-size view, then the phone on Replit)
+
+Home with seed → Take stock log → photo → Check → one voice edit with yes → Save → Result → confirm one order → restock log → "Did Sharma deliver?" yes → Home shows the visit. Light and dark. Screenshots go in the spec folder.
+
+### 5.5 Requirement map
+
 | Req | Check |
 |---|---|
-| R1 | Manual: seed, open Home, 3 logs shown newest first |
-| R2 | Live: photo of a real shelf returns known items only; unit test: validator drops unknown ids and bad counts; kill key → empty list, no crash |
-| R3 | 5 Hindi + 3 English spoken phrases parse right or re-ask; unclear phrase re-asks |
-| R4 | Manual walk through on phone-size view |
-| R5, R6, R7 | `node --test`: worked example in R6, stock-out case, first-log case, call-early case, same item under a 4-day vs 15-day distributor gives a smaller vs bigger order |
-| R8 | Manual: every row has a reason |
-| R9 | `node --test` for `next_visit` (visit today, visit missed, long cycle); manual: change a distributor's cycle, its card changes and other cards do not; move an item, it moves card |
-| R10 | `rg -n "[0-9]" server/src/core/rule.js` shows only 0 and 1 |
-| R11 | `pnpm seed` then Home shows rates and at least one alert |
-| R13 | `node --test` for `restock.js`: worked example in R13, a small rise below the threshold is ignored, rises of two distributors give two questions; manual: confirm a visit, distributor's next visit moves, Home strip updates |
-| R12 | Phone browser on the HTTPS URL: photo and mic both work; screenshot |
+| R1 | `api-logs.test.js`; walk through |
+| R2 | `validate.test.js`, `api-ai.test.js`; vision eval |
+| R3 | `validate.test.js`, `api-ai.test.js`; voice eval |
+| R4 | walk through |
+| R5, R6, R7 | `rule.test.js`, `plan.test.js`, `api-logs.test.js` |
+| R8 | `reasons.test.js`; walk through |
+| R9 | `schedule.test.js`, `api-store.test.js` |
+| R10 | `config.test.js` |
+| R11 | `seed.test.js`, `demo:check` |
+| R12 | phone on Replit: photo and mic work; screenshot |
+| R13 | `restock.test.js`, `api-visits.test.js`, `demo:check` |
+
+## 5b. Demo evals
+
+Evals measure the parts we cannot prove with a unit test: how well the models do, and whether the rule learns. Each eval has a fixed input set, a script, a number and a bar. Results go in `checks.md` and on one slide. Inputs are our own photos and voices, or synthetic; no real owner data.
+
+| Eval | Input set | Script | Metric | Bar for the demo | Cost |
+|---|---|---|---|---|---|
+| **E1. Vision count** | 5 shelf photos in `evals/vision/` (our own photos of a home or shop shelf with catalog items), each with a hand count `shelf-0N.truth.json` | `pnpm eval:vision` | precision (items returned that are really there), recall (items there that were returned), share of counts within ±20% or ±1 pack | precision ≥ 0.9 (it must not invent items), recall ≥ 0.6, counts within bar ≥ 60% | 5 vision calls |
+| **E2. Voice parse** | 20 typed phrases in `evals/voice/phrases.json`: 8 Hindi, 6 Hinglish, 6 English; includes 4 that must re-ask ("thoda kam karo", unknown brand, two items with one number, a number with no item) | `pnpm eval:parse` | exact match of `{item_id, count}` edits; re-ask rate on the 4 unclear ones | ≥ 90% exact on the 16 clear ones; 4/4 unclear ones re-ask (no guess) | 20 small text calls |
+| **E3. Voice end to end** | 5 short clips we record (`evals/voice/hi-0N.wav`, 3 Hindi, 2 English) with expected edits | `pnpm eval:voice` | item and count right after STT + parse | ≥ 4 of 5 | 5 STT + 5 parse calls |
+| **E4. Learning (simulation)** | synthetic store: 25 items, 3 distributors (4, 7, 15 days), hidden true daily demand with noise, 12 cycles, fixed seed | `pnpm eval:sim` | stock-out days and leftover units per cycle, learning rule vs fixed starter quantities; writes `sim-chart.png` and a table | learning beats fixed on stock-out days by cycle 6 and keeps it to cycle 12 | free |
+| **E5. Restock detection** | 10 synthetic before/after log pairs in `evals/restock/` (6 with a real delivery, 4 with only count noise) | `pnpm eval:restock` | right distributor asked, no question on noise | 6/6 asked, ≤ 1 false question | free |
+
+The pitch shows E4's chart (it learns), E1 and E2 numbers (the models are good enough and never guess), and states the limits (5 photos, 20 phrases, synthetic demand).
+
+Priority if time is short: E2 and E4 first (cheap, strongest story), then E1, then E5, then E3.
 
 ## 6. Open questions (proposed answers)
 
