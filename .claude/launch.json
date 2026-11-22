@@ -1,7 +1,35 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "kiranaq-server", "runtimeExecutable": "node", "runtimeArgs": ["server.js"], "cwd": "server", "port": 3000 },
-    { "name": "kiranaq-web", "runtimeExecutable": "pnpm", "runtimeArgs": ["dev"], "cwd": "web", "port": 5173 }
+    {
+      "name": "kiranaq-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "server.js"
+      ],
+      "cwd": "server",
+      "port": 3000
+    },
+    {
+      "name": "kiranaq-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "cwd": "web",
+      "port": 5173
+    },
+    {
+      "name": "kiranaq-web-mock",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev:mock",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
+      "cwd": "web",
+      "port": 5174
+    }
   ]
 }
