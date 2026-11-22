@@ -1,0 +1,32 @@
+[
+  {
+    "file": "shelf-01.jpg",
+    "title": "Biscuit aisle (side view, boxed)",
+    "box": {
+      "x0": 0.58,
+      "y0": 0.2,
+      "x1": 1.0,
+      "y1": 0.72
+    }
+  },
+  {
+    "file": "shelf-02.jpg",
+    "title": "Rice shelf (front view)",
+    "box": {
+      "x0": 0,
+      "y0": 0,
+      "x1": 1,
+      "y1": 1
+    }
+  },
+  {
+    "file": "shelf-03.jpg",
+    "title": "Small-town kirana",
+    "box": {
+      "x0": 0.5,
+      "y0": 0.05,
+      "x1": 1,
+      "y1": 0.95
+    }
+  }
+]

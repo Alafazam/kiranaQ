@@ -74,6 +74,7 @@ Reads, never edits: `ai/index.js`, `ai/fake.js`, `core/config.js`, `repo/items.j
 - [ ] C2. `vision.js` (Sarvam `gemma4` default, Claude option; catalog in prompt, JSON only, timeout) and `parse.js` (Sarvam `sarvam-105b` default, Claude Haiku option; draft + catalog aliases in prompt, `unclear` + `ask`). Each writes an `ai_call` row through `logAiCall`. (R2, R3)
 - [ ] C3. `sarvam.js`: add `keyterms` to STT; model names and limits from `core/config.js`; TTS stays `bulbul:v3` (spec open question 1). (R3)
 - [ ] C4. `routes/speech.js`: add `/vision` and `/parse` (multer memory storage, size limits, `MAX_MODEL_CALLS_PER_HOUR` → 429) + `api-ai.test.js` with the fake. (R2, R3)
+- [ ] C2b. Vision prompt (R2b): "count only packs whose front faces the camera; ignore packs seen from the side or far down an aisle". `run-vision.js` crops each photo to its `box` from `web/public/samples/samples.json` before the call (use `sharp`-free cropping: ask the lead to add a dependency if needed, or crop with the Sarvam call skipped). Truth files count inside the box only.
 - [ ] C5. `smoke-live.js` (one real call each). Needs keys.
 - [ ] C6. Evals: E2 runner first (`evals/voice/phrases.json` is written by the photos-and-catalog session; uses `sku_key`); then E1: 3–5 openly licensed **Indian** shelf photos into `evals/vision/` and `web/public/samples/`, `SOURCES.md`, runner (send Lane A the brands seen by 3:30; the lead writes the truth files by reading the photos). Stretch: E3 clips.
 
@@ -88,6 +89,7 @@ Reads: `DESIGN.md`, spec sections "UI tech", "Theming", "Navigation", "Screens",
 - [ ] D2. `api.js` with a `VITE_USE_MOCK=1` switch to the mock JSON, so screens work before the API.
 - [ ] D3. Home (distributor strip, logs, four states). (R1, R7)
 - [ ] D4. Photo step (camera input or "Use a sample photo" grid from `web/public/samples/`, resize to 1600 px, up to 3) and Check step (stepper rows, add item, mic hold-to-speak with `MediaRecorder`, read-back sheet, text fallback). (R2, R3, R4)
+- [ ] D4b. Count box (R2b): after a photo is chosen, show it with a draggable rectangle (corner handles, pointer events, min 20% size), default = whole photo, sample photos use the preset `box` from `web/public/samples/samples.json` (written by the lead: `[{file, title, box:{x0,y0,x1,y1}}]`, fractions of width/height). Crop on canvas to the box, then resize to 1600 px and upload. Check screen shows the photo thumbnail with the box drawn and "Counted inside the box only".
 - [ ] D5. Visit sheet, Result / Orders (cards per distributor, confirm, stamp, Read out, Copy list). (R6–R8, R13)
 - [ ] D6. Settings (distributors edit, items, language, theme; no reset button). (R9) Cut first if late: keep read-only lists.
 

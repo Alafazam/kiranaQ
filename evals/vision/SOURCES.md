@@ -12,3 +12,5 @@ Notes:
 - CC BY-SA 3.0 needs attribution and share-alike. Keep this file with the photos.
 - shelf-01 shows biscuits only. shelf-02 shows rice only. Only shelf-03 is a mixed kirana shelf.
 - Truth files (expected counts) are not here. Write them by hand per photo.
+
+Count boxes (R2b): each photo has a preset box in `web/public/samples/samples.json` (fractions of width and height). `shelf-0N.box.jpg` is the photo cropped to that box with `sips`; the eval sends the box file, as the app does after cropping. Truth files count inside the box only.
