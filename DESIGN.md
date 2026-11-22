@@ -6,14 +6,15 @@ Based on the Hallmark design rules (app-screen scope) and its **Dose** theme (wa
 ## System
 - Scope: app screens (a tool the owner works in, not a marketing page). No hero, no stock photos, no reveal on load.
 - Theme: Dose, adapted. Vibe: "warm shop notebook, calm, exact, big numbers".
-- Signature: the distributor card. A pale tinted band per distributor: who comes next, what runs out before that visit, what to order.
+- Signature: the distributor card. A white card with a thick colour stripe on its left edge, one colour per distributor: who comes next, what runs out before that visit, what to order.
+- **Light cream is the only default.** The users are not tech-savvy and work in bright shops: the app always opens light (cream paper, white cards, dark text), whatever the phone's system setting. Few colours, high contrast, nothing decorative.
 - Users: a kirana owner, often one-handed, in a bright shop, Hindi first.
 
 ## Tokens
 `web/src/tokens.css` is the source of truth. Tailwind maps names to these variables. No hex, rgb or `font-family` outside this block.
 ```css
 :root {
-  --color-paper: oklch(97.6% 0.011 88);  --color-paper-2: oklch(96.5% 0.02 160);  --color-paper-3: oklch(93% 0.036 160);
+  --color-paper: oklch(97% 0.022 85);   /* cream */  --color-paper-2: oklch(96.5% 0.02 160);  --color-paper-3: oklch(93% 0.036 160);
   --color-surface: oklch(99.5% 0.004 88);
   --color-ink: oklch(21% 0.025 170);  --color-ink-2: oklch(31% 0.02 170);  --color-muted: oklch(49% 0.024 165);
   --color-rule: oklch(86.5% 0.022 140);
@@ -22,8 +23,9 @@ Based on the Hallmark design rules (app-screen scope) and its **Dose** theme (wa
   --color-focus: oklch(45% 0.14 160);
   --color-danger: oklch(52% 0.17 30);  --color-danger-soft: oklch(93% 0.04 30);   /* variant, see below */
   /* distributor tints: identity only, never a state. Assigned in order. */
-  --t-1: oklch(87.5% 0.058 64);  --t-2: oklch(87% 0.048 210);  --t-3: oklch(84% 0.045 270);
-  --t-4: oklch(91.5% 0.064 98);  --t-5: oklch(84% 0.048 322);
+  /* used only as the card's left stripe and a small dot in lists; text never sits on them */
+  --t-1: oklch(70% 0.12 60);  --t-2: oklch(62% 0.10 230);  --t-3: oklch(58% 0.10 290);
+  --t-4: oklch(72% 0.12 100); --t-5: oklch(60% 0.12 330);
   --font-display: "Schibsted Grotesk", "Noto Sans Devanagari", ui-sans-serif, sans-serif;
   --font-body: "Instrument Sans", "Noto Sans Devanagari", ui-sans-serif, sans-serif;
   --font-label: "DM Mono", ui-monospace, monospace;
@@ -32,7 +34,7 @@ Based on the Hallmark design rules (app-screen scope) and its **Dose** theme (wa
   --dur-micro: 120ms;  --dur-short: 200ms;  --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 ```
-Dark (night ground): same names, redefined under `@media (prefers-color-scheme: dark)` guarded by `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`. Paper `oklch(13% 0.01 170)`, ink `oklch(96% 0.01 160)`, tints at 40% lightness, mint with dark ink, danger lightened for contrast.
+Dark (optional, only when the owner picks it in Settings): same names, redefined under `:root[data-theme="dark"]` only. No `prefers-color-scheme` switch: the app never turns dark on its own. Settings theme choices: Light (default) and Dark. Paper `oklch(13% 0.01 170)`, ink `oklch(96% 0.01 160)`, tints at 40% lightness, mint with dark ink, danger lightened for contrast.
 Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono:400;500`, `Noto Sans Devanagari:400;500;700`.
 
 ## Type
@@ -43,7 +45,7 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 - Labels: body face, one step smaller, sentence case. Never tracked capitals, never small caps. Three weights per screen: 400, 500, 700.
 
 ## Controls
-- Moulded, from Dose: 52px tall, `--radius-control`, 1px rim and a 3px rim below, sinks 3px on press (`transform` only).
+- Simple and flat: 52px tall, `--radius-control`, solid fill or a 1.5px border, no bevel or gradient. Press feedback: a slightly darker fill (`transform` only for motion).
 - Primary: green (`--color-accent` to `--color-accent-deep`), accent-ink text. One primary per screen, with one exception: on Result and Orders each distributor card has its own primary "Confirm order" (the card is the unit of work), and no other primary shows there. Secondary: clear with rule rim.
 - Stepper (− qty +): two 52px keys around a DM Mono number.
 - Choices (language, theme, yes/no): keys, mint (`--color-accent-soft`) when selected.
@@ -52,14 +54,15 @@ Fonts: Google Fonts `Schibsted Grotesk:700`, `Instrument Sans:400;500`, `DM Mono
 
 ## Surfaces
 - Paper ground, white surfaces lifted on `--shadow-lift`. 14px cards, 10px controls, pills for tags.
-- Distributor card: a pale band in its tint (`--t-n` at about 60% over paper), the distributor name and next visit on top, white rows inside. Rows, never cards inside cards.
+- Distributor card: a white card on cream with a 6px left stripe in its colour (`--t-n`), the distributor name and next visit on top, rows inside. Rows, never cards inside cards. The Home strip uses the same white cards with the stripe.
 - A confirmed order or a recorded visit shows a small green double-ringed stamp in DM Mono ("Ordered 24 Nov", "Delivered 22 Nov"), rotated 2 degrees. Not yet confirmed: the same stamp in grey.
 
 ## Color use
 - Green does every positive signal: primary action, current tab, selected key, confirmed stamp.
 - Status is never color alone. Each has an icon and a word: danger + `AlertTriangle` + "Runs out"; ink + `ShoppingCart` + "Order"; muted + `CheckCircle2` + "Enough"; muted + `Clock` + "First log".
 - Tints mark which distributor, nothing else.
-- Text contrast at least 4.5:1 on paper, surface and tints, in both themes.
+- Text contrast at least 4.5:1 (aim for 7:1 on main text) on paper and surface. Text never sits on a distributor colour.
+- Use at most: cream, white, ink, muted ink, green (actions and good), red (runs out only). Distributor colours only as stripes and dots.
 
 ## Variants (where KiranaQ differs from Dose)
 - **Danger red is allowed for one state only: "runs out before the visit".** Dose says late is grey. Here the owner must act (call the distributor), so it gets red, an icon and a word. Nothing else is red.
